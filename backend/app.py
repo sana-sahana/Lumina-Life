@@ -50,7 +50,6 @@ CORS(app,
          }
      })
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 try:
     cred = credentials.Certificate(
         os.path.join(
@@ -59,13 +58,10 @@ try:
         )
     )
 
-    firebase_admin.initialize_app(cred)
     print("✅ Firebase initialized")
 
 except Exception as e:
-    print("⚠️ Firebase not initialized:", e)
-
-firebase_admin.initialize_app(cred)
+    print(f"⚠️ Firebase not initialized: {e}")
 # Load configuration
 try:
     from backend.config import Config
