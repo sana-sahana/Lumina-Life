@@ -1378,10 +1378,8 @@ def get_compatible_donors(blood_type):
 # ========== SERVE STATIC FILES ==========
 @app.route('/')
 def serve_index():
-    try:
-        return send_from_directory('../static', 'dashboard.html')
-    except:
-        return send_from_directory('../static', 'l.html')
+    return send_from_directory('../static', 'landing.html')
+    
 
 @app.route('/<path:path>')
 def serve_static(path):
@@ -1937,9 +1935,8 @@ if __name__ == '__main__':
     print("📝 Profile: http://127.0.0.1:5000/profile.html")
     print("=" * 60)
     
-import os
-
-app.run(
-    host='0.0.0.0',
-    port=int(os.environ.get("PORT", 5000))
-)
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=int(os.environ.get("PORT", 5000))
+    )
