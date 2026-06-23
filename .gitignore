@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.firebase/
+backend/luminalife-7f217-firebase-adminsdk-fbsvc-921f0445a7.json

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lumina Life | Health Intelligence Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #fef9f7 0%, #fff5f3 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1e2a3e;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            border-radius: 42px;
+            box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+        .app-layout { display: flex; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 248, 245, 0.65);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(230, 57, 70, 0.12);
+            padding: 32px 20px;
+        }
+        .logo-area { display: flex; align-items: center; gap: 14px; margin-bottom: 35px; cursor: pointer; }
+        .lumina-logo {
+            width: 58px; height: 58px; object-fit: cover; border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(255,183,3,0.28);
+        }
+        .logo-text {
+            font-size: 1.6rem; font-weight: 700;
+            background: linear-gradient(135deg,#ffb703,#d90429);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 18px; margin: 6px 0; border-radius: 28px;
+            font-weight: 500; color: #576c7e; cursor: pointer;
+            text-decoration: none;
+        }
+        .nav-item img { width: 24px; height: 24px; opacity: 0.7; }
+        .nav-item.active {
+            background: rgba(230, 57, 70, 0.12);
+            color: #e63946;
+        }
+        .main-content { flex: 1; padding: 28px 32px; overflow-x: auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 15px; }
+        .greeting h2 { font-weight: 600; font-size: 1.7rem; color: #1e2a3e; }
+        .profile-pic {
+            width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+            border: 2px solid white; cursor: pointer;
+        }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,240,0.8); backdrop-filter: blur(8px);
+            border-radius: 28px; padding: 1.2rem;
+            border: 1px solid rgba(255,235,230,0.8);
+        }
+        .stat-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #b38686; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #e44d5a; margin: 0.4rem 0; }
+        .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; margin-bottom: 1.8rem; }
+        .glass-card {
+            background: rgba(255, 245, 242, 0.75); backdrop-filter: blur(8px);
+            border-radius: 32px; padding: 1.3rem;
+            border: 1px solid rgba(255,245,240,0.9);
+        }
+        .score-ring { position: relative; width: 120px; height: 120px; margin: 0 auto 12px; }
+        .circle-progress { fill: none; stroke: #e63946; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 263.89; transition: stroke-dashoffset 0.6s ease; }
+        .circle-bg { fill: none; stroke: #ffe0da; stroke-width: 8; }
+        .score-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 800; color: #e63946; }
+        .badge-status { display: inline-block; padding: 5px 14px; border-radius: 40px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: rgba(46,204,113,0.15); color: #2ecc71; }
+        .badge-warning { background: rgba(241,196,15,0.15); color: #f1c40f; }
+        .badge-danger { background: rgba(231,76,60,0.15); color: #e74c3c; }
+        .badge-info { background: rgba(52,152,219,0.15); color: #3498db; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .btn-primary {
+            background: #e63946; border: none; padding: 10px 20px; border-radius: 36px;
+            color: white; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: scale(0.98); }
+        .btn-secondary {
+            background: transparent; border: 1px solid #eac2bb; padding: 10px 20px;
+            border-radius: 36px; cursor: pointer; color: #e63946; transition: 0.2s;
+        }
+        .btn-secondary:hover { background: rgba(230,57,70,0.05); }
+        .progress-bar-bg { background: #ffe0da; height: 6px; border-radius: 8px; margin: 8px 0; }
+        .progress-fill { background: #e63946; height: 6px; border-radius: 8px; width: 0%; }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; visibility: hidden; opacity: 0;
+            transition: 0.25s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-container {
+            background: white; border-radius: 32px; width: 90%; max-width: 600px;
+            padding: 28px; max-height: 85vh; overflow-y: auto;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #666; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 16px; background: #fef9f7;
+            border: 1px solid #f0e0db; border-radius: 24px; font-family: inherit;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: #e63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.1);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .toast-notify {
+            position: fixed; bottom: 24px; right: 24px; background: #2ecc71;
+            color: white; padding: 12px 24px; border-radius: 40px;
+            z-index: 999; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .ai-chat {
+            position: fixed; bottom: 24px; right: 24px; width: 380px;
+            background: white; border-radius: 28px; border: 1px solid #f0e0db;
+            z-index: 200; display: none; flex-direction: column; max-height: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .ai-chat.open { display: flex; }
+        .ai-chat-header {
+            padding: 16px 20px; background: linear-gradient(135deg, #e63946, #ff6b6b);
+            border-radius: 28px 28px 0 0; display: flex; justify-content: space-between;
+            font-weight: 600; color: white;
+        }
+        .ai-chat-messages { padding: 20px; height: 300px; overflow-y: auto; font-size: 14px; }
+        .ai-chat-input { padding: 16px; border-top: 1px solid #f0e0db; display: flex; gap: 12px; }
+        .ai-chat-input input { flex: 1; padding: 12px 16px; background: #fef9f7; border: 1px solid #f0e0db; border-radius: 40px; }
+        .ai-btn {
+            position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
+            background: linear-gradient(135deg, #e63946, #ff6b6b); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(230,57,70,0.3); z-index: 199;
+        }
+        .ai-btn i { font-size: 28px; color: white; }
+        hr { margin: 20px 0; border-color: #f0e0db; }
+        .quick-actions { display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
+        .info-box { background: #fff5f0; border-radius: 20px; padding: 15px; margin-top: 15px; }
+        .message { margin-bottom: 12px; padding: 8px 12px; border-radius: 16px; }
+        .message.user { background: #e63946; color: white; text-align: right; margin-left: auto; max-width: 80%; }
+        .message.bot { background: #f0e0db; color: #1e2a3e; max-width: 80%; }
+        @media (max-width: 1000px) {
+            .stats-row, .two-columns { grid-template-columns: 1fr; }
+            .sidebar { width: 100%; display: flex; flex-wrap: wrap; gap: 4px; padding: 16px; overflow-x: auto; }
+            .app-layout { flex-direction: column; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+        
+        /* Guest mode banner */
+        .guest-banner {
+            background: linear-gradient(135deg, #ffb703, #ff8c00);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 60px;
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .guest-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo-area" id="logoHomeBtn">
+                <img class="lumina-logo" src="https://i.pinimg.com/originals/8b/16/7a/8b167af653c2395dd2b2b2d6c7d9b7d5.png" alt="Logo">
+                <div class="logo-text">Lumina Life</div>
+            </div>
+            
+            <a href="dashboard.html" class="nav-item">
+                <img src="https://i.pinimg.com/1200x/7e/05/df/7e05df23a9a155c4a103dce04bbf45c9.jpg" alt="dashboard">
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="donor.html" class="nav-item">
+                <img src="https://i.pinimg.com/736x/0a/a2/18/0aa2184eaf76105a30e0377d57565842.jpg" alt="donate">
+                <span>Donate Blood</span>
+            </a>
+            
+            <a href="health.html" class="nav-item active">
+                <img src="https://i.pinimg.com/736x/54/e5/c4/54e5c458dca79ed7873bbd3665979291.jpg" alt="health">
+                <span>Health Status</span>
+            </a>
+            
+            <a href="profile.html" class="nav-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="profile">
+                <span>Profile</span>
+            </a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="greeting">
+                    <h2>Health Intelligence <span style="color:#e63946">Center</span></h2>
+                    <p>Track your health metrics for safe blood donation</p>
+                </div>
+                <div class="guest-actions">
+                    <div class="guest-banner" id="authStatusBanner">
+                        <i class="fas fa-user"></i> <span id="authStatusText">Loading...</span>
+                    </div>
+                    <button class="btn-primary" id="updateHealthBtn"><i class="fas fa-edit"></i> Update Health</button>
+                    <button class="btn-secondary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-title">Health Score</div>
+                    <div class="score-ring">
+                        <svg width="110" height="110" viewBox="0 0 110 110">
+                            <circle class="circle-bg" cx="55" cy="55" r="42" stroke-width="8" fill="none"/>
+                            <circle class="circle-progress" id="health-ring" cx="55" cy="55" r="42" stroke-width="8" fill="none"/>
+                        </svg>
+                        <div class="score-text" id="health-score-val">--</div>
+                    </div>
+                    <div class="flex-between"><span>Overall Wellness</span><span id="health-badge" class="badge-status">--</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Donation Readiness</div>
+                    <div class="score-ring">
+                        <svg width="110" height="110" viewBox="0 0 110 110">
+                            <circle class="circle-bg" cx="55" cy="55" r="42" stroke-width="8"/>
+                            <circle class="circle-progress" id="readiness-ring" cx="55" cy="55" r="42" stroke-width="8" style="stroke: #2ecc71;"/>
+                        </svg>
+                        <div class="score-text" id="readiness-score">--</div>
+                    </div>
+                    <div><span id="eligibility-badge" class="badge-status">--</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title"><i class="fas fa-tint"></i> Hemoglobin</div>
+                    <div style="font-size: 36px; font-weight: 800;" id="hb-value">-- g/dL</div>
+                    <div><span id="hb-badge" class="badge-status">--</span></div>
+                    <div id="hb-recommendation" style="font-size: 13px; margin-top: 10px;"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title"><i class="fas fa-chart-line"></i> Body Metrics</div>
+                    <div class="flex-between"><span>⚖️ Weight</span><strong id="weight-value">-- kg</strong></div>
+                    <div class="flex-between"><span>📏 Height</span><strong id="height-value">-- cm</strong></div>
+                    <div class="flex-between"><span>🎂 Age</span><strong id="age-value">-- years</strong></div>
+                    <div class="flex-between"><span>💧 Hydration</span><strong id="hydration-value">--%</strong></div>
+                    <div class="flex-between"><span>😴 Sleep</span><strong id="sleep-value">-- hrs</strong></div>
+                    <div class="flex-between"><span>⚡ Energy</span><strong id="energy-value">--%</strong></div>
+                </div>
+            </div>
+
+            <!-- Eligibility & Chart -->
+            <div class="two-columns">
+                <div class="glass-card">
+                    <h3><i class="fas fa-clipboard-list"></i> Eligibility Checklist</h3>
+                    <div id="checklist">
+                        <div class="flex-between" style="margin-bottom: 14px;"><span>✓ Hemoglobin ≥ 12.5 g/dL</span><span id="check-hb">--</span></div>
+                        <div class="flex-between" style="margin-bottom: 14px;"><span>✓ Weight ≥ 50 kg</span><span id="check-weight">--</span></div>
+                        <div class="flex-between" style="margin-bottom: 14px;"><span>✓ Hydration ≥ 70%</span><span id="check-hydration">--</span></div>
+                        <div class="flex-between" style="margin-bottom: 14px;"><span>✓ Age 18-65 years</span><span id="check-age">--</span></div>
+                        <div class="flex-between" style="margin-bottom: 14px;"><span>✓ No fever/illness</span><span id="check-illness">--</span></div>
+                        <div class="flex-between"><span>✓ 90 days since last donation</span><span id="check-last-donation">--</span></div>
+                    </div>
+                    <hr>
+                    <div><strong>🤖 AI Recommendation:</strong> <span id="ai-recommendation">Loading...</span></div>
+                    <div class="quick-actions">
+                        <button class="btn-secondary" id="quickHydrationBtn" style="font-size:12px;"><i class="fas fa-tint"></i> Log Hydration</button>
+                        <button class="btn-secondary" id="quickWeightBtn" style="font-size:12px;"><i class="fas fa-weight-scale"></i> Log Weight</button>
+                        <button class="btn-secondary" id="quickSleepBtn" style="font-size:12px;"><i class="fas fa-bed"></i> Log Sleep</button>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3><i class="fas fa-chart-line"></i> Hemoglobin Trend</h3>
+                    <canvas id="hbChart" height="150" style="max-height: 180px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Donation History & Health Tips -->
+            <div class="two-columns">
+                <div class="glass-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Donation History</h3>
+                    <div class="flex-between"><span>Last Donation:</span><strong id="last-donation-date">--</strong></div>
+                    <div class="flex-between"><span>Next Eligible Date:</span><strong id="next-eligible-date">--</strong></div>
+                    <div class="flex-between"><span>Days Remaining:</span><strong id="days-remaining">--</strong></div>
+                    <div class="flex-between"><span>Total Donations:</span><strong id="total-donations">--</strong></div>
+                    <div class="flex-between"><span>Lives Saved:</span><strong id="lives-saved">--</strong></div>
+                    <div class="progress-bar-bg" style="margin-top: 15px;"><div class="progress-fill" id="recoveryFill"></div></div>
+                    <div class="flex-between" style="margin-top: 8px;"><span>Recovery Progress</span><span id="recoveryPercent">0%</span></div>
+                </div>
+                <div class="glass-card">
+                    <h3><i class="fas fa-lightbulb"></i> Health Tips</h3>
+                    <div id="healthTips">
+                        <div class="info-box"><p>💪 <strong>Iron-rich foods:</strong> Spinach, lentils, red meat, beans</p></div>
+                        <div class="info-box"><p>💧 <strong>Stay hydrated:</strong> Drink 2-3 liters of water daily</p></div>
+                        <div class="info-box"><p>😴 <strong>Quality sleep:</strong> 7-8 hours helps recovery</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COMPREHENSIVE HEALTH UPDATE MODAL -->
+<div class="modal-overlay" id="healthModal">
+    <div class="modal-container">
+        <h3 style="margin-bottom:20px;"><i class="fas fa-heartbeat"></i> Update Health Metrics</h3>
+        <p style="color:#666; margin-bottom:20px;">Enter your latest health measurements manually</p>
+        
+        <form id="healthForm">
+            <div style="background:#fef5f0; padding:15px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="color:#e63946; margin-bottom:15px;">📋 Basic Information</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Full Name</label><input type="text" id="inputName" placeholder="Your full name"></div>
+                    <div class="form-group"><label>Blood Group</label>
+                        <select id="inputBloodGroup">
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Age (years)</label><input type="number" id="inputAge" placeholder="18-65" step="1"></div>
+                    <div class="form-group"><label>Gender</label>
+                        <select id="inputGender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#fef5f0; padding:15px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="color:#e63946; margin-bottom:15px;">📏 Body Measurements</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Weight (kg) *</label><input type="number" step="0.1" id="inputWeight" placeholder="e.g., 65.5"></div>
+                    <div class="form-group"><label>Height (cm)</label><input type="number" step="0.1" id="inputHeight" placeholder="e.g., 170"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>BMI (auto-calculated)</label><input type="text" id="inputBMI" readonly style="background:#f0e0db;"></div>
+                    <div class="form-group"><label>Body Temperature (°F)</label><input type="number" step="0.1" id="inputTemperature" placeholder="98.6"></div>
+                </div>
+            </div>
+
+            <div style="background:#fef5f0; padding:15px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="color:#e63946; margin-bottom:15px;">🩸 Blood & Health Metrics</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Hemoglobin (g/dL) *</label><input type="number" step="0.1" id="inputHb" placeholder="12.5 - 17.5"></div>
+                    <div class="form-group"><label>Blood Pressure</label><input type="text" id="inputBP" placeholder="e.g., 120/80"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Heart Rate (bpm)</label><input type="number" id="inputHeartRate" placeholder="60-100"></div>
+                </div>
+            </div>
+
+            <div style="background:#fef5f0; padding:15px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="color:#e63946; margin-bottom:15px;">💪 Lifestyle & Daily Metrics</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Hydration Level (%)</label><input type="number" id="inputHydration" placeholder="70-100"></div>
+                    <div class="form-group"><label>Energy Level (%)</label><input type="number" id="inputEnergy" placeholder="0-100"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Sleep Hours (last night)</label><input type="number" step="0.5" id="inputSleep" placeholder="7-8 recommended"></div>
+                    <div class="form-group"><label>Stress Level (1-10)</label><input type="number" id="inputStress" placeholder="1=Low, 10=High"></div>
+                </div>
+            </div>
+
+            <div style="background:#fef5f0; padding:15px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="color:#e63946; margin-bottom:15px;">📅 Donation & Health Status</h4>
+                <div class="form-group"><label>Last Donation Date</label><input type="date" id="inputLastDonation"></div>
+                <div class="form-group"><label>Illness/Symptoms</label>
+                    <select id="inputIllness">
+                        <option value="none">None - Feeling healthy</option>
+                        <option value="cold">Mild Cold</option>
+                        <option value="fever">Fever</option>
+                        <option value="flu">Flu</option>
+                        <option value="infection">Infection</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width:100%">💾 Save All Health Data</button>
+            <button type="button" class="btn-secondary" id="closeHealthBtn" style="width:100%; margin-top:12px">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Quick Log Modal -->
+<div class="modal-overlay" id="quickModal">
+    <div class="modal-container">
+        <h3 id="quickModalTitle" style="margin-bottom:20px;">Quick Log</h3>
+        <div id="quickModalContent"></div>
+        <button type="button" class="btn-secondary" id="closeQuickModal" style="width:100%; margin-top:12px">Cancel</button>
+    </div>
+</div>
+
+<!-- AI Chat -->
+<div class="ai-btn" id="aiChatBtn"><i class="fas fa-robot"></i></div>
+<div class="ai-chat" id="aiChat">
+    <div class="ai-chat-header">
+        <span><i class="fas fa-brain"></i> Lumina AI Assistant</span>
+        <span id="closeChatBtn" style="cursor:pointer;">✕</span>
+    </div>
+    <div class="ai-chat-messages" id="chatMessages">
+        <div class="message bot">Hello! I'm your health assistant. Ask me about hemoglobin, eligibility, or nutrition tips for blood donation.</div>
+    </div>
+    <div class="ai-chat-input">
+        <input type="text" id="chatInput" placeholder="Ask anything about your health...">
+        <button id="sendChatBtn" class="btn-primary" style="padding:8px 20px;">Send</button>
+    </div>
+</div>
+
+<script>
+    // ========== NO AUTO-REDIRECT - Works in guest mode too ==========
+    // Try to get auth data, but don't redirect if missing
+    let token = localStorage.getItem('lifelineUserToken');
+    let userId = localStorage.getItem('lifelineUserId');
+    let userProfile = {};
+
+    try {
+        userProfile = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+    } catch(e) { userProfile = {}; }
+
+    // Update auth status banner
+    const authStatusBanner = document.getElementById('authStatusText');
+    const authStatusDiv = document.getElementById('authStatusBanner');
+    
+    if (token && userId) {
+        authStatusBanner.innerHTML = '<i class="fas fa-check-circle"></i> Logged in';
+        authStatusDiv.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+    } else {
+        // Create a guest user ID for local storage
+        if (!userId) {
+            userId = 'guest_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('lifelineUserId', userId);
+        }
+        authStatusBanner.innerHTML = '<i class="fas fa-user-friends"></i> Guest Mode - Data saved locally';
+        authStatusDiv.style.background = 'linear-gradient(135deg, #ffb703, #ff8c00)';
+        token = null; // No token for guest
+    }
+
+    // ========== GLOBAL VARIABLES ==========
+    const API_BASE = 'http://127.0.0.1:5000/api';
+    let healthChart = null;
+    let healthData = {};
+    
+    // Local storage for guest mode
+    const STORAGE_KEY = `health_data_${userId}`;
+    const PROFILE_KEY = `user_profile_${userId}`;
+
+    // ========== API HELPER (works with or without token) ==========
+    async function makeRequest(url, options = {}) {
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            const response = await fetch(url, { ...options, headers });
+            if (response.ok) return await response.json();
+            return null;
+        } catch (error) {
+            console.log('API unavailable, using local storage');
+            return null;
+        }
+    }
+
+    // ========== FETCH DATA (API first, then localStorage) ==========
+    async function fetchAllData() {
+        try {
+            // Try API first if authenticated
+            if (token) {
+                const healthRes = await makeRequest(`${API_BASE}/health/${userId}`);
+                if (healthRes) healthData = healthRes;
+                
+                const profileRes = await makeRequest(`${API_BASE}/profile/${userId}`);
+                if (profileRes) {
+                    userProfile = profileRes.profile || profileRes;
+                    localStorage.setItem('lifelineUserProfile', JSON.stringify(userProfile));
+                }
+            }
+            
+            // Fallback to localStorage if API didn't return data
+            if (!healthData || Object.keys(healthData).length === 0) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) healthData = JSON.parse(saved);
+            }
+            if (!userProfile || Object.keys(userProfile).length === 0) {
+                const savedProfile = localStorage.getItem(PROFILE_KEY);
+                if (savedProfile) userProfile = JSON.parse(savedProfile);
+            }
+            
+            renderDashboard();
+        } catch (error) {
+            console.error('Fetch error:', error);
+            renderDashboard();
+        }
+    }
+
+    // ========== UPDATE HEALTH METRICS ==========
+    async function updateHealthMetrics(updatedData) {
+        try {
+            let success = false;
+            
+            // Try API first
+            if (token) {
+                const response = await fetch(`${API_BASE}/health/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ user_id: userId, ...updatedData })
+                });
+                if (response.ok) success = true;
+            }
+            
+            // Always save to localStorage as backup
+            const currentData = { ...healthData, ...updatedData };
+            healthData = currentData;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(healthData));
+            
+            // Update profile in localStorage
+            if (updatedData.full_name || updatedData.blood_group || updatedData.age || updatedData.weight_kg) {
+                const updatedProfile = { ...userProfile, ...updatedData };
+                userProfile = updatedProfile;
+                localStorage.setItem(PROFILE_KEY, JSON.stringify(userProfile));
+                if (token) localStorage.setItem('lifelineUserProfile', JSON.stringify(userProfile));
+            }
+            
+            await fetchAllData();
+            showToast('✅ Health data saved!', 'success');
+            return true;
+        } catch (error) {
+            showToast('❌ Failed to save', 'error');
+            return false;
+        }
+    }
+
+    // Calculate BMI
+    function calculateBMI(weight, height) {
+        if (weight && height && height > 0) {
+            const heightM = height / 100;
+            return (weight / (heightM * heightM)).toFixed(1);
+        }
+        return '';
+    }
+
+    // ========== ELIGIBILITY CALCULATION ==========
+    function calculateEligibility() {
+        const hb = healthData.hemoglobin || 0;
+        const weight = userProfile.weight_kg || healthData.weight_kg || 0;
+        const hydration = healthData.hydration || 0;
+        const age = userProfile.age || healthData.age || 25;
+        const illness = healthData.illness || 'none';
+        const hbOk = hb >= 12.5;
+        const weightOk = weight >= 50;
+        const hydrationOk = hydration >= 70;
+        const ageOk = age >= 18 && age <= 65;
+        const illnessOk = illness === 'none';
+        
+        let lastDate = userProfile.last_donation_date ? new Date(userProfile.last_donation_date) : null;
+        let daysSince = lastDate ? Math.floor((new Date() - lastDate) / (1000*60*60*24)) : 999;
+        const recoveryOk = daysSince >= 90 || !lastDate;
+        
+        return { hbOk, weightOk, hydrationOk, ageOk, illnessOk, recoveryOk, 
+                 allEligible: hbOk && weightOk && hydrationOk && ageOk && illnessOk && recoveryOk, 
+                 daysSince };
+    }
+
+    // ========== RENDER DASHBOARD ==========
+    function renderDashboard() {
+        const elig = calculateEligibility();
+        
+        const hb = healthData.hemoglobin || 0;
+        const hydration = healthData.hydration || 0;
+        const energy = healthData.energy || 0;
+        const weight = userProfile.weight_kg || healthData.weight_kg || 0;
+        const height = userProfile.height_cm || healthData.height_cm || 0;
+        const age = userProfile.age || healthData.age || 0;
+        const sleep = healthData.sleep_hours || 0;
+        
+        const hasData = hb > 0 || weight > 0;
+        
+        let healthScore = 0;
+        if (hasData && hb > 0 && hydration > 0 && energy > 0) {
+            healthScore = Math.min(100, Math.max(0, Math.round((hb * 5 + hydration + energy) / 2.5)));
+        } else if (hb > 0) {
+            healthScore = Math.min(100, Math.round(hb * 7));
+        }
+        
+        document.getElementById('health-score-val').innerText = hasData ? healthScore : '--';
+        if (hasData) document.getElementById('health-ring').style.strokeDashoffset = 263.89 - (263.89 * healthScore / 100);
+        
+        const readinessScore = elig.allEligible && hasData ? Math.min(100, healthScore + 12) : (hasData ? Math.max(30, healthScore - 18) : 0);
+        document.getElementById('readiness-score').innerText = hasData ? readinessScore : '--';
+        if (hasData) document.getElementById('readiness-ring').style.strokeDashoffset = 263.89 - (263.89 * readinessScore / 100);
+        
+        document.getElementById('health-badge').innerHTML = !hasData ? 'No data' : (healthScore >= 85 ? 'Excellent' : (healthScore >= 70 ? 'Good' : 'Needs Attention'));
+        document.getElementById('eligibility-badge').innerHTML = !hasData ? '⚠️ Add data' : (elig.allEligible ? '✅ Eligible' : '❌ Not Eligible');
+        document.getElementById('eligibility-badge').className = `badge-status ${!hasData ? 'badge-warning' : (elig.allEligible ? 'badge-success' : 'badge-danger')}`;
+        
+        document.getElementById('hb-value').innerHTML = hb > 0 ? `${hb} <span style="font-size:14px;">g/dL</span>` : '-- g/dL';
+        document.getElementById('hb-badge').innerHTML = hb === 0 ? 'No data' : (hb >= 12.5 ? '✓ Normal' : '⚠️ Low');
+        document.getElementById('hb-recommendation').innerHTML = hb === 0 ? 'Click Update Health to add data' : (hb >= 12.5 ? 'Good for donation' : 'Eat iron-rich foods');
+        
+        document.getElementById('weight-value').innerHTML = weight > 0 ? `${weight} kg` : '-- kg';
+        document.getElementById('height-value').innerHTML = height > 0 ? `${height} cm` : '-- cm';
+        document.getElementById('age-value').innerHTML = age > 0 ? `${age} years` : '-- years';
+        document.getElementById('hydration-value').innerHTML = hydration > 0 ? `${hydration}%` : '--%';
+        document.getElementById('sleep-value').innerHTML = sleep > 0 ? `${sleep} hrs` : '-- hrs';
+        document.getElementById('energy-value').innerHTML = energy > 0 ? `${energy}%` : '--%';
+        
+        document.getElementById('check-hb').innerHTML = hb === 0 ? '—' : (elig.hbOk ? '✅' : '❌');
+        document.getElementById('check-weight').innerHTML = weight === 0 ? '—' : (elig.weightOk ? '✅' : '❌');
+        document.getElementById('check-hydration').innerHTML = hydration === 0 ? '—' : (elig.hydrationOk ? '✅' : '❌');
+        document.getElementById('check-age').innerHTML = age === 0 ? '—' : (elig.ageOk ? '✅' : '❌');
+        document.getElementById('check-illness').innerHTML = !healthData.illness ? '—' : (elig.illnessOk ? '✅' : '❌');
+        document.getElementById('check-last-donation').innerHTML = elig.recoveryOk ? '✅' : (userProfile.last_donation_date ? `❌ (${elig.daysSince} days)` : '—');
+        
+        if (userProfile.last_donation_date) {
+            const last = new Date(userProfile.last_donation_date);
+            document.getElementById('last-donation-date').innerHTML = last.toLocaleDateString();
+            const next = new Date(last);
+            next.setDate(next.getDate() + 90);
+            document.getElementById('next-eligible-date').innerHTML = next.toLocaleDateString();
+            document.getElementById('days-remaining').innerHTML = elig.recoveryOk ? 'Eligible now' : `${90 - elig.daysSince} days left`;
+            let recoveryPercent = Math.min(100, Math.floor((elig.daysSince / 90) * 100));
+            document.getElementById('recoveryFill').style.width = `${Math.min(100, recoveryPercent)}%`;
+            document.getElementById('recoveryPercent').innerText = `${Math.min(100, recoveryPercent)}%`;
+        } else {
+            document.getElementById('last-donation-date').innerHTML = 'No donations yet';
+            document.getElementById('next-eligible-date').innerHTML = 'Ready to donate';
+            document.getElementById('days-remaining').innerHTML = 'First-time donor';
+            document.getElementById('recoveryFill').style.width = '100%';
+            document.getElementById('recoveryPercent').innerText = '100%';
+        }
+        
+        document.getElementById('total-donations').innerText = userProfile.total_donations || 0;
+        document.getElementById('lives-saved').innerText = userProfile.lives_saved || 0;
+        
+        let rec = '';
+        if (!hasData) rec = '📝 Click "Update Health" to add your health data.';
+        else if (!elig.hbOk) rec = `⚠️ Low hemoglobin (${hb} g/dL). Eat spinach, lentils, and lean meat.`;
+        else if (!elig.weightOk) rec = `⚠️ Weight (${weight} kg) is below minimum 50kg requirement.`;
+        else if (!elig.ageOk) rec = `⚠️ Age ${age} is outside the 18-65 year donation range.`;
+        else if (!elig.hydrationOk) rec = `💧 Hydration at ${hydration}%. Drink 2-3L water daily.`;
+        else if (!elig.illnessOk) rec = '🩹 Wait until you fully recover from illness.';
+        else if (elig.allEligible) rec = '✅ You are fully eligible! Schedule your donation today.';
+        else rec = '📈 Keep improving your health metrics.';
+        document.getElementById('ai-recommendation').innerHTML = rec;
+        
+        updateChart();
+    }
+    
+    async function updateChart() {
+        const ctx = document.getElementById('hbChart').getContext('2d');
+        if (healthChart) healthChart.destroy();
+        
+        // Try to get history from API or use local data
+        let historyData = [];
+        if (token) {
+            const history = await makeRequest(`${API_BASE}/health/history/${userId}?limit=12`);
+            if (history) historyData = history.history || history;
+        }
+        
+        if (historyData.length === 0 && healthData.hemoglobin) {
+            historyData = [{ recorded_at: new Date().toISOString(), hemoglobin: healthData.hemoglobin }];
+        }
+        
+        if (historyData.length > 0) {
+            const labels = historyData.map(h => new Date(h.recorded_at || h.timestamp).toLocaleDateString());
+            const values = historyData.map(h => h.hemoglobin);
+            healthChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Hemoglobin (g/dL)', data: values, borderColor: '#e63946', backgroundColor: 'rgba(230,57,70,0.1)', tension: 0.3, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: true }
+            });
+        } else {
+            healthChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['No data'], datasets: [{ label: 'Hemoglobin (g/dL)', data: [0], borderColor: '#e63946' }] },
+                options: { responsive: true }
+            });
+        }
+    }
+
+    // ========== QUICK LOG HANDLERS ==========
+    function showQuickModal(type) {
+        const modal = document.getElementById('quickModal');
+        const title = document.getElementById('quickModalTitle');
+        const content = document.getElementById('quickModalContent');
+        
+        if (type === 'hydration') {
+            title.innerHTML = '<i class="fas fa-tint"></i> Log Hydration';
+            content.innerHTML = `<div class="form-group"><label>Hydration Level (%)</label><input type="number" id="quickHydration" placeholder="70-100"></div>
+                <button class="btn-primary" id="saveQuickHydration" style="width:100%; margin-top:10px;">Save</button>`;
+            modal.classList.add('active');
+            document.getElementById('saveQuickHydration').onclick = async () => {
+                const val = document.getElementById('quickHydration').value;
+                if (val) await updateHealthMetrics({ hydration: parseInt(val) });
+                modal.classList.remove('active');
+            };
+        } else if (type === 'weight') {
+            title.innerHTML = '<i class="fas fa-weight-scale"></i> Log Weight';
+            content.innerHTML = `<div class="form-group"><label>Weight (kg)</label><input type="number" step="0.1" id="quickWeight" placeholder="e.g., 65.5"></div>
+                <button class="btn-primary" id="saveQuickWeight" style="width:100%; margin-top:10px;">Save</button>`;
+            modal.classList.add('active');
+            document.getElementById('saveQuickWeight').onclick = async () => {
+                const val = document.getElementById('quickWeight').value;
+                if (val) await updateHealthMetrics({ weight_kg: parseFloat(val) });
+                modal.classList.remove('active');
+            };
+        } else if (type === 'sleep') {
+            title.innerHTML = '<i class="fas fa-bed"></i> Log Sleep';
+            content.innerHTML = `<div class="form-group"><label>Sleep Hours</label><input type="number" step="0.5" id="quickSleep" placeholder="7-8 recommended"></div>
+                <button class="btn-primary" id="saveQuickSleep" style="width:100%; margin-top:10px;">Save</button>`;
+            modal.classList.add('active');
+            document.getElementById('saveQuickSleep').onclick = async () => {
+                const val = document.getElementById('quickSleep').value;
+                if (val) await updateHealthMetrics({ sleep_hours: parseFloat(val) });
+                modal.classList.remove('active');
+            };
+        }
+    }
+
+    // ========== AI CHAT ==========
+    async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const q = input.value.trim();
+
+    if (!q) return;
+
+    const messagesDiv = document.getElementById('chatMessages');
+
+    messagesDiv.innerHTML += `
+        <div class="message user">${q}</div>
+    `;
+
+    input.value = '';
+
+    messagesDiv.innerHTML += `
+        <div class="message bot" id="thinkingMsg">
+            <em>Thinking...</em>
+        </div>
+    `;
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/ai/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                message: q
+            })
+        });
+
+        const data = await response.json();
+
+        document.getElementById('thinkingMsg').remove();
+
+        messagesDiv.innerHTML += `
+            <div class="message bot">
+                ${data.response || "Sorry, I couldn't generate a response."}
+            </div>
+        `;
+    } catch (error) {
+        document.getElementById('thinkingMsg').remove();
+
+        messagesDiv.innerHTML += `
+            <div class="message bot">
+                ❌ AI service unavailable.
+            </div>
+        `;
+
+        console.error(error);
+    }
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+    // ========== EVENT LISTENERS ==========
+    function setupEventListeners() {
+        document.getElementById('updateHealthBtn').onclick = () => {
+            document.getElementById('inputName').value = userProfile.full_name || userProfile.name || '';
+            document.getElementById('inputBloodGroup').value = userProfile.blood_group || 'O+';
+            document.getElementById('inputAge').value = userProfile.age || healthData.age || '';
+            document.getElementById('inputGender').value = userProfile.gender || 'Male';
+            document.getElementById('inputWeight').value = userProfile.weight_kg || healthData.weight_kg || '';
+            document.getElementById('inputHeight').value = userProfile.height_cm || healthData.height_cm || '';
+            document.getElementById('inputHb').value = healthData.hemoglobin || '';
+            document.getElementById('inputBP').value = healthData.blood_pressure || '';
+            document.getElementById('inputHeartRate').value = healthData.heart_rate || '';
+            document.getElementById('inputHydration').value = healthData.hydration || '';
+            document.getElementById('inputEnergy').value = healthData.energy || '';
+            document.getElementById('inputSleep').value = healthData.sleep_hours || '';
+            document.getElementById('inputLastDonation').value = userProfile.last_donation_date || '';
+            document.getElementById('inputIllness').value = healthData.illness || 'none';
+            document.getElementById('inputTemperature').value = healthData.body_temperature || '98.6';
+            
+            const w = parseFloat(document.getElementById('inputWeight').value);
+            const h = parseFloat(document.getElementById('inputHeight').value);
+            document.getElementById('inputBMI').value = calculateBMI(w, h);
+            
+            document.getElementById('healthModal').classList.add('active');
+        };
+        
+        document.getElementById('inputWeight')?.addEventListener('input', () => {
+            const w = parseFloat(document.getElementById('inputWeight').value);
+            const h = parseFloat(document.getElementById('inputHeight').value);
+            document.getElementById('inputBMI').value = calculateBMI(w, h);
+        });
+        document.getElementById('inputHeight')?.addEventListener('input', () => {
+            const w = parseFloat(document.getElementById('inputWeight').value);
+            const h = parseFloat(document.getElementById('inputHeight').value);
+            document.getElementById('inputBMI').value = calculateBMI(w, h);
+        });
+        
+        document.getElementById('refreshBtn').onclick = fetchAllData;
+        document.getElementById('closeHealthBtn').onclick = () => document.getElementById('healthModal').classList.remove('active');
+        document.getElementById('closeQuickModal').onclick = () => document.getElementById('quickModal').classList.remove('active');
+        
+        document.getElementById('quickHydrationBtn').onclick = () => showQuickModal('hydration');
+        document.getElementById('quickWeightBtn').onclick = () => showQuickModal('weight');
+        document.getElementById('quickSleepBtn').onclick = () => showQuickModal('sleep');
+        
+        document.getElementById('healthForm').onsubmit = async (e) => {
+            e.preventDefault();
+            await updateHealthMetrics({
+                full_name: document.getElementById('inputName').value,
+                blood_group: document.getElementById('inputBloodGroup').value,
+                age: parseInt(document.getElementById('inputAge').value) || null,
+                gender: document.getElementById('inputGender').value,
+                hemoglobin: parseFloat(document.getElementById('inputHb').value),
+                weight_kg: parseFloat(document.getElementById('inputWeight').value),
+                height_cm: parseFloat(document.getElementById('inputHeight').value) || null,
+                blood_pressure: document.getElementById('inputBP').value,
+                heart_rate: parseInt(document.getElementById('inputHeartRate').value) || null,
+                hydration: parseInt(document.getElementById('inputHydration').value) || 70,
+                energy: parseInt(document.getElementById('inputEnergy').value) || 80,
+                sleep_hours: parseFloat(document.getElementById('inputSleep').value) || 7,
+                last_donation_date: document.getElementById('inputLastDonation').value || null,
+                illness: document.getElementById('inputIllness').value,
+                body_temperature: parseFloat(document.getElementById('inputTemperature').value) || 98.6,
+                stress_level: parseInt(document.getElementById('inputStress').value) || null
+            });
+            document.getElementById('healthModal').classList.remove('active');
+        };
+        
+        document.getElementById('aiChatBtn').onclick = () => document.getElementById('aiChat').classList.toggle('open');
+        document.getElementById('closeChatBtn').onclick = () => document.getElementById('aiChat').classList.remove('open');
+        document.getElementById('sendChatBtn').onclick = sendChatMessage;
+        document.getElementById('chatInput').onkeypress = (e) => { if (e.key === 'Enter') sendChatMessage(); };
+        document.getElementById('logoHomeBtn').onclick = () => window.location.href = 'dashboard.html';
+    }
+// Add to health.html
+function checkAndApplyCooldown() {
+    const lastDonation = localStorage.getItem('last_donation_date');
+    const healthModal = document.getElementById('healthModal');
+    const updateBtn = document.getElementById('updateHealthBtn');
+    
+    if (lastDonation) {
+        const lastDate = new Date(lastDonation);
+        const today = new Date();
+        const daysSince = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+        
+        if (daysSince < 90) {
+            const remainingDays = 90 - daysSince;
+            if (updateBtn) {
+                updateBtn.disabled = true;
+                updateBtn.style.opacity = '0.5';
+                updateBtn.title = `You cannot update health for ${remainingDays} days after donation`;
+            }
+            document.getElementById('cooldownMessage').innerHTML = 
+                `🩸 You donated blood ${daysSince} days ago. Health updates locked for ${remainingDays} more days.`;
+        }
+    }
+}
+    // ========== INITIALIZE ==========
+    fetchAllData();
+    setupEventListeners();
+    setInterval(fetchAllData, 30000);
+</script>
+</body>
+</html>

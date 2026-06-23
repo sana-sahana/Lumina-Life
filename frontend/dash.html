@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LifeFlow | Blood & Organ Donation Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #fef9f7 0%, #fff5f3 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1e2a3e;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            border-radius: 42px;
+            box-shadow: 0 25px 55px -12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255,255,255,0.7);
+            overflow: hidden;
+        }
+        .app-layout { display: flex; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 248, 245, 0.65);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(230, 57, 70, 0.12);
+            padding: 32px 20px;
+        }
+        .logo-area { display: flex; align-items: center; gap: 14px; margin-bottom: 35px; cursor: pointer; }
+        .lumina-logo {
+            width: 58px; height: 58px; object-fit: cover; border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(255,183,3,0.28);
+            transition: 0.35s ease;
+        }
+        .logo-text {
+            font-size: 1.6rem; font-weight: 700;
+            background: linear-gradient(135deg,#ffb703,#d90429);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 18px; margin: 6px 0; border-radius: 28px;
+            font-weight: 500; color: #576c7e; cursor: pointer;
+            text-decoration: none;
+        }
+        .nav-item img { width: 24px; height: 24px; opacity: 0.7; }
+        .nav-item.active {
+            background: rgba(230, 57, 70, 0.12);
+            color: #e63946;
+        }
+        .nav-item.notification-nav { position: relative; }
+        .notif-sidebar-badge {
+            position: absolute; top: 4px; right: 12px;
+            background: linear-gradient(135deg, #e63946, #ff6b6b);
+            color: white; font-size: 0.65rem; font-weight: 700;
+            min-width: 20px; height: 20px; border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 5px;
+        }
+        .main-content { flex: 1; padding: 28px 32px; overflow-x: auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .greeting h2 { font-weight: 600; font-size: 1.7rem; color: #1e2a3e; }
+        .profile-pic {
+            width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+            border: 2px solid white; cursor: pointer;
+        }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,240,0.8); backdrop-filter: blur(8px);
+            border-radius: 28px; padding: 1.2rem;
+            border: 1px solid rgba(255,235,230,0.8);
+        }
+        .stat-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #b38686; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #e44d5a; margin: 0.4rem 0; }
+        .two-columns { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 1.8rem; margin-bottom: 1.8rem; }
+        .glass-card {
+            background: rgba(255, 245, 242, 0.75); backdrop-filter: blur(8px);
+            border-radius: 32px; padding: 1.3rem;
+            border: 1px solid rgba(255,245,240,0.9);
+        }
+        .chart-container { margin-top: 12px; height: 220px; }
+        .blood-group-stats { display: flex; justify-content: space-between; margin-top: 1rem; }
+        .donor-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f3e0dc; }
+        .three-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.6rem; margin-bottom: 1.8rem; }
+        .activity-item { padding: 10px 0; border-bottom: 1px solid #f3e0dc; font-size: 0.85rem; }
+        .badge { background: #ffe0db; color: #d65c5c; border-radius: 60px; padding: 0.2rem 0.7rem; font-size: 0.7rem; display: inline-block; }
+        .eligibility-tag { font-weight: 600; color: #33a36b; }
+        .quick-actions { display: flex; gap: 12px; margin-top: 1rem; flex-wrap: wrap; }
+        .btn-primary {
+            background: #e63946; border: none; padding: 10px 16px; border-radius: 36px;
+            color: white; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block;
+        }
+        .btn-outline {
+            background: transparent; border: 1px solid #eac2bb; padding: 10px 16px;
+            border-radius: 36px; cursor: pointer; text-decoration: none; display: inline-block; color: #e63946;
+        }
+        .progress-bar-bg { background: #ffe0da; height: 6px; border-radius: 8px; margin: 8px 0; }
+        .progress-fill { background: #e63946; height: 6px; border-radius: 8px; width: 0%; }
+        .notifications-panel {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(12px); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .notifications-card {
+            background: rgba(255, 250, 245, 0.98); backdrop-filter: blur(20px);
+            width: 90%; max-width: 550px; border-radius: 48px; padding: 28px;
+            max-height: 80vh; overflow-y: auto;
+        }
+        .notif-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-size: 1.5rem; }
+        .close-notif { cursor: pointer; font-size: 1.8rem; }
+        .notif-item { padding: 14px 0; border-bottom: 1px solid #f3e0dc; }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+        .shake-bell { animation: shake 0.5s ease-in-out; }
+        .glow-pulse { background: rgba(230,57,70,0.2); border-radius: 28px; transition: 0.3s; }
+        @media (max-width: 1100px) {
+            .app-layout { flex-direction: column; }
+            .sidebar { width: 100%; display: flex; flex-wrap: wrap; gap: 4px; padding: 16px; overflow-x: auto; }
+            .stats-row, .two-columns, .three-grid { grid-template-columns: 1fr; }
+        }
+
+        @keyframes glowPulse {
+    0% { box-shadow: 0 0 5px rgba(224,58,62,0.5); }
+    50% { box-shadow: 0 0 25px rgba(224,58,62,0.9); }
+    100% { box-shadow: 0 0 5px rgba(224,58,62,0.5); }
+}
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo-area" id="logoHomeBtn">
+                <img class="lumina-logo" src="frontend/icon.png" alt="Lumina Life Logo" onerror="this.src='https://i.pinimg.com/originals/8b/16/7a/8b167af653c2395dd2b2b2d6c7d9b7d5.png'">
+                <div class="logo-text">Lumina Life</div>
+            </div>
+            
+            <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+                <img src="https://i.pinimg.com/1200x/7e/05/df/7e05df23a9a155c4a103dce04bbf45c9.jpg" alt="dashboard">
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="donor.html" class="nav-item" data-page="donate">
+                <img src="https://i.pinimg.com/736x/0a/a2/18/0aa2184eaf76105a30e0377d57565842.jpg" alt="donate">
+                <span>Donate Blood</span>
+            </a>
+            
+            <a href="#" class="nav-item notification-nav" id="sidebarNotifItem">
+                <img id="sidebarBellImg" src="https://i.pinimg.com/1200x/d0/f9/1c/d0f91cf23dfce1440d452789fb3b6894.jpg" alt="notifications">
+                <span>Notifications</span>
+                <span class="notif-sidebar-badge" id="sidebarNotifBadge" style="display:none;">0</span>
+            </a>
+            
+            <!-- FIXED: Link to health.html instead of old version -->
+            <a href="health.html" class="nav-item" data-page="health">
+                <img src="https://i.pinimg.com/736x/54/e5/c4/54e5c458dca79ed7873bbd3665979291.jpg" alt="health">
+                <span>Health Status</span>
+            </a>
+
+            <a href="route-navigation.html" class="nav-item" data-page="health">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLixGNswaabPOAByvijxEmSQfGEc9Q3_lQ5Q&s" alt="health">
+                <span>Navigation</span>
+            </a>
+            
+            <a href="profile.html" class="nav-item" data-page="profile">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="profile">
+                <span>Profile</span>
+            </a>
+            
+            <a href="frontend/settings.html" class="nav-item" data-page="settings">
+                <img src="https://img.icons8.com/material-outlined/24/1e2a3e/settings.png" alt="settings">
+                <span>Settings</span>
+            </a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="greeting"><h2 id="greetingName">Loading...</h2><p>Your impact saves lives</p></div>
+                <div class="actions">
+                    <a href="profile.html">
+                        <img id="profileAvatar" class="profile-pic" src="https://randomuser.me/api/portraits/women/44.jpg" alt="profile">
+                    </a>
+                </div>
+            </div>
+
+            <div class="stats-row" id="statsRow">
+                <div class="stat-card"><div class="stat-title">Active Donors</div><div class="stat-number" id="activeDonors">--</div></div>
+                <div class="stat-card"><div class="stat-title">Live Requests</div><div class="stat-number" id="liveRequests">--</div></div>
+                <div class="stat-card"><div class="stat-title">Lives Saved</div><div class="stat-number" id="livesSaved">--</div></div>
+                <div class="stat-card"><div class="stat-title">Nearby Hospitals</div><div class="stat-number" id="nearbyHospitals">--</div></div>
+            </div>
+
+            <div class="two-columns">
+                <div class="glass-card">
+                    <h4>🩸 Donation Trends</h4>
+                    <div class="chart-container"><canvas id="donationTrendChart"></canvas></div>
+                    <hr>
+                    <div class="blood-group-stats" id="bloodInventory">
+                        <span><strong>A+</strong> <span id="statsA">--</span> units</span>
+                        <span><strong>B+</strong> <span id="statsB">--</span> units</span>
+                        <span><strong>O+</strong> <span id="statsO">--</span> units</span>
+                        <span><strong>AB-</strong> <span id="statsAB">--</span> units</span>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h4>📍 Matching Donors Nearby</h4>
+                    <div id="donorList"><div class="donor-item">Loading donors...</div></div>
+                    <div class="quick-actions">
+                        <a href="donor.html" class="btn-outline" id="donateNowBtn">Donate Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="three-grid">
+                <div class="glass-card activity-feed">
+                    <h4>⚡ Live Activity</h4>
+                    <div id="activityFeed"><div class="activity-item">Loading activities...</div></div>
+                </div>
+                <div class="glass-card">
+                    <h4>🔔 Recent Alerts</h4>
+                    <div id="recentAlerts"><div class="activity-item">Loading alerts...</div></div>
+                </div>
+                <div class="glass-card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <h4>👤 Profile Summary</h4>
+                        <span class="badge" id="donorBadge">--</span>
+                    </div>
+                    <div style="margin-top: 14px;">
+                        <p><strong id="profileName">--</strong> · Blood group: <strong id="profileBloodGroup" style="color:#e63946;">--</strong></p>
+                        <p>Eligibility status: <span id="eligibilityStatus" class="eligibility-tag">--</span></p>
+                        <p id="lastDonationText">Loading...</p>
+                        <div class="progress-bar-bg"><div class="progress-fill" id="recoveryFill"></div></div>
+                    </div>
+                    <!-- FIXED: Link to health.html instead of health-status.html -->
+                    <a href="health.html" class="btn-outline" style="margin-top: 12px; width:100%; text-align:center; display:block;" id="fullHealthBtn">
+                        🩺 Full Health Dashboard →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notifications Panel -->
+<div id="notificationsPanel" class="notifications-panel">
+    <div class="notifications-card">
+        <div class="notif-header"><span>🔔 Notifications Center</span><span class="close-notif" id="closeNotifPanel">&times;</span></div>
+        <div id="dynamicNotifList"><div class="notif-item">Loading notifications...</div></div>
+    </div>
+</div>
+
+<script>
+    // ========== CONFIGURATION ==========
+    // Get token and user ID from localStorage (set by login)
+    const token = localStorage.getItem('lifelineUserToken');
+    let userId = localStorage.getItem('lifelineUserId');
+    let userProfile = {};
+
+    try {
+        userProfile = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+    } catch(e) {}
+
+    // If no userId, try to get from profile or use demo
+    if (!userId || userId === 'D001') {
+        if (userProfile && userProfile.user_id) {
+            userId = userProfile.user_id;
+        } else if (userProfile && userProfile.id) {
+            userId = userProfile.id;
+        } else {
+            userId = 'D001';
+        }
+        localStorage.setItem('lifelineUserId', userId);
+    }
+
+    const API_BASE = 'http://127.0.0.1:5000/api';
+    let unreadCount = 0;
+    let chart = null;
+
+    // Helper function for authenticated API calls
+    async function authFetch(url, options = {}) {
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        try {
+            const response = await fetch(url, { ...options, headers });
+            if (response.status === 401) {
+                // Token expired - don't redirect, just use mock data
+                console.warn('Auth failed, using mock data');
+                return null;
+            }
+            return response;
+        } catch (error) {
+            console.warn('API unavailable:', error);
+            return null;
+        }
+    }
+
+    // ========== API CALLS (Backend first, fallback to mock) ==========
+    const mockData = {
+        dashboard: {
+            active_donors: 1247,
+            live_requests: 38,
+            lives_saved: 542,
+            nearby_hospitals: 16
+        },
+        health: {
+            eligibility: "Eligible",
+            recovery_percentage: 85
+        },
+        profile: {
+            name: "Medini Shetty",
+            blood_group: "O+",
+            donor_badge: "Gold Donor",
+            last_donation_days: 85,
+            avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+        },
+        donors: [
+            { name: "Rahul Sharma", blood_group: "O+", distance: 2 },
+            { name: "Ananya Verma", blood_group: "A+", distance: 4 },
+            { name: "Michael Chen", blood_group: "B+", distance: 5 },
+            { name: "Priya Patel", blood_group: "AB-", distance: 7 }
+        ],
+        activities: [
+            { message: "🩸 New blood donation at City Hospital" },
+            { message: "✨ 5 new donors registered today" },
+            { message: "🏥 Emergency request: O+ blood needed" },
+            { message: "🎉 1000+ lives saved this month!" }
+        ],
+        alerts: [
+            { message: "URGENT: O+ blood required at City General" },
+            { message: "Blood donation camp at Central Mall tomorrow" },
+            { message: "Winter drive: Donate and save lives" }
+        ],
+        bloodInventory: {
+            A_plus: 120,
+            B_plus: 90,
+            O_plus: 150,
+            AB_minus: 30
+        },
+        donationTrends: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            values: [100, 120, 150, 180, 200, 220]
+        },
+        notifications: [
+            { title: "Welcome to LuminaLife!", message: "Thank you for joining our community", read: false, created_at: new Date().toISOString() },
+            { title: "Health Check Reminder", message: "Update your health metrics", read: false, created_at: new Date().toISOString() }
+        ]
+    };
+
+    // Real backend calls with fallback
+    async function fetchDashboardData() {
+        try {
+            const response = await authFetch(`${API_BASE}/dashboard/${userId}`);
+            if (response && response.ok) {
+                const data = await response.json();
+                return data.dashboard || data;
+            }
+        } catch (error) {}
+        return mockData.dashboard;
+    }
+
+    async function fetchHealthData() {
+        try {
+            const response = await authFetch(`${API_BASE}/health/${userId}`);
+            if (response && response.ok) {
+                return await response.json();
+            }
+        } catch (error) {}
+        return mockData.health;
+    }
+
+    async function fetchProfileData() {
+        try {
+            const response = await authFetch(`${API_BASE}/profile/${userId}`);
+            if (response && response.ok) {
+                const data = await response.json();
+                const profile = data.profile || data;
+                // Cache profile in localStorage
+                localStorage.setItem('lifelineUserProfile', JSON.stringify(profile));
+                return profile;
+            }
+        } catch (error) {}
+        return mockData.profile;
+    }
+
+    async function fetchDonors() {
+        try {
+            const response = await authFetch(`${API_BASE}/donors/nearby?blood_group=O+`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.donors;
+    }
+
+    async function fetchActivities() {
+        try {
+            const response = await authFetch(`${API_BASE}/activities/recent`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.activities;
+    }
+
+    async function fetchAlerts() {
+        try {
+            const response = await authFetch(`${API_BASE}/alerts/active`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.alerts;
+    }
+
+    async function fetchBloodInventory() {
+        try {
+            const response = await authFetch(`${API_BASE}/blood-inventory`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.bloodInventory;
+    }
+
+    async function fetchDonationTrends() {
+        try {
+            const response = await authFetch(`${API_BASE}/donation-trends`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.donationTrends;
+    }
+
+    async function fetchNotifications() {
+        try {
+            const response = await authFetch(`${API_BASE}/notifications/${userId}`);
+            if (response && response.ok) return await response.json();
+        } catch (error) {}
+        return mockData.notifications;
+    }
+
+    // ========== UI UPDATES ==========
+    async function updateDashboard() {
+        try {
+            const [dashboard, health, profile] = await Promise.all([
+                fetchDashboardData(),
+                fetchHealthData(),
+                fetchProfileData()
+            ]);
+            
+            document.getElementById('activeDonors').innerText = dashboard.active_donors?.toLocaleString() || '0';
+            document.getElementById('liveRequests').innerText = dashboard.live_requests?.toLocaleString() || '0';
+            document.getElementById('livesSaved').innerText = dashboard.lives_saved?.toLocaleString() || '0';
+            document.getElementById('nearbyHospitals').innerText = dashboard.nearby_hospitals?.toLocaleString() || '0';
+            
+            const userName = profile.full_name || profile.name || "Donor";
+            document.getElementById('greetingName').innerHTML = `Hello, ${userName.split(' ')[0]} 👋`;
+            document.getElementById('profileName').innerText = profile.full_name || profile.name || '--';
+            document.getElementById('profileBloodGroup').innerHTML = profile.blood_group || 'O+';
+            document.getElementById('donorBadge').innerText = profile.donor_badge || 'Donor';
+            
+            if (profile.avatar) {
+                document.getElementById('profileAvatar').src = profile.avatar;
+            }
+            
+            const eligSpan = document.getElementById('eligibilityStatus');
+            const hb = health.hemoglobin || 14;
+            if (hb >= 12.5) {
+                eligSpan.innerHTML = '✅ Eligible · Ready to donate';
+                eligSpan.style.color = '#33a36b';
+            } else {
+                eligSpan.innerHTML = '⚠️ Low hemoglobin · Not eligible';
+                eligSpan.style.color = '#e67e22';
+            }
+            
+            const days = profile.last_donation_days;
+            document.getElementById('lastDonationText').innerHTML = days ? 
+                `Last donation: ${days} days ago · Recovery ${hb >= 12.5 ? 'complete' : 'pending'}` : 
+                'No previous donations';
+            
+            // Calculate recovery percentage
+            let recoveryPercent = 100;
+            if (profile.last_donation_date) {
+                const lastDate = new Date(profile.last_donation_date);
+                const daysSince = Math.floor((new Date() - lastDate) / (1000*60*60*24));
+                recoveryPercent = Math.min(100, Math.floor((daysSince / 90) * 100));
+            }
+            document.getElementById('recoveryFill').style.width = recoveryPercent + '%';
+            
+        } catch (error) {
+            console.error('Dashboard update error:', error);
+        }
+    }
+
+    async function updateDonorList() {
+        try {
+            const donors = await fetchDonors();
+            const container = document.getElementById('donorList');
+            if (!donors || donors.length === 0) {
+                container.innerHTML = '<div class="donor-item">No donors nearby</div>';
+                return;
+            }
+            container.innerHTML = donors.map(d => `
+                <div class="donor-item">
+                    <span>🩸 ${d.name} <span class="badge">${d.blood_group}</span></span>
+                    <span>${d.distance} km</span>
+                </div>
+            `).join('');
+        } catch (error) {
+            document.getElementById('donorList').innerHTML = '<div class="donor-item">Failed to load donors</div>';
+        }
+    }
+
+    async function updateActivityFeed() {
+        try {
+            const activities = await fetchActivities();
+            const container = document.getElementById('activityFeed');
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<div class="activity-item">No recent activity</div>';
+                return;
+            }
+            container.innerHTML = activities.map(a => `<div class="activity-item">${a.message || a}</div>`).join('');
+        } catch (error) {
+            document.getElementById('activityFeed').innerHTML = '<div class="activity-item">Failed to load activity</div>';
+        }
+    }
+
+    async function updateAlerts() {
+        try {
+            const alerts = await fetchAlerts();
+            const container = document.getElementById('recentAlerts');
+            if (!alerts || alerts.length === 0) {
+                container.innerHTML = '<div class="activity-item">No active alerts</div>';
+                return;
+            }
+            container.innerHTML = alerts.map(a => `<div class="activity-item">⚠️ ${a.message || a}</div>`).join('');
+        } catch (error) {
+            document.getElementById('recentAlerts').innerHTML = '<div class="activity-item">Failed to load alerts</div>';
+        }
+    }
+
+    async function updateBloodInventory() {
+        try {
+            const inventory = await fetchBloodInventory();
+            document.getElementById('statsA').innerText = inventory.A_plus || '0';
+            document.getElementById('statsB').innerText = inventory.B_plus || '0';
+            document.getElementById('statsO').innerText = inventory.O_plus || '0';
+            document.getElementById('statsAB').innerText = inventory.AB_minus || '0';
+        } catch (error) {}
+    }
+
+    async function updateNotificationsList() {
+        try {
+            const notifications = await fetchNotifications();
+            const container = document.getElementById('dynamicNotifList');
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = '<div class="notif-item">No notifications</div>';
+                updateBadgeCount(0);
+                return;
+            }
+            const notifArray = notifications.notifications || notifications;
+            const unread = notifArray.filter(n => !n.is_read && !n.read).length;
+            updateBadgeCount(unread);
+            container.innerHTML = notifArray.map(n => `
+                <div class="notif-item">
+                    <strong>${n.title || 'Notification'}</strong><br>
+                    <span style="font-size:12px">${n.message}</span>
+                    <div style="font-size:10px;color:#999;margin-top:4px">${n.created_at ? new Date(n.created_at).toLocaleString() : new Date().toLocaleString()}</div>
+                </div>
+            `).join('');
+        } catch (error) {
+            document.getElementById('dynamicNotifList').innerHTML = '<div class="notif-item">Failed to load notifications</div>';
+        }
+    }
+
+    async function initChart() {
+        try {
+            const trendData = await fetchDonationTrends();
+            const ctx = document.getElementById('donationTrendChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trendData.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Donations (units)',
+                        data: trendData.values || [],
+                        borderColor: '#e63946',
+                        backgroundColor: 'rgba(230,57,70,0.05)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true }
+            });
+        } catch (error) {
+            console.error('Chart error:', error);
+        }
+    }
+
+    // ========== NOTIFICATION FUNCTIONS ==========
+    function updateBadgeCount(count) {
+        unreadCount = count;
+        const badge = document.getElementById('sidebarNotifBadge');
+        if (unreadCount > 0) {
+            badge.style.display = 'flex';
+            badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function openNotificationsPage() {
+        updateNotificationsList();
+        document.getElementById('notificationsPanel').style.display = 'flex';
+    }
+
+    function closeNotificationsPanel() {
+        document.getElementById('notificationsPanel').style.display = 'none';
+    }
+
+    // ========== EVENT LISTENERS ==========
+    document.getElementById('sidebarNotifItem')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openNotificationsPage();
+    });
+    document.getElementById('closeNotifPanel')?.addEventListener('click', closeNotificationsPanel);
+    document.getElementById('notificationsPanel')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('notificationsPanel')) closeNotificationsPanel();
+    });
+
+    document.getElementById('logoHomeBtn')?.addEventListener('click', () => {
+        window.location.href = 'dashboard.html';
+    });
+
+    // ========== INITIALIZATION ==========
+    async function init() {
+        await Promise.all([
+            updateDashboard(),
+            updateDonorList(),
+            updateActivityFeed(),
+            updateAlerts(),
+            updateBloodInventory(),
+            initChart(),
+            updateNotificationsList()
+        ]);
+    }
+
+
+    
+    init();
+
+
+// Add to your existing dashboard script
+
+// Check if donor is in cooldown period
+function checkDonationCooldown() {
+    const lastDonation = localStorage.getItem('last_donation_date');
+    if (lastDonation) {
+        const lastDate = new Date(lastDonation);
+        const today = new Date();
+        const daysSince = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+        if (daysSince < 90) {
+            const remainingDays = 90 - daysSince;
+            document.getElementById('eligibilityStatus').innerHTML = 
+                `⏳ Not Eligible - ${remainingDays} days remaining in cooldown`;
+            document.getElementById('eligibilityStatus').style.color = '#f59e0b';
+            document.getElementById('donateNowBtn').style.opacity = '0.5';
+            document.getElementById('donateNowBtn').style.pointerEvents = 'none';
+            return false;
+        }
+    }
+    return true;
+}
+
+// Make navigation button glow when there's an accepted donation
+function updateNavigationGlow() {
+    const pendingDonation = localStorage.getItem('pending_navigation');
+    const navBtn = document.getElementById('openMapBtn');
+    if (pendingDonation === 'true') {
+        navBtn.style.animation = 'glowPulse 1s infinite';
+        navBtn.style.boxShadow = '0 0 20px rgba(224,58,62,0.8)';
+    } else {
+        navBtn.style.animation = 'none';
+        navBtn.style.boxShadow = 'none';
+    }
+}
+
+// After accepting donation, set pending navigation
+function afterAcceptingDonation(emergency) {
+    localStorage.setItem('pending_navigation', 'true');
+    localStorage.setItem('last_donation_date', new Date().toISOString());
+    localStorage.setItem('destination_hospital', JSON.stringify({
+        name: emergency.hospital,
+        lat: emergency.latitude,
+        lng: emergency.longitude,
+        blood: emergency.blood,
+        hospital_id: emergency.hospital_id
+    }));
+    updateNavigationGlow();
+    showToast('Navigation button is glowing! Click to go to hospital.');
+}
+</script>
+</body>
+</html>

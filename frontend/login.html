@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>LifeLink Login | Lumina Life</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+/* 🌈 UNICORN BACKGROUND */
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: linear-gradient(135deg,#ffc8dd,#cdb4db,#bde0fe,#fff1a8);
+  overflow:hidden;
+}
+
+/* 🫧 SOFT FLOATING BLOBS */
+body::before, body::after{
+  content:"";
+  position:absolute;
+  width:400px;
+  height:400px;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:0.6;
+}
+
+body::before{
+  background:#ffc8dd;
+  top:10%;
+  left:15%;
+}
+
+body::after{
+  background:#bde0fe;
+  bottom:10%;
+  right:15%;
+}
+
+/* 🌸 MODAL CONTAINER */
+.container{
+  width:900px;
+  height:500px;
+  display:flex;
+  border-radius:30px;
+  overflow:hidden;
+  backdrop-filter:blur(30px);
+  background: rgba(255,255,255,0.2);
+  box-shadow:0 20px 60px rgba(0,0,0,0.15);
+}
+
+/* 🖼️ LEFT IMAGE SIDE */
+.left{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  background: linear-gradient(135deg,#ffc8dd,#cdb4db);
+  position:relative;
+}
+
+.left img{
+  width:220px;
+  animation:float 6s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-15px);}
+}
+
+.left h2{
+  margin-top:20px;
+  color:white;
+  font-weight:500;
+}
+
+/* 🌿 RIGHT FORM */
+.right{
+  flex:1;
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.form{display:none;}
+.form.active{display:block;}
+
+h2{
+  color:#5a189a;
+  margin-bottom:10px;
+}
+
+p{
+  color:#666;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:15px;
+  border:none;
+  background: rgba(255,255,255,0.7);
+  outline:none;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:20px;
+  background: linear-gradient(135deg,#ffafcc,#a0c4ff);
+  color:white;
+  margin-top:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+}
+
+.google{
+  margin-top:10px;
+  padding:12px;
+  border-radius:15px;
+  background: rgba(255,255,255,0.7);
+  text-align:center;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.google:hover{
+  background: rgba(255,255,255,0.9);
+  transform:translateY(-2px);
+}
+
+.toggle{
+  margin-top:15px;
+  font-size:14px;
+  color:#5a189a;
+  cursor:pointer;
+  text-align:center;
+}
+
+.loading-btn{
+  opacity:0.7;
+  cursor:not-allowed;
+}
+
+.spinner{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-radius:50%;
+  border-top-color:white;
+  animation:spin 0.8s linear infinite;
+  margin-right:8px;
+  vertical-align:middle;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+.error-message{
+  color:#d62828;
+  font-size:12px;
+  margin-top:5px;
+  text-align:center;
+}
+
+.success-message{
+  color:#2ecc71;
+  font-size:12px;
+  margin-top:5px;
+  text-align:center;
+}
+
+.toast{
+  position:fixed;
+  bottom:30px;
+  right:30px;
+  background:linear-gradient(135deg,#5a189a,#9b59b6);
+  color:white;
+  padding:12px 24px;
+  border-radius:50px;
+  z-index:1000;
+  animation:slideIn 0.3s ease;
+}
+
+@keyframes slideIn{
+  from{transform:translateX(400px);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LEFT -->
+  <div class="left">
+    <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png">
+    <h2>Spread Love 💗</h2>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <!-- LOGIN -->
+    <div id="login" class="form active">
+      <h2>Welcome Back 🌸</h2>
+      <p>Login to continue your journey</p>
+
+      <input id="loginEmail" placeholder="Email" type="email">
+      <input id="loginPassword" placeholder="Password" type="password">
+      <div id="loginError" class="error-message"></div>
+
+      <button class="btn" id="loginBtn">Sign In</button>
+
+      <div class="google" id="googleLoginBtn">Continue with Google</div>
+
+      <div class="toggle" onclick="showSignup()">Create Account</div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signup" class="form">
+      <h2>Create Account 💫</h2>
+      <p>Join the donor community</p>
+
+      <input id="signupName" placeholder="Full Name">
+      <input id="signupEmail" placeholder="Email" type="email">
+      <input id="signupPhone" placeholder="Phone Number">
+      <input id="signupPassword" placeholder="Password" type="password">
+      <input id="signupConfirmPassword" placeholder="Confirm Password" type="password">
+      <div id="signupError" class="error-message"></div>
+
+      <button class="btn" id="signupBtn">Sign Up</button>
+
+      <div class="google" id="googleSignupBtn">Sign up with Google</div>
+
+      <div class="toggle" onclick="showLogin()">Already have account?</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// API Configuration
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// Helper function to show toast messages
+function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.background = isError ? 'linear-gradient(135deg,#d62828,#e74c3c)' : 'linear-gradient(135deg,#5a189a,#9b59b6)';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Helper function to set button loading state
+function setButtonLoading(button, isLoading, originalText) {
+    if (isLoading) {
+        button.dataset.originalText = button.innerHTML;
+        button.innerHTML = '<span class="spinner"></span> Loading...';
+        button.disabled = true;
+        button.classList.add('loading-btn');
+    } else {
+        button.innerHTML = button.dataset.originalText || originalText;
+        button.disabled = false;
+        button.classList.remove('loading-btn');
+    }
+}
+
+// ========== LOGIN FUNCTION ==========
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+    
+    // Clear previous error
+    errorDiv.textContent = '';
+    
+    // Validation
+    if (!email) {
+        errorDiv.textContent = 'Please enter your email';
+        return;
+    }
+    if (!password) {
+        errorDiv.textContent = 'Please enter your password';
+        return;
+    }
+    
+    const loginBtn = document.getElementById('loginBtn');
+    setButtonLoading(loginBtn, true, 'Sign In');
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.status === 'success') {
+            // Store user data in localStorage
+            localStorage.setItem('lifelineUserId', data.userId);
+            localStorage.setItem('lifelineUserToken', data.token);
+            localStorage.setItem('lifelineUserProfile', JSON.stringify(data.user));
+            
+            showToast('✅ Login successful! Redirecting...');
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        } else {
+            errorDiv.textContent = data.error || 'Invalid email or password';
+            showToast(data.error || 'Login failed', true);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Network error. Please check if server is running.';
+        showToast('Connection failed. Make sure Flask server is running on port 5000', true);
+    } finally {
+        setButtonLoading(loginBtn, false, 'Sign In');
+    }
+}
+
+// ========== SIGNUP FUNCTION ==========
+async function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const errorDiv = document.getElementById('signupError');
+    
+    // Clear previous error
+    errorDiv.textContent = '';
+    
+    // Validation
+    if (!name) {
+        errorDiv.textContent = 'Please enter your full name';
+        return;
+    }
+    if (!email) {
+        errorDiv.textContent = 'Please enter your email';
+        return;
+    }
+    if (!email.includes('@')) {
+        errorDiv.textContent = 'Please enter a valid email address';
+        return;
+    }
+    if (!phone) {
+        errorDiv.textContent = 'Please enter your phone number';
+        return;
+    }
+    if (phone.length < 10) {
+        errorDiv.textContent = 'Please enter a valid phone number';
+        return;
+    }
+    if (!password) {
+        errorDiv.textContent = 'Please enter a password';
+        return;
+    }
+    if (password.length < 6) {
+        errorDiv.textContent = 'Password must be at least 6 characters';
+        return;
+    }
+    if (password !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match';
+        return;
+    }
+    
+    const signupBtn = document.getElementById('signupBtn');
+    setButtonLoading(signupBtn, true, 'Sign Up');
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name, 
+                email, 
+                phone, 
+                password,
+                blood_group: 'O+',  // default
+                role: 'donor'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.status === 'success') {
+            showToast('✅ Account created successfully! Please login.');
+            
+            // Clear form
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPhone').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupConfirmPassword').value = '';
+            
+            // Switch to login form
+            setTimeout(() => {
+                showLogin();
+                // Pre-fill email for convenience
+                document.getElementById('loginEmail').value = email;
+            }, 1500);
+        } else {
+            errorDiv.textContent = data.error || 'Registration failed';
+            showToast(data.error || 'Registration failed', true);
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        errorDiv.textContent = 'Network error. Please check if server is running.';
+        showToast('Connection failed. Make sure Flask server is running on port 5000', true);
+    } finally {
+        setButtonLoading(signupBtn, false, 'Sign Up');
+    }
+}
+
+// ========== GOOGLE LOGIN (OAuth Simulation) ==========
+function handleGoogleLogin() {
+    showToast('🔐 Google Sign-In integration ready. Configure OAuth credentials in production.', false);
+    // In production, implement actual Google OAuth redirect
+    // window.location.href = `${API_BASE}/auth/google`;
+}
+
+function handleGoogleSignup() {
+    showToast('🔐 Google Sign-Up will be available soon.', false);
+}
+
+// ========== TOGGLE FUNCTIONS ==========
+function showSignup() {
+    document.getElementById("login").classList.remove("active");
+    document.getElementById("signup").classList.add("active");
+    document.getElementById('loginError').textContent = '';
+}
+
+function showLogin() {
+    document.getElementById("signup").classList.remove("active");
+    document.getElementById("login").classList.add("active");
+    document.getElementById('signupError').textContent = '';
+}
+
+// ========== CHECK IF ALREADY LOGGED IN ==========
+function checkExistingSession() {
+    const token = localStorage.getItem('lifelineUserToken');
+    const userId = localStorage.getItem('lifelineUserId');
+    
+    if (token && userId) {
+        // Verify token with backend
+        fetch(`${API_BASE}/auth/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, userId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.valid) {
+                window.location.href = 'dashboard.html';
+            }
+        })
+        .catch(() => {
+            // Token invalid, clear storage
+            localStorage.removeItem('lifelineUserToken');
+            localStorage.removeItem('lifelineUserId');
+            localStorage.removeItem('lifelineUserProfile');
+        });
+    }
+}
+
+// ========== EVENT LISTENERS ==========
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.getElementById('signupBtn').addEventListener('click', handleSignup);
+document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
+document.getElementById('googleSignupBtn').addEventListener('click', handleGoogleSignup);
+
+// Enter key support
+document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('signupConfirmPassword').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSignup();
+});
+
+// Check existing session on load
+checkExistingSession();
+</script>
+
+</body>
+</html>

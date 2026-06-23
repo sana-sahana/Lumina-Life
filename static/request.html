@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Life - Hospital Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg: linear-gradient(135deg,#fff8fa,#fff1f2,#fdf2f8);
+--card: rgba(255,255,255,.88);
+--text:#1f2937;
+--muted:#6b7280;
+--accent: linear-gradient(135deg,#ef4444,#ec4899);
+}
+body.dark{
+--bg: linear-gradient(135deg,#0b1220,#111827,#1f2937);
+--card: rgba(17,24,39,.85);
+--text:#ffffff;
+--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding:24px;transition:.3s;}
+.topbar{max-width:1300px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.logo{font-size:1.7rem;font-weight:800;}
+.logo span{color:#ec4899;}
+.theme-btn{padding:12px 18px;border:none;border-radius:999px;cursor:pointer;font-weight:600;background:rgba(255,255,255,.1);color:var(--text);}
+.nav-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.nav-btn{padding:10px 18px;border:none;border-radius:12px;cursor:pointer;font-weight:600;transition:all .2s;text-decoration:none;}
+.nav-btn.primary{background:linear-gradient(135deg,#ef4444,#ec4899);color:white;}
+.nav-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(239,68,68,.3);}
+.nav-btn.outline{background:transparent;border:1px solid var(--muted);color:var(--text);}
+.nav-btn.outline:hover{background:rgba(255,255,255,.1);}
+.container{max-width:1300px;margin:24px auto;display:grid;grid-template-columns:320px 1fr;gap:22px;}
+.card{background:var(--card);backdrop-filter:blur(20px);border-radius:28px;padding:24px;}
+.profile{text-align:center;}
+.avatar{width:110px;height:110px;border-radius:50%;margin:auto;background:linear-gradient(135deg,#ef4444,#ec4899);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;}
+.profile h2{margin-top:15px;}
+.profile p{color:var(--muted);}
+.info{margin-top:20px;text-align:left;}
+.info div{margin:12px 0;}
+.request-title{margin-bottom:10px;}
+.request-subtitle{color:var(--muted);margin-bottom:24px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+label{display:block;margin-bottom:6px;font-weight:600;}
+input,select,textarea{width:100%;padding:14px;border-radius:12px;border:1px solid #d1d5db;margin-bottom:18px;font-size:14px;background:rgba(255,255,255,.5);color:var(--text);}
+body.dark input,body.dark select,body.dark textarea{background:rgba(255,255,255,.05);border-color:#374151;color:#fff;}
+textarea{resize:vertical;min-height:120px;}
+.section{padding:18px;border-radius:18px;background:rgba(236,72,153,.06);margin-bottom:18px;}
+.section h3{margin-bottom:8px;}
+.section p{color:var(--muted);font-size:.95rem;}
+.primary-btn{padding:14px 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#ef4444,#ec4899);color:white;font-weight:700;cursor:pointer;transition:all .2s;width:100%;}
+.primary-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(239,68,68,.3);}
+.primary-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+#organSection{display:none;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);backdrop-filter:blur(12px);color:white;padding:14px 28px;border-radius:60px;font-size:.9rem;font-weight:500;z-index:9999;display:none;align-items:center;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+.toast.show{display:flex;animation:slideUp .3s ease-out;}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);justify-content:center;align-items:center;z-index:9999;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:white;padding:30px;border-radius:24px;width:420px;max-width:90%;text-align:center;color:#1f2937;}
+.modal-box h2{color:#1f2937;}
+.modal-box p{color:#6b7280;margin:15px 0;line-height:1.8;}
+.modal-box .close-btn{margin-top:10px;padding:12px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#ef4444,#ec4899);color:white;font-weight:700;cursor:pointer;transition:all .2s;}
+.modal-box .close-btn:hover{transform:scale(.95);}
+@media(max-width:950px){.container,.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body class="dark">
+
+<div class="toast" id="toast">
+<span id="toastIcon">✅</span>
+<span id="toastMessage">Done</span>
+</div>
+
+<div class="topbar">
+<div class="logo">Lumina <span>Life</span></div>
+<div class="nav-btns">
+    <a href="request-status.html" class="nav-btn outline">📊 View Requests</a>
+    <a href="donor-dashboard.html" class="nav-btn primary">🩸 Donor Dashboard</a>
+    <button id="themeBtn" class="theme-btn">🌓 Theme</button>
+</div>
+</div>
+
+<div class="container">
+<div class="card profile">
+<div class="avatar" id="avatar">H</div>
+<h2 id="hospitalName">Hospital Name</h2>
+<p id="hospitalArea">Area</p>
+<div class="info">
+<div><strong>Hospital ID:</strong> <span id="hospitalId">Not Set</span></div>
+<div><strong>Email:</strong> <span id="hospitalEmail">Not Available</span></div>
+<div><strong>Area:</strong> <span id="hospitalArea2">Not Available</span></div>
+<div><strong>Status:</strong> <span style="color:#22c55e;">● Active</span></div>
+<div><strong>Role:</strong> Hospital</div>
+</div>
+</div>
+
+<div class="card">
+<h1 class="request-title">Create Donation Request</h1>
+<p class="request-subtitle">Create blood or organ requests that will be saved to MongoDB and sent to compatible donors.</p>
+
+<div class="section">
+<h3>📋 Request Information</h3>
+<p>Once created, compatible donors will be notified immediately.</p>
+</div>
+
+<div class="form-grid">
+<div>
+<label>Patient ID / Name</label>
+<input id="patientId" placeholder="e.g., P1001 or John Doe">
+
+<label>Request Type</label>
+<select id="requestType">
+<option>Blood</option>
+<option>Organ</option>
+</select>
+
+<div id="bloodSection">
+<label>Blood Group Needed</label>
+<select id="bloodGroup">
+<option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+<option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+</select>
+</div>
+
+<div id="organSection">
+<label>Organ Type</label>
+<select id="organ">
+<option>Kidney</option><option>Liver</option><option>Bone Marrow</option>
+<option>Heart</option><option>Lungs</option><option>Corneas</option>
+</select>
+</div>
+</div>
+
+<div>
+<label>Priority</label>
+<select id="priority">
+<option value="low">🟢 Low</option>
+<option value="medium">🟡 Medium</option>
+<option value="high" selected>🟠 High</option>
+<option value="critical">🔴 Critical</option>
+</select>
+
+<label>Hospital Area</label>
+<select id="area">
+<option>Koramangala</option><option>Whitefield</option><option>Indiranagar</option>
+<option>Electronic City</option><option>Hebbal</option><option>Jayanagar</option>
+<option>Banashankari</option><option>Marathahalli</option><option>Yelahanka</option>
+<option>Rajajinagar</option>
+</select>
+
+<label>Additional Notes</label>
+<textarea id="notes" placeholder="e.g., Emergency surgery, accident victim, critical condition..."></textarea>
+</div>
+</div>
+
+<button class="primary-btn" id="createRequestBtn">🚀 Send Request to Donors</button>
+
+<div class="modal-overlay" id="modal">
+<div class="modal-box">
+<h2 id="modalTitle">✅ Request Sent!</h2>
+<p id="modalMessage"></p>
+<button class="close-btn" id="modalCloseBtn">View Requests</button>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURATION
+// ============================================================
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ============================================================
+//  HOSPITAL ID - Generate or retrieve from localStorage
+// ============================================================
+let HOSPITAL_ID = localStorage.getItem('hospital_id');
+
+// If no hospital ID exists, create one
+if (!HOSPITAL_ID) {
+    HOSPITAL_ID = 'H' + Date.now().toString().slice(-6);
+    localStorage.setItem('hospital_id', HOSPITAL_ID);
+    console.log('🆕 New Hospital ID generated:', HOSPITAL_ID);
+}
+
+// ============================================================
+//  LOAD/SAVE HOSPITAL PROFILE
+// ============================================================
+let hospitalProfile = JSON.parse(localStorage.getItem("hospitalProfile")) || {};
+
+// If hospital name not set, prompt for it
+if (!hospitalProfile.name || hospitalProfile.name === 'Hospital Name') {
+    const name = prompt('🏥 Please enter your hospital name:', 'Apollo Hospital');
+    if (name && name.trim()) {
+        hospitalProfile.name = name.trim();
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    } else {
+        hospitalProfile.name = 'Apollo Hospital';
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    }
+}
+
+// If email not set, prompt for it
+if (!hospitalProfile.email) {
+    const email = prompt('📧 Please enter your hospital email:', 'hospital@luminalife.com');
+    if (email && email.trim()) {
+        hospitalProfile.email = email.trim();
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    } else {
+        hospitalProfile.email = 'hospital@luminalife.com';
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    }
+}
+
+// If area not set, use default or prompt
+if (!hospitalProfile.area) {
+    const area = prompt('📍 Please enter your hospital area:', 'Koramangala');
+    if (area && area.trim()) {
+        hospitalProfile.area = area.trim();
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    } else {
+        hospitalProfile.area = 'Koramangala';
+        localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+    }
+}
+
+// If phone not set
+if (!hospitalProfile.phone) {
+    hospitalProfile.phone = '';
+    localStorage.setItem('hospitalProfile', JSON.stringify(hospitalProfile));
+}
+
+// ============================================================
+//  DISPLAY HOSPITAL PROFILE
+// ============================================================
+document.getElementById("hospitalName").innerText = hospitalProfile.name || "Hospital Name";
+document.getElementById("hospitalEmail").innerText = hospitalProfile.email || "Not Available";
+document.getElementById("hospitalArea").innerText = hospitalProfile.area || "Area";
+document.getElementById("hospitalArea2").innerText = hospitalProfile.area || "Area";
+document.getElementById("hospitalId").innerText = HOSPITAL_ID;
+
+if(hospitalProfile.name) {
+    document.getElementById("avatar").innerText = hospitalProfile.name.charAt(0).toUpperCase();
+}
+
+console.log('🏥 Hospital Profile Loaded:', {
+    id: HOSPITAL_ID,
+    name: hospitalProfile.name,
+    email: hospitalProfile.email,
+    area: hospitalProfile.area
+});
+
+// ============================================================
+//  THEME SYSTEM
+// ============================================================
+if(localStorage.getItem("theme") === "light") {
+    document.body.classList.remove("dark");
+}
+
+document.getElementById("themeBtn").onclick = () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+};
+
+// ============================================================
+//  TOAST NOTIFICATION
+// ============================================================
+function showToast(message, icon = '✅') {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMessage').textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================================
+//  REQUEST TYPE SWITCHING
+// ============================================================
+document.getElementById("requestType").addEventListener("change", function() {
+    if(this.value === "Blood") {
+        document.getElementById("bloodSection").style.display = "block";
+        document.getElementById("organSection").style.display = "none";
+    } else {
+        document.getElementById("bloodSection").style.display = "none";
+        document.getElementById("organSection").style.display = "block";
+    }
+});
+
+// ============================================================
+//  CREATE REQUEST - SAVES TO MONGODB emergency_requests
+// ============================================================
+let isSubmitting = false;
+
+document.getElementById("createRequestBtn").addEventListener("click", async function() {
+    if(isSubmitting) return;
+    
+    isSubmitting = true;
+    const button = this;
+    button.disabled = true;
+    button.innerHTML = '<span style="display:inline-block;width:20px;height:20px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;"></span> Saving to MongoDB...';
+
+    try {
+        const patientId = document.getElementById("patientId").value.trim();
+        const priority = document.getElementById("priority").value;
+        const area = document.getElementById("area").value;
+        const notes = document.getElementById("notes").value.trim();
+        const requestType = document.getElementById("requestType").value;
+        const bloodGroup = document.getElementById("bloodGroup").value;
+        const organType = document.getElementById("organ").value;
+
+        if(!patientId) {
+            showToast('Please enter Patient ID or Name', '⚠️');
+            isSubmitting = false;
+            button.disabled = false;
+            button.innerHTML = '🚀 Send Request to Donors';
+            return;
+        }
+
+        // Generate Emergency ID
+        const emergencyId = 'EMG' + Date.now().toString().slice(-6);
+
+        // Prepare request data for MongoDB emergency_requests collection
+        const requestData = {
+            emergency_id: emergencyId,
+            hospital_id: HOSPITAL_ID,
+            hospital_name: hospitalProfile.name || 'Apollo Hospital',
+            hospital_address: area || hospitalProfile.area || 'Koramangala',
+            hospital_email: hospitalProfile.email || 'hospital@luminalife.com',
+            hospital_phone: hospitalProfile.phone || '',
+            blood_type_needed: requestType === "Blood" ? bloodGroup : null,
+            units_needed: 1,
+            priority: priority,
+            patient_name: patientId,
+            patient_age: null,
+            reason: notes || 'Emergency donation required',
+            contact_person: hospitalProfile.name || '',
+            contact_phone: hospitalProfile.phone || '',
+            expires_in_hours: 4,
+            latitude: null,
+            longitude: null,
+            request_type: requestType,
+            organ_type: requestType === "Organ" ? organType : null,
+            area: area || hospitalProfile.area || 'Koramangala',
+            status: 'active',
+            responders: 0,
+            responding_donors: [],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        console.log('📤 Saving to MongoDB emergency_requests:', requestData);
+
+        // Send to backend - this will save to emergency_requests collection
+        const response = await fetch(`${API_BASE}/hospital/request-blood`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-User-Id': HOSPITAL_ID
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+        console.log('📥 Response from backend:', data);
+
+        if(data.success) {
+            // Show success modal
+            document.getElementById("modalTitle").textContent = "✅ Request Saved to MongoDB!";
+            document.getElementById("modalMessage").innerHTML = `
+                <strong>Emergency ID:</strong> ${emergencyId}<br>
+                <strong>Hospital:</strong> ${requestData.hospital_name}<br>
+                <strong>Type:</strong> ${requestType}<br>
+                <strong>Blood Type:</strong> ${bloodGroup}<br>
+                <strong>Priority:</strong> ${priority.toUpperCase()}<br>
+                <strong>Status:</strong> Active - Waiting for donors<br><br>
+                ✅ Compatible donors have been notified!
+            `;
+            
+            document.getElementById("modalCloseBtn").textContent = "📊 View Requests";
+            document.getElementById("modalCloseBtn").onclick = function() {
+                document.getElementById("modal").classList.remove('show');
+                window.location.href = 'request-status.html';
+            };
+            
+            document.getElementById("modal").classList.add('show');
+
+            showToast('✅ Request saved to MongoDB! Donors notified.', '🚨');
+            
+            // Reset form
+            document.getElementById("patientId").value = '';
+            document.getElementById("notes").value = '';
+            
+        } else {
+            showToast(`❌ ${data.message || 'Failed to create request'}`, '❌');
+        }
+
+    } catch(error) {
+        console.error('❌ Error:', error);
+        showToast('❌ Server error. Please make sure backend is running.', '❌');
+    } finally {
+        setTimeout(() => {
+            isSubmitting = false;
+            button.disabled = false;
+            button.innerHTML = '🚀 Send Request to Donors';
+        }, 2000);
+    }
+});
+
+// Add spin animation
+const style = document.createElement('style');
+style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+// Close modal on outside click or close button
+document.getElementById("modal").addEventListener("click", function(e) {
+    if(e.target === this) {
+        this.classList.remove('show');
+    }
+});
+
+// Auto-save profile on any change
+function updateHospitalProfile(field, value) {
+    const profile = JSON.parse(localStorage.getItem("hospitalProfile") || '{}');
+    profile[field] = value;
+    localStorage.setItem("hospitalProfile", JSON.stringify(profile));
+    console.log(`✅ Updated ${field}:`, value);
+}
+
+console.log('🏥 Hospital Portal initialized');
+console.log(`🔗 API: ${API_BASE}`);
+console.log(`🏛️ Hospital ID: ${HOSPITAL_ID}`);
+console.log(`🏥 Hospital Name: ${hospitalProfile.name}`);
+console.log('📦 Data will be saved to MongoDB emergency_requests collection');
+</script>
+</body>
+</html>

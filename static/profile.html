@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LuminaLife — Your Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red:          #B91C1C;
+      --red-bright:   #DC2626;
+      --red-muted:    #FEF2F2;
+      --red-border:   #FECACA;
+      --green:        #16A34A;
+      --green-muted:  #F0FDF4;
+      --green-border: #BBF7D0;
+      --amber:        #D97706;
+      --amber-muted:  #FFFBEB;
+      --blue:         #2563EB;
+      --blue-muted:   #EFF6FF;
+      --blue-border:  #BFDBFE;
+      --bg:           #F8FAFC;
+      --surface:      #FFFFFF;
+      --surface-2:    #F1F5F9;
+      --surface-3:    #E8EEF4;
+      --border:       #E2E8F0;
+      --border-2:     #CBD5E1;
+      --text:         #0F172A;
+      --text-2:       #475569;
+      --text-3:       #94A3B8;
+      --shadow-xs:    0 1px 2px rgba(15,23,42,.06);
+      --shadow-sm:    0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.06);
+      --shadow-md:    0 4px 6px -1px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.06);
+      --shadow-lg:    0 10px 24px -3px rgba(15,23,42,.10), 0 4px 8px -4px rgba(15,23,42,.06);
+      --shadow-xl:    0 20px 48px -6px rgba(15,23,42,.14), 0 8px 16px -6px rgba(15,23,42,.08);
+      --radius-sm:    8px;
+      --radius:       12px;
+      --radius-lg:    16px;
+      --radius-xl:    20px;
+      --radius-2xl:   24px;
+      --ease:         cubic-bezier(.2,.9,.4,1);
+    }
+
+    [data-theme="dark"] {
+      --bg:           #020617;
+      --surface:      #0F172A;
+      --surface-2:    #1E293B;
+      --surface-3:    #263245;
+      --border:       #1E293B;
+      --border-2:     #334155;
+      --text:         #F8FAFC;
+      --text-2:       #94A3B8;
+      --text-3:       #475569;
+      --red-muted:    rgba(185,28,28,.12);
+      --red-border:   rgba(185,28,28,.25);
+      --green-muted:  rgba(22,163,74,.10);
+      --green-border: rgba(22,163,74,.25);
+      --amber-muted:  rgba(217,119,6,.10);
+      --blue-muted:   rgba(37,99,235,.10);
+      --blue-border:  rgba(37,99,235,.25);
+      --shadow-xs:    0 1px 2px rgba(0,0,0,.4);
+      --shadow-sm:    0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.4);
+      --shadow-md:    0 4px 6px -1px rgba(0,0,0,.5), 0 2px 4px -2px rgba(0,0,0,.4);
+      --shadow-lg:    0 10px 24px -3px rgba(0,0,0,.6), 0 4px 8px -4px rgba(0,0,0,.4);
+      --shadow-xl:    0 20px 48px -6px rgba(0,0,0,.7), 0 8px 16px -6px rgba(0,0,0,.5);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: sticky; top: 0; z-index: 200;
+      height: 56px;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 0;
+    }
+    [data-theme="dark"] .navbar { background: rgba(9,15,36,.9); }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .nav-logo-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-bright) 100%);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-mark svg { color: #fff; width: 15px; height: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; letter-spacing: -.3px; color: var(--text); }
+    .nav-spacer { flex: 1; }
+    .nav-right { display: flex; align-items: center; gap: 6px; }
+    .nav-icon-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      border: none; background: none; cursor: pointer;
+      color: var(--text-2);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s ease;
+    }
+    .nav-icon-btn:hover { background: var(--surface-2); color: var(--text); }
+    .nav-icon-btn svg { width: 16px; height: 16px; }
+    .nav-back {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13.5px; font-weight: 500; color: var(--text-2);
+      text-decoration: none; padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all .15s ease;
+      margin-left: 8px;
+    }
+    .nav-back:hover { background: var(--surface-2); color: var(--text); }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    /* ─── PAGE LAYOUT ─── */
+    .page-root {
+      max-width: 1120px; margin: 0 auto;
+      padding: 40px 24px 80px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ─── SIDEBAR CARD ─── */
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 72px;
+    }
+
+    .avatar-hero {
+      padding: 32px 24px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(160deg, var(--red-muted) 0%, var(--surface) 60%);
+      position: relative;
+    }
+    .avatar-wrap {
+      position: relative;
+      width: 96px; height: 96px;
+      margin: 0 auto 16px;
+    }
+    .avatar-img {
+      width: 96px; height: 96px; border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--surface);
+      box-shadow: 0 0 0 2px var(--red), var(--shadow-md);
+      display: block;
+    }
+    .avatar-edit-btn {
+      position: absolute; bottom: 0; right: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--red);
+      border: 2px solid var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .15s ease;
+      color: #fff;
+    }
+    .avatar-edit-btn:hover { background: var(--red-bright); transform: scale(1.1); }
+    .avatar-edit-btn svg { width: 11px; height: 11px; }
+
+    .profile-name {
+      font-size: 18px; font-weight: 700; letter-spacing: -.3px;
+      margin-bottom: 4px;
+    }
+    .profile-blood-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--red-muted); color: var(--red);
+      border: 1px solid var(--red-border);
+      border-radius: 100px; padding: 3px 10px;
+      font-size: 12.5px; font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .profile-blood-pill svg { width: 11px; height: 11px; }
+    .profile-location {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 12.5px; color: var(--text-3);
+    }
+    .profile-location svg { width: 12px; height: 12px; }
+
+    /* Donor badge */
+    .donor-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11.5px; font-weight: 600;
+      padding: 4px 12px; border-radius: 100px;
+      margin-top: 10px;
+    }
+    .donor-status-badge.eligible { background: var(--green-muted); color: var(--green); border: 1px solid var(--green-border); }
+    .donor-status-badge.cooldown { background: var(--amber-muted); color: var(--amber); border: 1px solid #FDE68A; }
+    .donor-status-badge svg { width: 11px; height: 11px; }
+
+    /* Stat grid inside sidebar */
+    .sidebar-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-stat {
+      background: var(--surface);
+      padding: 18px 16px; text-align: center;
+    }
+    .sidebar-stat-num { font-size: 22px; font-weight: 800; letter-spacing: -.5px; color: var(--text); }
+    .sidebar-stat-label { font-size: 11px; font-weight: 500; color: var(--text-3); margin-top: 3px; text-transform: uppercase; letter-spacing: .4px; }
+
+    /* Achievements */
+    .sidebar-achievements { padding: 20px 20px; }
+    .sidebar-section-label {
+      font-size: 10.5px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px;
+    }
+    .achievement-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .achievement-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 6px 10px;
+      font-size: 11.5px; font-weight: 500; color: var(--text-2);
+    }
+    .achievement-chip.earned { background: var(--green-muted); border-color: var(--green-border); color: var(--green); }
+    .achievement-chip svg { width: 12px; height: 12px; }
+
+    /* ─── MAIN FORM AREA ─── */
+    .main-area { display: flex; flex-direction: column; gap: 20px; }
+
+    /* ─── SECTION CARDS ─── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .section-card-header {
+      padding: 20px 24px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-card-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14.5px; font-weight: 700; letter-spacing: -.2px;
+    }
+    .section-card-title-icon {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .section-card-title-icon.red { background: var(--red-muted); color: var(--red); }
+    .section-card-title-icon.blue { background: var(--blue-muted); color: var(--blue); }
+    .section-card-title-icon.green { background: var(--green-muted); color: var(--green); }
+    .section-card-title-icon svg { width: 15px; height: 15px; }
+    .section-card-body { padding: 0 24px 24px; }
+
+    /* ─── FORM FIELDS ─── */
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .field-grid.full { grid-template-columns: 1fr; }
+    .field { position: relative; }
+    .field label {
+      display: block; font-size: 11.5px; font-weight: 600;
+      color: var(--text-3); text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13.5px; font-weight: 500;
+      font-family: inherit;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+      appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(185,28,28,.08);
+      background: var(--surface);
+    }
+    .field input::placeholder { color: var(--text-3); font-weight: 400; }
+    .field input.error { border-color: var(--red-bright); box-shadow: 0 0 0 3px rgba(220,38,38,.08); }
+    .field select { cursor: pointer; }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field-hint { font-size: 11.5px; color: var(--text-3); margin-top: 5px; }
+    .field-error { font-size: 11.5px; color: var(--red); margin-top: 5px; display: none; }
+    .field.has-error .field-error { display: block; }
+    .field.has-error input, .field.has-error select { border-color: var(--red-bright); box-shadow: 0 0 0 3px rgba(220,38,38,.08); }
+
+    /* ─── AVATAR PICKER ─── */
+    .avatar-upload-zone {
+      border: 1.5px dashed var(--border-2);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s ease;
+      background: var(--surface-2);
+      margin-bottom: 20px;
+    }
+    .avatar-upload-zone:hover {
+      border-color: var(--red);
+      background: var(--red-muted);
+    }
+    .upload-icon {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px; color: var(--text-3);
+    }
+    .upload-icon svg { width: 18px; height: 18px; }
+    .upload-title { font-size: 13.5px; font-weight: 600; color: var(--text-2); margin-bottom: 3px; }
+    .upload-hint { font-size: 11.5px; color: var(--text-3); }
+
+    /* Avatar grid */
+    .avatar-grid-label {
+      font-size: 11.5px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px;
+    }
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .avatar-option {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: all .15s ease;
+      background: var(--surface-2);
+      box-shadow: var(--shadow-xs);
+    }
+    .avatar-option:hover { transform: scale(1.06); box-shadow: var(--shadow-md); }
+    .avatar-option.selected {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(185,28,28,.15);
+    }
+    .avatar-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ─── SYNC STATUS BAR ─── */
+    .sync-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      font-size: 12.5px; font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .sync-bar.synced { background: var(--green-muted); color: var(--green); border: 1px solid var(--green-border); }
+    .sync-bar.pending { background: var(--amber-muted); color: var(--amber); border: 1px solid #FDE68A; }
+    .sync-bar.error   { background: var(--red-muted); color: var(--red); border: 1px solid var(--red-border); }
+    .sync-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13.5px; font-weight: 600; padding: 9px 18px;
+      border-radius: var(--radius);
+      border: none; cursor: pointer;
+      transition: all .15s ease;
+      font-family: inherit; line-height: 1;
+    }
+    .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-bright) 100%);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(185,28,28,.3), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(185,28,28,.35), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-outline {
+      background: var(--surface); color: var(--text-2);
+      border: 1px solid var(--border-2); box-shadow: var(--shadow-xs);
+    }
+    .btn-outline:hover { background: var(--surface-2); color: var(--text); }
+    .btn-lg { padding: 12px 24px; font-size: 14.5px; border-radius: var(--radius-lg); }
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* Save actions row */
+    .save-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 20px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .save-actions-left { display: flex; align-items: center; gap: 10px; }
+
+    /* Spinner */
+    .spinner {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── DONOR BADGE PANEL ─── */
+    .badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .badge-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .badge-item.verified { background: var(--green-muted); border-color: var(--green-border); }
+    .badge-icon {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .badge-icon svg { width: 15px; height: 15px; }
+    .badge-icon.green { background: var(--green-muted); color: var(--green); }
+    .badge-icon.red   { background: var(--red-muted);   color: var(--red); }
+    .badge-icon.amber { background: var(--amber-muted); color: var(--amber); }
+    .badge-icon.blue  { background: var(--blue-muted);  color: var(--blue); }
+    .badge-text { font-size: 12.5px; font-weight: 600; color: var(--text-2); line-height: 1.3; }
+    .badge-text span { display: block; font-size: 11px; font-weight: 400; color: var(--text-3); margin-top: 1px; }
+
+    /* ─── TOAST ─── */
+    .toast-stack {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13.5px; font-weight: 500; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+      animation: toastIn .25s var(--ease);
+      pointer-events: all; max-width: 360px;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .toast svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .toast.success svg { color: var(--green); }
+    .toast.error   svg { color: var(--red); }
+    .toast.info    svg { color: var(--blue); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      .page-root { grid-template-columns: 1fr; }
+      .sidebar-card { position: static; }
+      .avatar-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .page-root { padding: 24px 16px 60px; gap: 16px; }
+      .field-grid { grid-template-columns: 1fr; }
+      .field-grid.three { grid-template-columns: 1fr 1fr; }
+      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+      .badge-grid { grid-template-columns: 1fr; }
+      .save-actions { flex-direction: column; gap: 10px; }
+      .save-actions .btn-lg { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .field-grid.three { grid-template-columns: 1fr; }
+      .avatar-grid { grid-template-columns: repeat(3, 1fr); }
+      .toast-stack { left: 16px; right: 16px; }
+      .toast { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav class="navbar">
+  <a class="nav-logo" href="dashboard.html">
+    <div class="nav-logo-mark"><i data-lucide="heart"></i></div>
+    <span class="nav-logo-text">LuminaLife</span>
+  </a>
+  <a class="nav-back" href="dashboard.html">
+    <i data-lucide="arrow-left"></i> Back to Dashboard
+  </a>
+  <div class="nav-spacer"></div>
+  <div class="nav-right">
+    <button class="nav-icon-btn" id="themeToggle" aria-label="Toggle theme">
+      <i data-lucide="moon" id="themeIconMoon"></i>
+      <i data-lucide="sun" id="themeIconSun" style="display:none"></i>
+    </button>
+  </div>
+</nav>
+
+<!-- Hidden file input -->
+<input type="file" id="avatarFileInput" accept="image/*" style="display:none">
+
+<div class="page-root">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside>
+    <div class="sidebar-card">
+
+      <!-- Avatar Hero -->
+      <div class="avatar-hero">
+        <div class="avatar-wrap">
+          <img class="avatar-img" id="sidebarAvatar" src="https://cdn-icons-png.flaticon.com/512/2966/2966480.png" alt="Profile photo">
+          <div class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">
+            <i data-lucide="camera"></i>
+          </div>
+        </div>
+        <div class="profile-name" id="sidebarName">—</div>
+        <div class="profile-blood-pill" id="sidebarBloodPill">
+          <i data-lucide="droplets"></i>
+          <span id="sidebarBlood">—</span>
+        </div>
+        <div class="profile-location" id="sidebarLocation">
+          <i data-lucide="map-pin"></i>
+          <span id="sidebarCity">—</span>
+        </div>
+        <div id="sidebarEligBadge" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="sidebar-stats">
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num" id="statDonations">0</div>
+          <div class="sidebar-stat-label">Donations</div>
+        </div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num" id="statLives">0</div>
+          <div class="sidebar-stat-label">Lives Saved</div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="sidebar-achievements">
+        <div class="sidebar-section-label">Achievements</div>
+        <div class="achievement-list" id="achievementList">
+          <div class="achievement-chip">
+            <i data-lucide="award"></i> First Donation
+          </div>
+          <div class="achievement-chip">
+            <i data-lucide="zap"></i> Emergency Responder
+          </div>
+          <div class="achievement-chip">
+            <i data-lucide="shield"></i> Verified Donor
+          </div>
+          <div class="achievement-chip">
+            <i data-lucide="star"></i> Life Saver
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <main class="main-area">
+
+    <!-- Sync status -->
+    <div class="sync-bar pending" id="syncBar">
+      <i data-lucide="loader-circle"></i>
+      <span id="syncText">Connecting to server...</span>
+    </div>
+
+    <!-- ── SECTION: Personal Information ── -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="section-card-title-icon red"><i data-lucide="user"></i></div>
+          Personal Information
+        </div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid" style="margin-bottom:14px;">
+          <div class="field" id="field-fullName">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name">
+            <div class="field-error">Name is required</div>
+          </div>
+          <div class="field" id="field-email">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="you@example.com">
+            <div class="field-error">Enter a valid email</div>
+          </div>
+        </div>
+        <div class="field-grid three">
+          <div class="field" id="field-age">
+            <label>Age</label>
+            <input type="number" id="age" placeholder="18–65" min="18" max="65">
+            <div class="field-error">Age must be 18–65</div>
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <select id="gender">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other / Prefer not to say</option>
+            </select>
+          </div>
+          <div class="field" id="field-phone">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" placeholder="+91-XXXXX-XXXXX">
+            <div class="field-error">Phone number is required</div>
+          </div>
+        </div>
+        <div class="field-grid" style="margin-top:14px;">
+          <div class="field" id="field-location">
+            <label>City / Location</label>
+            <input type="text" id="location" placeholder="Bengaluru">
+            <div class="field-error">Location is required</div>
+          </div>
+          <div class="field">
+            <label>Last Donation Date</label>
+            <input type="date" id="lastDonationDate">
+            <div class="field-hint">Leave blank if you have never donated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION: Medical Details ── -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="section-card-title-icon blue"><i data-lucide="activity"></i></div>
+          Medical Details
+        </div>
+      </div>
+      <div class="section-card-body">
+        <div class="field-grid three">
+          <div class="field" id="field-bloodGroup">
+            <label>Blood Group</label>
+            <select id="bloodGroup">
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+            <div class="field-error">Please select your blood group</div>
+          </div>
+          <div class="field" id="field-weight">
+            <label>Weight (kg)</label>
+            <input type="number" id="weight" placeholder="Min. 45 kg" min="45" max="200">
+            <div class="field-error">Weight must be 45–200 kg</div>
+          </div>
+          <div class="field">
+            <label>Height (cm)</label>
+            <input type="number" id="height" placeholder="e.g. 165" min="100" max="250">
+          </div>
+        </div>
+        <div class="field-grid" style="margin-top:14px;">
+          <div class="field">
+            <label>Hemoglobin (g/dL)</label>
+            <input type="number" id="hemoglobin" placeholder="e.g. 13.5" step="0.1" min="0" max="20">
+            <div class="field-hint">Min. 12.5 g/dL required for donation</div>
+          </div>
+          <div class="field">
+            <label>Blood Pressure</label>
+            <input type="text" id="bloodPressure" placeholder="e.g. 120/80">
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>Medical Notes (optional)</label>
+          <textarea id="medicalNotes" placeholder="Any allergies, conditions, or medications we should know about..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION: Profile Photo ── -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="section-card-title-icon red"><i data-lucide="image"></i></div>
+          Profile Photo
+        </div>
+      </div>
+      <div class="section-card-body">
+        <div class="avatar-upload-zone" id="dropZone">
+          <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
+          <div class="upload-title">Upload your own photo</div>
+          <div class="upload-hint">JPG, PNG, WEBP — drag and drop or click to browse</div>
+        </div>
+        <div class="avatar-grid-label">Or choose a preset avatar</div>
+        <div class="avatar-grid" id="avatarGrid"></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION: Trust & Verification ── -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <div class="section-card-title">
+          <div class="section-card-title-icon green"><i data-lucide="shield-check"></i></div>
+          Donor Verification
+        </div>
+      </div>
+      <div class="section-card-body">
+        <div class="badge-grid">
+          <div class="badge-item verified">
+            <div class="badge-icon green"><i data-lucide="check-circle"></i></div>
+            <div class="badge-text">Government Approved
+              <span>Registered in the national donor registry</span>
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon blue"><i data-lucide="shield"></i></div>
+            <div class="badge-text">HIPAA-Compliant Security
+              <span>Your data is encrypted end-to-end</span>
+            </div>
+          </div>
+          <div class="badge-item" id="verifiedDonorBadge">
+            <div class="badge-icon amber"><i data-lucide="badge-check"></i></div>
+            <div class="badge-text">Verified Donor Badge
+              <span>Complete profile to unlock</span>
+            </div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-icon red"><i data-lucide="zap"></i></div>
+            <div class="badge-text">Emergency Response Certified
+              <span>Active on the emergency donor network</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SAVE ACTIONS ── -->
+    <div class="section-card">
+      <div class="save-actions">
+        <div class="save-actions-left">
+          <div class="sync-bar" id="saveStatus" style="margin-bottom:0;padding:8px 12px;">
+            <i data-lucide="info"></i>
+            <span>Changes will sync to MongoDB Atlas</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-lg" onclick="window.location.href='dashboard.html'">
+            <i data-lucide="arrow-left"></i> Cancel
+          </button>
+          <button class="btn btn-primary btn-lg" id="saveBtn" onclick="saveProfile()">
+            <i data-lucide="save"></i> Save Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════ TOAST STACK ═══════════ -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let selectedAvatarUrl = '';
+let userId = localStorage.getItem('lifelineUserId') || 'D001';
+let isSaving = false;
+
+const AVATAR_PRESETS = [
+  'https://i.pinimg.com/736x/9a/d2/5e/9ad25e15e3d881a3fc9bdd2f86b2f740.jpg',
+  'https://i.pinimg.com/1200x/a8/7f/bf/a87fbf47a42d2802704782dc5781fc75.jpg',
+  'https://i.pinimg.com/736x/ed/76/db/ed76db19045a7b9469404866ddbb3d9e.jpg',
+  'https://i.pinimg.com/1200x/33/86/2c/33862cb803e0c990eff517beadd1cf72.jpg',
+  'https://i.pinimg.com/1200x/b5/82/40/b58240c482100c5e3daa78d85f8b640f.jpg',
+  'https://i.pinimg.com/736x/b7/c9/1e/b7c91e176dab3bc486b3377ea190fb77.jpg',
+];
+
+// ══════════════════════════════════════
+// LUCIDE INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  initAvatarGrid();
+  initDropZone();
+  loadProfileFromStorage();
+  loadFromBackend();
+  initTheme();
+});
+
+// ══════════════════════════════════════
+// THEME
+// ══════════════════════════════════════
+function initTheme() {
+  const saved = localStorage.getItem('llTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcons(saved);
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('llTheme', next);
+    updateThemeIcons(next);
+  });
+}
+function updateThemeIcons(theme) {
+  document.getElementById('themeIconMoon').style.display = theme === 'light' ? 'block' : 'none';
+  document.getElementById('themeIconSun').style.display  = theme === 'dark'  ? 'block'  : 'none';
+}
+
+// ══════════════════════════════════════
+// AVATAR GRID
+// ══════════════════════════════════════
+function initAvatarGrid() {
+  const grid = document.getElementById('avatarGrid');
+  AVATAR_PRESETS.forEach((url, i) => {
+    const el = document.createElement('div');
+    el.className = 'avatar-option' + (i === 0 ? ' selected' : '');
+    el.innerHTML = `<img src="${url}" alt="Avatar option ${i+1}" loading="lazy">`;
+    el.addEventListener('click', () => selectAvatar(url, el));
+    grid.appendChild(el);
+  });
+  if (!selectedAvatarUrl) selectAvatarByUrl(AVATAR_PRESETS[0]);
+}
+
+function selectAvatar(url, el) {
+  document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAvatarUrl = url;
+  updateSidebarAvatar(url);
+}
+
+function selectAvatarByUrl(url) {
+  selectedAvatarUrl = url;
+  updateSidebarAvatar(url);
+  document.querySelectorAll('.avatar-option').forEach(el => {
+    const img = el.querySelector('img');
+    if (img && img.src === url) {
+      el.classList.add('selected');
+    } else {
+      el.classList.remove('selected');
+    }
+  });
+}
+
+function updateSidebarAvatar(url) {
+  document.getElementById('sidebarAvatar').src = url;
+}
+
+// ══════════════════════════════════════
+// DROP ZONE + FILE UPLOAD
+// ══════════════════════════════════════
+function initDropZone() {
+  const zone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('avatarFileInput');
+  const editBtn = document.getElementById('avatarEditBtn');
+
+  zone.addEventListener('click', () => fileInput.click());
+  editBtn.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) readImageFile(file);
+  });
+
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    zone.style.borderColor = 'var(--red)';
+    zone.style.background = 'var(--red-muted)';
+  });
+  zone.addEventListener('dragleave', () => {
+    zone.style.borderColor = '';
+    zone.style.background = '';
+  });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.style.borderColor = '';
+    zone.style.background = '';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) readImageFile(file);
+  });
+}
+
+function readImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const url = e.target.result;
+    selectedAvatarUrl = url;
+    updateSidebarAvatar(url);
+    document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+    showToast('Photo uploaded successfully.', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══════════════════════════════════════
+// SIDEBAR REACTIVE UPDATES
+// ══════════════════════════════════════
+function updateSidebar() {
+  const name = document.getElementById('fullName').value.trim() || '—';
+  const blood = document.getElementById('bloodGroup').value || '—';
+  const city = document.getElementById('location').value.trim() || '—';
+  const donations = parseInt(localStorage.getItem('ll_total_donations') || '0');
+  const lives = parseInt(localStorage.getItem('ll_lives_saved') || '0');
+  const lastDon = document.getElementById('lastDonationDate').value;
+
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarBlood').textContent = blood;
+  document.getElementById('sidebarCity').textContent = city;
+  document.getElementById('statDonations').textContent = donations;
+  document.getElementById('statLives').textContent = lives;
+
+  // Eligibility badge
+  const badge = document.getElementById('sidebarEligBadge');
+  if (lastDon) {
+    const days = Math.floor((Date.now() - new Date(lastDon)) / 86400000);
+    if (days >= 90) {
+      badge.innerHTML = `<span class="donor-status-badge eligible"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Eligible to donate</span>`;
+    } else {
+      const remaining = 90 - days;
+      badge.innerHTML = `<span class="donor-status-badge cooldown"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Eligible in ${remaining} days</span>`;
+    }
+  } else {
+    badge.innerHTML = `<span class="donor-status-badge eligible"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Ready to donate</span>`;
+  }
+
+  // Update achievements based on donation count
+  const list = document.getElementById('achievementList');
+  const chips = list.querySelectorAll('.achievement-chip');
+  if (donations >= 1) chips[0].classList.add('earned');
+  if (donations >= 3) chips[3].classList.add('earned');
+  lucide.createIcons();
+}
+
+// Live sidebar updates on input
+['fullName','bloodGroup','location','lastDonationDate'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateSidebar);
+  if (el) el.addEventListener('change', updateSidebar);
+});
+
+// ══════════════════════════════════════
+// LOAD PROFILE FROM LOCALSTORAGE
+// ══════════════════════════════════════
+function loadProfileFromStorage() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+    if (p.user_id) userId = p.user_id;
+    if (p.full_name) document.getElementById('fullName').value = p.full_name;
+    if (p.email) document.getElementById('email').value = p.email;
+    if (p.age) document.getElementById('age').value = p.age;
+    if (p.gender) document.getElementById('gender').value = p.gender;
+    if (p.phone) document.getElementById('phone').value = p.phone;
+    if (p.location) document.getElementById('location').value = p.location;
+    if (p.last_donation_date) document.getElementById('lastDonationDate').value = p.last_donation_date.substring(0, 10);
+    if (p.blood_group) document.getElementById('bloodGroup').value = p.blood_group;
+    if (p.weight_kg) document.getElementById('weight').value = p.weight_kg;
+    if (p.height_cm) document.getElementById('height').value = p.height_cm;
+    if (p.hemoglobin) document.getElementById('hemoglobin').value = p.hemoglobin;
+    if (p.blood_pressure) document.getElementById('bloodPressure').value = p.blood_pressure;
+    if (p.notes) document.getElementById('medicalNotes').value = p.notes;
+    if (p.total_donations !== undefined) localStorage.setItem('ll_total_donations', p.total_donations);
+    if (p.lives_saved !== undefined) localStorage.setItem('ll_lives_saved', p.lives_saved);
+    if (p.avatar) {
+      selectAvatarByUrl(p.avatar);
+    }
+    updateSidebar();
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════
+// LOAD FROM BACKEND
+// ══════════════════════════════════════
+async function loadFromBackend() {
+  setSyncBar('pending', 'Syncing with server...');
+  try {
+    const res = await fetch(`${API_BASE}/profile/${userId}`);
+    if (res.ok) {
+      const data = await res.json();
+      const p = data.profile || data;
+      // Merge backend data into form
+      if (p.user_id) userId = p.user_id;
+      if (p.full_name)   document.getElementById('fullName').value = p.full_name;
+      if (p.email)       document.getElementById('email').value = p.email;
+      if (p.age)         document.getElementById('age').value = p.age;
+      if (p.gender)      document.getElementById('gender').value = p.gender || '';
+      if (p.phone)       document.getElementById('phone').value = p.phone;
+      if (p.location)    document.getElementById('location').value = p.location || '';
+      if (p.last_donation_date) {
+        const dateStr = typeof p.last_donation_date === 'string'
+          ? p.last_donation_date.substring(0, 10)
+          : new Date(p.last_donation_date).toISOString().substring(0, 10);
+        document.getElementById('lastDonationDate').value = dateStr;
+      }
+      if (p.blood_group)    document.getElementById('bloodGroup').value = p.blood_group;
+      if (p.weight_kg)      document.getElementById('weight').value = p.weight_kg;
+      if (p.height_cm)      document.getElementById('height').value = p.height_cm;
+      if (p.hemoglobin)     document.getElementById('hemoglobin').value = p.hemoglobin;
+      if (p.blood_pressure) document.getElementById('bloodPressure').value = p.blood_pressure;
+      if (p.notes)          document.getElementById('medicalNotes').value = p.notes;
+      if (p.total_donations !== undefined) localStorage.setItem('ll_total_donations', p.total_donations);
+      if (p.lives_saved !== undefined)     localStorage.setItem('ll_lives_saved', p.lives_saved);
+      if (p.avatar) selectAvatarByUrl(p.avatar);
+      // Cache to localStorage
+      localStorage.setItem('lifelineUserProfile', JSON.stringify(p));
+      if (p.user_id) localStorage.setItem('lifelineUserId', p.user_id);
+      setSyncBar('synced', 'Profile synced from MongoDB Atlas');
+      updateSidebar();
+    } else {
+      setSyncBar('pending', 'Server unavailable — editing offline');
+    }
+  } catch(e) {
+    setSyncBar('pending', 'Offline mode — changes will sync when reconnected');
+  }
+}
+
+// ══════════════════════════════════════
+// VALIDATION
+// ══════════════════════════════════════
+function validateField(fieldWrapId, condition) {
+  const wrap = document.getElementById(fieldWrapId);
+  if (!wrap) return condition;
+  if (!condition) wrap.classList.add('has-error');
+  else wrap.classList.remove('has-error');
+  return condition;
+}
+
+function validateAll() {
+  const name   = document.getElementById('fullName').value.trim();
+  const email  = document.getElementById('email').value.trim();
+  const age    = parseInt(document.getElementById('age').value);
+  const phone  = document.getElementById('phone').value.trim();
+  const loc    = document.getElementById('location').value.trim();
+  const blood  = document.getElementById('bloodGroup').value;
+  const weight = parseFloat(document.getElementById('weight').value);
+
+  let ok = true;
+  ok = validateField('field-fullName', name.length > 0) && ok;
+  ok = validateField('field-email', email.includes('@') && email.includes('.')) && ok;
+  ok = validateField('field-age', !isNaN(age) && age >= 18 && age <= 65) && ok;
+  ok = validateField('field-phone', phone.length >= 7) && ok;
+  ok = validateField('field-location', loc.length > 0) && ok;
+  ok = validateField('field-bloodGroup', blood !== '') && ok;
+  if (document.getElementById('weight').value) {
+    ok = validateField('field-weight', !isNaN(weight) && weight >= 45 && weight <= 200) && ok;
+  }
+  return ok;
+}
+
+// ══════════════════════════════════════
+// SAVE PROFILE - REDIRECTS TO DASHBOARD.HTML
+// ══════════════════════════════════════
+async function saveProfile() {
+  if (isSaving) return;
+  if (!validateAll()) {
+    showToast('Please fix the highlighted fields before saving.', 'error');
+    return;
+  }
+
+  isSaving = true;
+  const btn = document.getElementById('saveBtn');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Saving...`;
+
+  const profileData = {
+    user_id:           userId || `D${Date.now().toString().slice(-8)}`,
+    full_name:         document.getElementById('fullName').value.trim(),
+    email:             document.getElementById('email').value.trim(),
+    age:               parseInt(document.getElementById('age').value) || null,
+    gender:            document.getElementById('gender').value || null,
+    phone:             document.getElementById('phone').value.trim(),
+    location:          document.getElementById('location').value.trim(),
+    blood_group:       document.getElementById('bloodGroup').value,
+    weight_kg:         parseFloat(document.getElementById('weight').value) || null,
+    height_cm:         parseFloat(document.getElementById('height').value) || null,
+    hemoglobin:        parseFloat(document.getElementById('hemoglobin').value) || null,
+    blood_pressure:    document.getElementById('bloodPressure').value.trim() || null,
+    notes:             document.getElementById('medicalNotes').value.trim() || null,
+    last_donation_date: document.getElementById('lastDonationDate').value || null,
+    avatar:            selectedAvatarUrl,
+    updated_at:        new Date().toISOString(),
+  };
+
+  // Preserve existing stats
+  const cached = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+  if (cached.total_donations !== undefined) profileData.total_donations = cached.total_donations;
+  if (cached.lives_saved !== undefined)     profileData.lives_saved = cached.lives_saved;
+
+  // Always save to localStorage first
+  localStorage.setItem('lifelineUserProfile', JSON.stringify(profileData));
+  localStorage.setItem('lifelineUserId', profileData.user_id);
+  if (!localStorage.getItem('lifelineUserToken')) {
+    localStorage.setItem('lifelineUserToken', 'token_' + Date.now());
+  }
+
+  // Try server
+  let serverSuccess = false;
+  try {
+    const res = await fetch(`${API_BASE}/profile/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      serverSuccess = true;
+      if (data.profile) {
+        const merged = { ...profileData, ...data.profile };
+        localStorage.setItem('lifelineUserProfile', JSON.stringify(merged));
+      }
+    }
+  } catch(e) {}
+
+  // Health record sync
+  if (profileData.hemoglobin || profileData.weight_kg || profileData.height_cm) {
+    try {
+      await fetch(`${API_BASE}/health/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id:        profileData.user_id,
+          full_name:      profileData.full_name,
+          blood_group:    profileData.blood_group,
+          hemoglobin:     profileData.hemoglobin,
+          weight_kg:      profileData.weight_kg,
+          height_cm:      profileData.height_cm,
+          age:            profileData.age,
+          gender:         profileData.gender,
+          blood_pressure: profileData.blood_pressure,
+          source:         'profile_update',
+        })
+      });
+    } catch(e) {}
+  }
+
+  isSaving = false;
+  btn.disabled = false;
+  btn.innerHTML = originalHTML;
+  lucide.createIcons();
+
+  updateSidebar();
+
+  if (serverSuccess) {
+    setSyncBar('synced', 'Profile saved to MongoDB Atlas');
+    setSaveStatus('synced', 'Saved to MongoDB Atlas');
+    showToast('Profile saved successfully.', 'success');
+    // ✅ REDIRECT TO DASHBOARD.HTML
+    setTimeout(() => { 
+      window.location.href = 'dashboard.html'; 
+    }, 1400);
+  } else {
+    setSyncBar('pending', 'Saved locally — will sync when server is available');
+    setSaveStatus('pending', 'Saved locally (server offline)');
+    showToast('Profile saved locally. Server sync pending.', 'info');
+    // ✅ REDIRECT TO DASHBOARD.HTML
+    setTimeout(() => { 
+      window.location.href = 'dashboard.html'; 
+    }, 1600);
+  }
+}
+
+// ══════════════════════════════════════
+// SYNC BAR
+// ══════════════════════════════════════
+function setSyncBar(type, msg) {
+  const bar = document.getElementById('syncBar');
+  bar.className = `sync-bar ${type}`;
+  const iconMap = { synced: 'check-circle', pending: 'loader-circle', error: 'alert-circle' };
+  bar.innerHTML = `<i data-lucide="${iconMap[type] || 'info'}"></i><span>${msg}</span>`;
+  lucide.createIcons();
+}
+
+function setSaveStatus(type, msg) {
+  const bar = document.getElementById('saveStatus');
+  bar.className = `sync-bar ${type}`;
+  bar.style.marginBottom = '0';
+  bar.style.padding = '8px 12px';
+  const iconMap = { synced: 'check-circle', pending: 'clock', error: 'alert-circle' };
+  bar.innerHTML = `<i data-lucide="${iconMap[type] || 'info'}"></i><span>${msg}</span>`;
+  lucide.createIcons();
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const icons = {
+    success: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error:   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = icons[type] + msg;
+  document.getElementById('toastStack').appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(24px)';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+</script>
+</body>
+</html>

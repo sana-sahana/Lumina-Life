@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuminaLife · Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ════════════════════════════════════════════════════════
+   PREMIUM GLASSMORPHISM DESIGN
+════════════════════════════════════════════════════════ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.04);
+  --glass-blur: blur(24px) saturate(180%);
+  
+  --crimson: #C4183C;
+  --crimson-glow: rgba(196, 24, 60, 0.15);
+  --crimson-l: #E2264F;
+  --rose: #F9A8B8;
+  --sage: #7BB597;
+  --sage-glow: rgba(123, 181, 151, 0.15);
+  --gold: #D4A055;
+  --navy: #0A1628;
+  --text: #0A1628;
+  --text-muted: #6B7280;
+  --bg: #F0F2F6;
+  --bg-glass: rgba(255,255,255,0.3);
+  
+  /* Theme Colors */
+  --primary: #C4183C;
+  --primary-light: #E2264F;
+  --secondary: #7BB597;
+  --accent: #D4A055;
+}
+
+/* ── THEME PRESETS ── */
+[data-theme="light"] {
+  --bg: #F0F2F6;
+  --text: #0A1628;
+  --text-muted: #6B7280;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --bg-glass: rgba(255,255,255,0.3);
+}
+
+[data-theme="dark"] {
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  --bg: #080C18;
+  --text: #F2F5FA;
+  --text-muted: #94A3B8;
+  --bg-glass: rgba(15, 23, 42, 0.3);
+  --crimson-glow: rgba(196, 24, 60, 0.08);
+}
+
+[data-theme="ocean"] {
+  --bg: #E8F4F8;
+  --text: #0A2E3E;
+  --text-muted: #4A7A8A;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(56, 189, 248, 0.2);
+  --bg-glass: rgba(56, 189, 248, 0.1);
+  --crimson: #0EA5E9;
+  --crimson-glow: rgba(14, 165, 233, 0.15);
+  --crimson-l: #38BDF8;
+  --rose: #7DD3FC;
+}
+
+[data-theme="forest"] {
+  --bg: #ECF5EC;
+  --text: #1A3A1A;
+  --text-muted: #4A7A4A;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(74, 222, 128, 0.2);
+  --bg-glass: rgba(74, 222, 128, 0.1);
+  --crimson: #22C55E;
+  --crimson-glow: rgba(34, 197, 94, 0.15);
+  --crimson-l: #4ADE80;
+  --rose: #86EFAC;
+}
+
+[data-theme="sunset"] {
+  --bg: #FDF0EC;
+  --text: #3A1A0A;
+  --text-muted: #7A4A3A;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(251, 146, 60, 0.2);
+  --bg-glass: rgba(251, 146, 60, 0.1);
+  --crimson: #F97316;
+  --crimson-glow: rgba(251, 146, 60, 0.15);
+  --crimson-l: #FB923C;
+  --rose: #FDBA74;
+}
+
+[data-theme="purple"] {
+  --bg: #F3F0F8;
+  --text: #2A1A3A;
+  --text-muted: #6A4A7A;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(139, 92, 246, 0.2);
+  --bg-glass: rgba(139, 92, 246, 0.1);
+  --crimson: #8B5CF6;
+  --crimson-glow: rgba(139, 92, 246, 0.15);
+  --crimson-l: #A78BFA;
+  --rose: #C4B5FD;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .4s ease, color .4s ease;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 64px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 0;
+  z-index: 100;
+  transition: all .4s ease;
+}
+.sidebar:hover {
+  background: var(--glass-bg);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+}
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--crimson), var(--crimson-l));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: white;
+  box-shadow: 0 4px 20px var(--crimson-glow);
+  cursor: pointer;
+  transition: all .3s ease;
+  margin-bottom: 1.8rem;
+  flex-shrink: 0;
+}
+.sidebar-logo:hover { transform: scale(1.08) rotate(-5deg); }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin: 0 8px;
+  border-radius: 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1rem;
+  position: relative;
+  transition: all .3s ease;
+  text-decoration: none;
+}
+.nav-item i {
+  transition: all .3s ease;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: var(--bg-glass);
+}
+.nav-item.active {
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.nav-item.active i {
+  transform: scale(1.1);
+}
+.nav-item .tip {
+  position: absolute;
+  left: calc(100% + 14px);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s ease;
+  color: var(--text);
+  box-shadow: var(--glass-shadow);
+}
+.nav-item:hover .tip { opacity: 1; }
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.theme-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.theme-toggle-btn:hover {
+  color: var(--text);
+  background: var(--glass-bg);
+}
+.logout-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.logout-btn:hover {
+  color: var(--crimson);
+  background: var(--crimson-glow);
+  border-color: var(--crimson);
+}
+.avatar-sb {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  border: 2px solid var(--glass-border);
+  transition: all .3s ease;
+}
+.avatar-sb:hover { transform: scale(1.06); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 96px;
+  max-width: 1320px;
+  padding: 20px 24px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.8rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+.topbar-left h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.topbar-left h2 span { color: var(--crimson); }
+.topbar-left .sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.glass-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  transition: all .3s ease;
+  position: relative;
+}
+.glass-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0.8rem 0.2rem 0.3rem;
+  border-radius: 60px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.user-chip:hover { border-color: var(--crimson); }
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  color: white;
+  font-weight: 700;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-name { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+.user-role { font-size: 0.55rem; color: var(--text-muted); }
+
+/* ── SETTINGS CARDS ── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 1.4rem 1.6rem;
+  transition: all .4s ease;
+  margin-bottom: 1.5rem;
+}
+.glass-card:hover {
+  box-shadow: 0 12px 48px rgba(0,0,0,0.06);
+}
+.glass-card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.glass-card .head h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.glass-card .head h3 i { color: var(--crimson); font-size: 0.9rem; }
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.setting-item:last-child { border-bottom: none; }
+.setting-item .left { flex: 1; }
+.setting-item .left .title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.setting-item .left .desc {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+.setting-item .right { margin-left: 1rem; }
+
+/* ── TOGGLE SWITCH ── */
+.toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 60px;
+  background: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: all .3s ease;
+  flex-shrink: 0;
+}
+.toggle.active {
+  background: var(--crimson);
+}
+.toggle .knob {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: all .3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.toggle.active .knob {
+  left: 23px;
+}
+
+/* ── SELECT DROPDOWN ── */
+.settings-select {
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--glass-border);
+  background: var(--bg-glass);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  outline: none;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.settings-select:focus {
+  border-color: var(--crimson);
+}
+
+/* ── THEME OPTIONS ── */
+.theme-options {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.theme-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 2px solid var(--glass-border);
+  cursor: pointer;
+  transition: all .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.theme-option:hover {
+  transform: scale(1.05);
+}
+.theme-option.active {
+  border-color: var(--crimson);
+  box-shadow: 0 0 0 3px var(--crimson-glow);
+}
+.theme-option.light { background: #F0F2F6; color: #0A1628; }
+.theme-option.dark { background: #080C18; color: #F2F5FA; }
+.theme-option.ocean { background: #E8F4F8; color: #0A2E3E; }
+.theme-option.forest { background: #ECF5EC; color: #1A3A1A; }
+.theme-option.sunset { background: #FDF0EC; color: #3A1A0A; }
+.theme-option.purple { background: #F3F0F8; color: #2A1A3A; }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--crimson), var(--crimson-l));
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 60px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.btn-primary:hover { transform: scale(0.97); }
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--glass-border);
+  padding: 0.5rem 1.5rem;
+  border-radius: 60px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.btn-outline:hover { border-color: var(--crimson); color: var(--crimson); }
+.btn-danger {
+  background: linear-gradient(135deg, #DC2626, #B91C1C);
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 60px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.btn-danger:hover { transform: scale(0.97); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: white;
+  padding: 0.7rem 1.8rem;
+  border-radius: 60px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: 0 8px 28px rgba(10,22,40,.2);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0;
+  transition: .3s;
+  pointer-events: none;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar { left: 8px; top: 8px; bottom: 8px; width: 52px; padding: 0.8rem 0; }
+  .sidebar .tip { display: none; }
+  .main { margin-left: 68px; padding: 12px; }
+  .topbar { padding: 0.6rem 1rem; }
+  .user-name { display: none; }
+  .theme-options { gap: 0.4rem; }
+  .theme-option { width: 32px; height: 32px; font-size: 0.6rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo" onclick="window.location.href='/dashboard.html'">
+    <i class="fas fa-heart-pulse"></i>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="/dashboard.html"><i class="fas fa-grid-2"></i><span class="tip">Dashboard</span></a>
+    <a class="nav-item" href="/donor.html"><i class="fas fa-droplet"></i><span class="tip">Donate</span></a>
+    <a class="nav-item" href="/health.html"><i class="fas fa-heartbeat"></i><span class="tip">Health</span></a>
+    <a class="nav-item" href="/route-navigation.html"><i class="fas fa-route"></i><span class="tip">Navigate</span></a>
+    <a class="nav-item" href="/notifications.html"><i class="fas fa-bell"></i><span class="tip">Alerts</span></a>
+    <a class="nav-item" href="/profile.html"><i class="fas fa-user"></i><span class="tip">Profile</span></a>
+    <a class="nav-item active" href="/settings.html"><i class="fas fa-sliders"></i><span class="tip">Settings</span></a>
+    <a class="nav-item" href="/guide.html"><i class="fas fa-book"></i><span class="tip">Guidelines</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+      <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    <button class="logout-btn" onclick="logoutUser()" title="Logout">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+    <div class="avatar-sb" id="sbAvatar">U</div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <h2>Lumina<span>Life</span></h2>
+        <div class="sub">Settings</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="glass-btn" onclick="window.location.href='/notifications.html'">
+        <i class="fas fa-bell"></i>
+      </div>
+      <div class="user-chip" onclick="window.location.href='/profile.html'">
+        <div class="avatar" id="avatarEl">U</div>
+        <div>
+          <div class="user-name" id="userNameEl">Loading...</div>
+          <div class="user-role" id="userRoleEl">🩸 Donor</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SETTINGS CONTENT -->
+  <div id="settingsContent">
+    <!-- Loading State -->
+    <div class="glass-card" id="loadingState">
+      <div style="text-align:center;padding:2rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--crimson);"></i>
+        <p style="margin-top:0.5rem;color:var(--text-muted);">Loading your settings…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYNC STATUS -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;font-size:0.6rem;color:var(--text-muted);padding-top:0.8rem;border-top:1px solid var(--glass-border);margin-top:1.5rem;">
+    <span class="sync-dot" style="width:7px;height:7px;border-radius:60px;background:var(--sage);display:inline-block;animation:pulse-dot 2s infinite;"></span>
+    <span id="syncStatus">Connected to LuminaLife Network</span>
+    <span>·</span>
+    <span id="syncTime">just now</span>
+  </div>
+
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <i class="fas fa-circle-check" style="color:var(--sage);"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  LUMINALIFE SETTINGS PAGE
+// ═══════════════════════════════════════════════════════════
+
+const USER_ID = localStorage.getItem('lifelineUserId') || sessionStorage.getItem('lifelineUserId') || 'D001';
+const API_BASE = 'http://127.0.0.1:5000/api';
+const $ = id => document.getElementById(id);
+
+// ── STATE ──────────────────────────────────────────────────
+let settings = {};
+
+// ── API ──────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  try {
+    const url = `${API_BASE}${path}`;
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': USER_ID },
+      ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.warn('API Error:', e.message);
+    return null;
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg) {
+  const el = $('toast');
+  $('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── THEME ──────────────────────────────────────────────────
+function toggleTheme() {
+  const themes = ['light', 'dark', 'ocean', 'forest', 'sunset', 'purple'];
+  const current = document.documentElement.getAttribute('data-theme');
+  let nextIndex = themes.indexOf(current) + 1;
+  if (nextIndex >= themes.length) nextIndex = 0;
+  const next = themes[nextIndex];
+  
+  applyTheme(next);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('lumina_theme', theme);
+  
+  // Update icon
+  const icon = $('themeIcon');
+  if (theme === 'light') icon.className = 'fas fa-sun';
+  else if (theme === 'dark') icon.className = 'fas fa-moon';
+  else icon.className = 'fas fa-palette';
+  
+  // Update theme options
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === theme);
+  });
+  
+  // Save to backend
+  apiFetch('/settings/theme', {
+    method: 'POST',
+    body: { user_id: USER_ID, theme: theme }
+  });
+  
+  toast(`🎨 Theme changed to ${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem('lumina_theme');
+  if (saved) {
+    applyTheme(saved);
+  }
+}
+
+// ── LOGOUT FUNCTION ─────────────────────────────────────────
+function logoutUser() {
+  if (confirm('Are you sure you want to logout?')) {
+    localStorage.clear();
+    sessionStorage.clear();
+    toast('👋 Logging out...');
+    setTimeout(() => {
+      window.location.href = '/l.html';
+    }, 1000);
+  }
+}
+
+// ── RENDER SETTINGS ──────────────────────────────────────
+function renderSettings(data) {
+  const container = $('settingsContent');
+  settings = data;
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+
+  const html = `
+    <!-- Theme Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-palette"></i> Theme & Appearance</h3>
+        <span class="badge badge-purple">Customize</span>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Select Theme</div>
+          <div class="desc">Choose your preferred color scheme</div>
+        </div>
+        <div class="right">
+          <div class="theme-options">
+            <div class="theme-option light ${currentTheme === 'light' ? 'active' : ''}" data-theme="light" onclick="applyTheme('light')" title="Light">☀️</div>
+            <div class="theme-option dark ${currentTheme === 'dark' ? 'active' : ''}" data-theme="dark" onclick="applyTheme('dark')" title="Dark">🌙</div>
+            <div class="theme-option ocean ${currentTheme === 'ocean' ? 'active' : ''}" data-theme="ocean" onclick="applyTheme('ocean')" title="Ocean">🌊</div>
+            <div class="theme-option forest ${currentTheme === 'forest' ? 'active' : ''}" data-theme="forest" onclick="applyTheme('forest')" title="Forest">🌿</div>
+            <div class="theme-option sunset ${currentTheme === 'sunset' ? 'active' : ''}" data-theme="sunset" onclick="applyTheme('sunset')" title="Sunset">🌅</div>
+            <div class="theme-option purple ${currentTheme === 'purple' ? 'active' : ''}" data-theme="purple" onclick="applyTheme('purple')" title="Purple">💜</div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Auto Dark Mode</div>
+          <div class="desc">Automatically switch theme based on system preference</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.auto_dark === true ? 'active' : ''}" onclick="toggleAutoDark()">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Language Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-globe"></i> Language</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">App Language</div>
+          <div class="desc">Choose your preferred language</div>
+        </div>
+        <div class="right">
+          <select class="settings-select" onchange="updateSetting('language', this.value)">
+            <option value="en" ${settings.language === 'en' ? 'selected' : ''}>🇬🇧 English</option>
+            <option value="hi" ${settings.language === 'hi' ? 'selected' : ''}>🇮🇳 Hindi</option>
+            <option value="kn" ${settings.language === 'kn' ? 'selected' : ''}>🇮🇳 Kannada</option>
+            <option value="ta" ${settings.language === 'ta' ? 'selected' : ''}>🇮🇳 Tamil</option>
+            <option value="te" ${settings.language === 'te' ? 'selected' : ''}>🇮🇳 Telugu</option>
+            <option value="ml" ${settings.language === 'ml' ? 'selected' : ''}>🇮🇳 Malayalam</option>
+            <option value="es" ${settings.language === 'es' ? 'selected' : ''}>🇪🇸 Spanish</option>
+            <option value="fr" ${settings.language === 'fr' ? 'selected' : ''}>🇫🇷 French</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-bell"></i> Notifications</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Emergency Alerts</div>
+          <div class="desc">Receive urgent blood donation requests</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.notifications?.emergency_alerts !== false ? 'active' : ''}" onclick="toggleNotification('emergency_alerts')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Donation Reminders</div>
+          <div class="desc">Get reminders about upcoming eligibility</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.notifications?.donation_reminders !== false ? 'active' : ''}" onclick="toggleNotification('donation_reminders')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Health Updates</div>
+          <div class="desc">Weekly health tips and insights</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.notifications?.health_updates !== false ? 'active' : ''}" onclick="toggleNotification('health_updates')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">App Updates</div>
+          <div class="desc">Get notified about new features</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.notifications?.app_updates === true ? 'active' : ''}" onclick="toggleNotification('app_updates')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="left">
+          <div class="title">Sound</div>
+          <div class="desc">Play sound for notifications</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.notifications?.sound !== false ? 'active' : ''}" onclick="toggleNotification('sound')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-lock"></i> Privacy & Security</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Show Blood Group</div>
+          <div class="desc">Display your blood group on your profile</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.privacy?.show_blood_group !== false ? 'active' : ''}" onclick="togglePrivacy('show_blood_group')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Show Location</div>
+          <div class="desc">Share your location for nearby hospitals</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.privacy?.show_location !== false ? 'active' : ''}" onclick="togglePrivacy('show_location')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Show Donation History</div>
+          <div class="desc">Display your donation history publicly</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.privacy?.show_donation_history !== false ? 'active' : ''}" onclick="togglePrivacy('show_donation_history')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="left">
+          <div class="title">Two-Factor Authentication</div>
+          <div class="desc">Add an extra layer of security</div>
+        </div>
+        <div class="right">
+          <button class="btn-outline" onclick="toast('🔐 2FA setup coming soon')">Setup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Communication Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-envelope"></i> Communication</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Email Notifications</div>
+          <div class="desc">Receive updates via email</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.communication?.email !== false ? 'active' : ''}" onclick="toggleCommunication('email')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">SMS Notifications</div>
+          <div class="desc">Receive updates via SMS</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.communication?.sms === true ? 'active' : ''}" onclick="toggleCommunication('sms')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="left">
+          <div class="title">Push Notifications</div>
+          <div class="desc">Receive push notifications on your device</div>
+        </div>
+        <div class="right">
+          <div class="toggle ${settings.communication?.push !== false ? 'active' : ''}" onclick="toggleCommunication('push')">
+            <div class="knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-user-cog"></i> Account</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Change Password</div>
+          <div class="desc">Update your account password</div>
+        </div>
+        <div class="right">
+          <button class="btn-outline" onclick="toast('🔐 Password change coming soon')">Change</button>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Email Address</div>
+          <div class="desc">Update your email address</div>
+        </div>
+        <div class="right">
+          <button class="btn-outline" onclick="toast('✉️ Email update coming soon')">Update</button>
+        </div>
+      </div>
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="left">
+          <div class="title" style="color: var(--crimson);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </div>
+          <div class="desc">Sign out of your LuminaLife account</div>
+        </div>
+        <div class="right">
+          <button class="btn-primary" style="background: var(--crimson);" onclick="logoutUser()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title" style="color: #DC2626;">Delete Account</div>
+          <div class="desc" style="color: #DC2626;">Permanently remove your account and all data</div>
+        </div>
+        <div class="right">
+          <button class="btn-danger" onclick="deleteAccount()">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-database"></i> Data Management</h3>
+      </div>
+      <div class="setting-item">
+        <div class="left">
+          <div class="title">Export Data</div>
+          <div class="desc">Download all your data as JSON</div>
+        </div>
+        <div class="right">
+          <button class="btn-outline" onclick="exportData()">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+      </div>
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="left">
+          <div class="title">Clear Local Data</div>
+          <div class="desc">Clear all locally stored data</div>
+        </div>
+        <div class="right">
+          <button class="btn-outline" style="border-color: #DC2626; color: #DC2626;" onclick="clearLocalData()">
+            <i class="fas fa-eraser"></i> Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// ── TOGGLE FUNCTIONS ──────────────────────────────────────
+function toggleAutoDark() {
+  const toggle = event.currentTarget;
+  toggle.classList.toggle('active');
+  settings.auto_dark = toggle.classList.contains('active');
+  saveSettings();
+  
+  if (settings.auto_dark) {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
+  }
+}
+
+function toggleNotification(key) {
+  const toggle = event.currentTarget;
+  toggle.classList.toggle('active');
+  const value = toggle.classList.contains('active');
+  
+  if (!settings.notifications) settings.notifications = {};
+  settings.notifications[key] = value;
+  saveSettings();
+}
+
+function togglePrivacy(key) {
+  const toggle = event.currentTarget;
+  toggle.classList.toggle('active');
+  const value = toggle.classList.contains('active');
+  
+  if (!settings.privacy) settings.privacy = {};
+  settings.privacy[key] = value;
+  saveSettings();
+}
+
+function toggleCommunication(key) {
+  const toggle = event.currentTarget;
+  toggle.classList.toggle('active');
+  const value = toggle.classList.contains('active');
+  
+  if (!settings.communication) settings.communication = {};
+  settings.communication[key] = value;
+  saveSettings();
+}
+
+function updateSetting(key, value) {
+  settings[key] = value;
+  saveSettings();
+}
+
+// ── SAVE SETTINGS ─────────────────────────────────────────
+async function saveSettings() {
+  try {
+    const response = await apiFetch('/settings/update', {
+      method: 'POST',
+      body: { 
+        user_id: USER_ID,
+        ...settings
+      }
+    });
+    
+    if (response?.success) {
+      toast('✅ Settings saved to MongoDB Atlas');
+      document.getElementById('syncTime').textContent = new Date().toLocaleTimeString();
+    } else {
+      toast('⚠️ Settings saved locally only');
+    }
+  } catch (e) {
+    toast('⚠️ Error saving settings');
+  }
+}
+
+// ── DELETE ACCOUNT ────────────────────────────────────────
+function deleteAccount() {
+  if (confirm('⚠️ Are you sure you want to delete your account? This action cannot be undone!')) {
+    if (confirm('❗ This will permanently remove all your data. Are you absolutely sure?')) {
+      toast('🗑️ Account deletion requested. Redirecting…');
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.href = '/l.html';
+      }, 2000);
+    }
+  }
+}
+
+// ── EXPORT DATA ───────────────────────────────────────────
+function exportData() {
+  const data = {
+    settings: settings,
+    user: {
+      id: USER_ID,
+      name: localStorage.getItem('userName') || 'Donor'
+    },
+    exportDate: new Date().toISOString()
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `luminalife-data-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 Data exported successfully!');
+}
+
+// ── CLEAR LOCAL DATA ──────────────────────────────────────
+function clearLocalData() {
+  if (confirm('Clear all locally stored data? You can still sync from the cloud.')) {
+    localStorage.clear();
+    toast('🗑️ Local data cleared');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+}
+
+// ── LOAD SETTINGS ─────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const response = await apiFetch(`/settings/${USER_ID}`);
+    
+    if (response?.settings) {
+      settings = response.settings;
+      renderSettings(settings);
+      toast('✅ Settings loaded from MongoDB Atlas');
+    } else {
+      // Use default settings
+      settings = {
+        theme: 'light',
+        auto_dark: false,
+        language: 'en',
+        notifications: {
+          emergency_alerts: true,
+          donation_reminders: true,
+          health_updates: true,
+          app_updates: false,
+          sound: true
+        },
+        privacy: {
+          show_blood_group: true,
+          show_location: true,
+          show_donation_history: true
+        },
+        communication: {
+          email: true,
+          sms: false,
+          push: true
+        }
+      };
+      renderSettings(settings);
+      toast('📡 Using default settings');
+    }
+    
+    // Update user info
+    const name = localStorage.getItem('userName') || 'Donor';
+    document.getElementById('userNameEl').textContent = name.split(' ')[0];
+    document.getElementById('userRoleEl').textContent = '🩸 O+';
+    document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('sbAvatar').textContent = name.charAt(0).toUpperCase();
+    
+    document.getElementById('syncTime').textContent = new Date().toLocaleTimeString();
+    
+  } catch (e) {
+    toast('⚠️ Using default settings');
+    settings = {
+      theme: 'light',
+      auto_dark: false,
+      language: 'en',
+      notifications: {
+        emergency_alerts: true,
+        donation_reminders: true,
+        health_updates: true,
+        app_updates: false,
+        sound: true
+      },
+      privacy: {
+        show_blood_group: true,
+        show_location: true,
+        show_donation_history: true
+      },
+      communication: {
+        email: true,
+        sms: false,
+        push: true
+      }
+    };
+    renderSettings(settings);
+  }
+}
+
+// ── AUTO DARK MODE ────────────────────────────────────────
+function setupAutoDark() {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (settings.auto_dark) {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────
+loadTheme();
+setupAutoDark();
+loadSettings();
+
+// Make functions globally accessible
+window.toast = toast;
+window.toggleTheme = toggleTheme;
+window.applyTheme = applyTheme;
+window.toggleAutoDark = toggleAutoDark;
+window.toggleNotification = toggleNotification;
+window.togglePrivacy = togglePrivacy;
+window.toggleCommunication = toggleCommunication;
+window.updateSetting = updateSetting;
+window.deleteAccount = deleteAccount;
+window.saveSettings = saveSettings;
+window.logoutUser = logoutUser;
+window.exportData = exportData;
+window.clearLocalData = clearLocalData;
+</script>
+</body>
+</html>

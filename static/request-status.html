@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Life - Request Status</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg: linear-gradient(135deg,#fff8fa,#fff1f2,#fdf2f8);
+--card: rgba(255,255,255,.88);
+--text:#1f2937;
+--muted:#6b7280;
+}
+body.dark{
+--bg: linear-gradient(135deg,#0b1220,#111827,#1f2937);
+--card: rgba(17,24,39,.85);
+--text:#ffffff;
+--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding:24px;transition:.3s;}
+.topbar{max-width:1400px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.logo{font-size:1.7rem;font-weight:800;}
+.logo span{color:#ec4899;}
+.top-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.action-btn{padding:12px 18px;border:none;border-radius:12px;cursor:pointer;font-weight:600;transition:all .2s;}
+.dashboard-btn{background:linear-gradient(135deg,#ef4444,#ec4899);color:white;}
+.dashboard-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(239,68,68,.3);}
+.theme-btn{background:rgba(255,255,255,.1);color:var(--text);}
+.container{max-width:1400px;margin:24px auto;display:grid;grid-template-columns:320px 1fr;gap:22px;}
+.card{background:var(--card);backdrop-filter:blur(20px);border-radius:28px;padding:24px;}
+.profile{text-align:center;}
+.avatar{width:110px;height:110px;border-radius:50%;margin:auto;background:linear-gradient(135deg,#ef4444,#ec4899);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;}
+.profile h2{margin-top:15px;}
+.profile p{color:var(--muted);}
+.info{margin-top:20px;text-align:left;}
+.info div{margin:12px 0;}
+.page-title{margin-bottom:8px;}
+.page-subtitle{color:var(--muted);margin-bottom:25px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.stat-card{padding:20px;border-radius:18px;background:rgba(236,72,153,.08);}
+.stat-card h3{font-size:2rem;margin-bottom:6px;}
+.stat-card p{color:var(--muted);}
+.table-container{overflow:auto;border-radius:20px;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:16px;background:rgba(236,72,153,.12);}
+td{padding:16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.view-btn{padding:10px 14px;border:none;border-radius:10px;cursor:pointer;background:linear-gradient(135deg,#ef4444,#ec4899);color:white;font-weight:600;transition:.2s;margin:2px;}
+.view-btn:hover{transform:scale(.95);}
+.view-btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.view-btn.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);}
+.view-btn.red{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.badge{padding:8px 12px;border-radius:999px;font-size:.85rem;font-weight:600;display:inline-block;}
+.badge-pending{background:rgba(251,191,36,.15);color:#f59e0b;}
+.badge-active{background:rgba(59,130,246,.15);color:#3b82f6;}
+.badge-matched{background:rgba(16,185,129,.15);color:#10b981;}
+.badge-completed{background:rgba(34,197,94,.15);color:#22c55e;}
+.badge-cancelled{background:rgba(239,68,68,.15);color:#ef4444;}
+.badge-arrived{background:rgba(34,197,94,.15);color:#22c55e;}
+.badge-responded{background:rgba(139,92,246,.15);color:#8b5cf6;}
+.badge-enroute{background:rgba(59,130,246,.15);color:#3b82f6;}
+.empty-state{display:none;text-align:center;padding:50px;}
+.empty-state h3{margin-bottom:10px;}
+.empty-state p{color:var(--muted);margin-bottom:18px;}
+.create-btn{padding:14px 18px;border:none;border-radius:12px;cursor:pointer;font-weight:700;background:linear-gradient(135deg,#ef4444,#ec4899);color:white;}
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;}
+.dot-pending{background:#f59e0b;}
+.dot-active{background:#3b82f6;}
+.dot-matched{background:#10b981;}
+.dot-completed{background:#22c55e;}
+.dot-cancelled{background:#ef4444;}
+.dot-arrived{background:#22c55e;}
+.dot-responded{background:#8b5cf6;}
+.dot-enroute{background:#3b82f6;}
+.nav-timeline{background:rgba(0,0,0,.05);border-radius:12px;padding:12px;margin-top:10px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:0.8rem;}
+.nav-item:last-child{border-bottom:none;}
+.nav-icon{font-size:1rem;}
+.arrival-badge{display:inline-block;padding:4px 10px;border-radius:60px;font-size:0.7rem;font-weight:600;}
+.arrival-badge.arrived{background:rgba(34,197,94,.15);color:#22c55e;}
+.arrival-badge.enroute{background:rgba(59,130,246,.15);color:#3b82f6;}
+.arrival-badge.not-started{background:rgba(107,114,128,.15);color:#6b7280;}
+@media(max-width:1100px){.stats{grid-template-columns:1fr 1fr;}}
+@media(max-width:900px){.container{grid-template-columns:1fr;}.stats{grid-template-columns:1fr;}}
+</style>
+</head>
+<body class="dark">
+
+<div class="topbar">
+<div class="logo">Lumina <span>Life</span></div>
+<div class="top-actions">
+<button class="action-btn dashboard-btn" onclick="window.location.href='hospital-dashboard.html'">Dashboard</button>
+<button class="action-btn dashboard-btn" onclick="window.location.href='request.html'">Create Request</button>
+<button class="action-btn dashboard-btn" onclick="loadRequests()">🔄 Refresh</button>
+<button id="themeBtn" class="action-btn theme-btn">Theme</button>
+</div>
+</div>
+
+<div class="container">
+<div class="card profile">
+<div class="avatar" id="avatar">H</div>
+<h2 id="hospitalName">Hospital Name</h2>
+<p id="hospitalArea">Area</p>
+<div class="info">
+<div><strong>Email:</strong> <span id="hospitalEmail">Not Available</span></div>
+<div><strong>Hospital ID:</strong> <span id="hospitalId">Not Set</span></div>
+<div><strong>Status:</strong> <span style="color:#22c55e;">● Active</span></div>
+<div><strong>Role:</strong> Hospital</div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<h1 class="page-title">Request Status</h1>
+<p class="page-subtitle">Monitor emergency requests with real-time donor responses and arrivals</p>
+
+<div class="stats">
+<div class="stat-card"><h3 id="totalRequests">0</h3><p>Total Requests</p></div>
+<div class="stat-card"><h3 id="pendingRequests">0</h3><p>Pending</p></div>
+<div class="stat-card"><h3 id="respondedRequests">0</h3><p>Donors Responded</p></div>
+<div class="stat-card"><h3 id="arrivedRequests">0</h3><p>Donors Arrived</p></div>
+</div>
+
+<div id="emptyState" class="empty-state" style="display:block;">
+<h3>No Requests Found</h3>
+<p>Create your first donation request.</p>
+<button class="create-btn" onclick="window.location.href='request.html'">Create Request</button>
+</div>
+
+<div id="tableWrapper" class="table-container" style="display:none;">
+<table>
+<thead>
+<tr>
+<th>Emergency ID</th>
+<th>Patient</th>
+<th>Blood Type</th>
+<th>Priority</th>
+<th>Donor Status</th>
+<th>Arrival Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="requestTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Request Details Modal -->
+<div id="requestModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);justify-content:center;align-items:center;z-index:9999;">
+<div style="background:white;padding:30px;border-radius:24px;width:600px;max-width:92%;max-height:80vh;overflow-y:auto;color:#1f2937;">
+<h2 style="color:#1f2937;">Request Details</h2>
+<div id="modalContent" style="margin-top:20px;line-height:2;"></div>
+<button class="create-btn" style="margin-top:20px;" onclick="document.getElementById('requestModal').style.display='none'">Close</button>
+</div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURATION
+// ============================================================
+const API_BASE = 'http://127.0.0.1:5000/api';
+const HOSPITAL_ID = localStorage.getItem('hospital_id') || 'HP001';
+
+// ============================================================
+//  LOAD PROFILE
+// ============================================================
+const hospital = JSON.parse(localStorage.getItem("hospitalProfile")) || {};
+
+document.getElementById("hospitalName").innerText = hospital.name || "Hospital";
+document.getElementById("hospitalEmail").innerText = hospital.email || "Not Available";
+document.getElementById("hospitalArea").innerText = hospital.area || "Area";
+document.getElementById("hospitalId").innerText = HOSPITAL_ID;
+
+if(hospital.name) {
+    document.getElementById("avatar").innerText = hospital.name.charAt(0).toUpperCase();
+}
+
+// ============================================================
+//  THEME
+// ============================================================
+if (localStorage.getItem("theme") === "light") {
+    document.body.classList.remove("dark");
+}
+
+document.getElementById("themeBtn").onclick = () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+};
+
+// ============================================================
+//  LOAD REQUESTS - COMBINES EMERGENCY_REQUESTS + NAVIGATION_HISTORY
+// ============================================================
+async function loadRequests() {
+    const tableBody = document.getElementById("requestTableBody");
+    const emptyState = document.getElementById("emptyState");
+    const tableWrapper = document.getElementById("tableWrapper");
+
+    try {
+        console.log('📤 Fetching requests for hospital:', HOSPITAL_ID);
+        
+        // 1. Fetch emergency requests from MongoDB
+        const response = await fetch(`${API_BASE}/hospital/requests?hospital_id=${HOSPITAL_ID}`, {
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-User-Id': HOSPITAL_ID 
+            }
+        });
+        
+        console.log('📡 Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📋 Emergency requests from MongoDB:', data);
+        
+        // 2. Get all emergency IDs from the requests
+        const requests = (data.success && data.requests) ? data.requests : [];
+        
+        if (requests.length > 0) {
+            const emergencyIds = requests.map(r => r.emergency_id).filter(id => id);
+            
+            // 3. Fetch navigation history for all these emergencies
+            let navigationData = {};
+            
+            if (emergencyIds.length > 0) {
+                try {
+                    const navResponse = await fetch(`${API_BASE}/navigation/history?emergency_ids=${emergencyIds.join(',')}`, {
+                        headers: { 'X-User-Id': HOSPITAL_ID }
+                    });
+                    
+                    if (navResponse.ok) {
+                        const navData = await navResponse.json();
+                        if (navData.success && navData.history) {
+                            // Group navigation history by emergency_id
+                            navigationData = navData.history.reduce((acc, item) => {
+                                if (!acc[item.emergency_id]) acc[item.emergency_id] = [];
+                                acc[item.emergency_id].push(item);
+                                return acc;
+                            }, {});
+                            console.log('🗺️ Navigation history grouped:', navigationData);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not fetch navigation history:', e);
+                }
+            }
+            
+            // 4. Process and display the data
+            processRequests(requests, navigationData, emptyState, tableWrapper, tableBody);
+            
+        } else {
+            emptyState.style.display = "block";
+            tableWrapper.style.display = "none";
+            document.getElementById("totalRequests").innerText = "0";
+            document.getElementById("pendingRequests").innerText = "0";
+            document.getElementById("respondedRequests").innerText = "0";
+            document.getElementById("arrivedRequests").innerText = "0";
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading requests:', error);
+        emptyState.style.display = "block";
+        tableWrapper.style.display = "none";
+        document.getElementById("totalRequests").innerText = "0";
+        document.getElementById("pendingRequests").innerText = "0";
+        document.getElementById("respondedRequests").innerText = "0";
+        document.getElementById("arrivedRequests").innerText = "0";
+    }
+}
+
+function processRequests(requests, navigationData, emptyState, tableWrapper, tableBody) {
+    if (requests.length > 0) {
+        emptyState.style.display = "none";
+        tableWrapper.style.display = "block";
+        
+        // Update stats
+        const total = requests.length;
+        const pending = requests.filter(r => r.status === 'pending' || r.status === 'active').length;
+        
+        // Count responded and arrived from combined data
+        let respondedCount = 0;
+        let arrivedCount = 0;
+        
+        requests.forEach(req => {
+            const navHistory = navigationData[req.emergency_id] || [];
+            const hasResponded = req.responders > 0 || navHistory.some(h => h.action === 'responded');
+            const hasArrived = navHistory.some(h => h.action === 'arrived' || h.action === 'reached' || h.status === 'arrived');
+            
+            if (hasResponded) respondedCount++;
+            if (hasArrived) arrivedCount++;
+        });
+        
+        document.getElementById("totalRequests").innerText = total;
+        document.getElementById("pendingRequests").innerText = pending;
+        document.getElementById("respondedRequests").innerText = respondedCount;
+        document.getElementById("arrivedRequests").innerText = arrivedCount;
+        
+        tableBody.innerHTML = "";
+        
+        requests.forEach((request) => {
+            const row = document.createElement("tr");
+            
+            // Get navigation history for this request
+            const navHistory = navigationData[request.emergency_id] || [];
+            
+            // Determine donor response status
+const hasResponded =
+    (request.responding_donors && request.responding_donors.length > 0) ||
+    request.responders > 0 ||
+    navHistory.some(h => h.action === 'responded');            const hasArrived = navHistory.some(h => h.action === 'arrived' || h.action === 'reached' || h.status === 'arrived');
+            const isEnRoute = navHistory.some(h => h.action === 'started' || h.status === 'in_progress');
+            
+            // Get donor names from navigation history
+            const donorNames = navHistory.map(h => h.donor_name || h.user_id).filter(Boolean);
+            const uniqueDonors = [...new Set(donorNames)];
+            
+            // Donor Status
+            let donorStatusText = 'No response';
+            let donorStatusClass = 'pending';
+            let donorDotClass = 'pending';
+            
+            if (hasArrived) {
+                donorStatusText = `✅ ${uniqueDonors.length} donor${uniqueDonors.length > 1 ? 's' : ''} arrived`;
+                donorStatusClass = 'arrived';
+                donorDotClass = 'arrived';
+            } else if (isEnRoute) {
+                donorStatusText = `🚗 ${uniqueDonors.length} donor${uniqueDonors.length > 1 ? 's' : ''} en route`;
+                donorStatusClass = 'enroute';
+                donorDotClass = 'enroute';
+            } else if (hasResponded) {
+    donorStatusText = ' Responded';
+    donorStatusClass = 'responded';
+    donorDotClass = 'responded';
+}
+            
+            // Arrival Status from navigation_history
+            let arrivalStatusText = 'Not started';
+            let arrivalClass = 'not-started';
+            
+            if (hasArrived) {
+                const arrivalItem = navHistory.find(h => h.action === 'arrived' || h.action === 'reached');
+                const arrivalTime = arrivalItem?.timestamp || arrivalItem?.arrived_at;
+                arrivalStatusText = `✅ Arrived${arrivalTime ? ' at ' + new Date(arrivalTime).toLocaleTimeString() : ''}`;
+                arrivalClass = 'arrived';
+            } else if (isEnRoute) {
+                arrivalStatusText = '🚗 En route';
+                arrivalClass = 'enroute';
+            }
+
+            // Request status
+            let statusText = request.status || 'pending';
+            let statusClass = 'pending';
+            
+            if (hasArrived) {
+                statusText = 'arrived';
+                statusClass = 'arrived';
+            } else if (isEnRoute && (statusText === 'active' || statusText === 'pending')) {
+                statusText = 'enroute';
+                statusClass = 'enroute';
+            } else if (hasResponded && (statusText === 'active' || statusText === 'pending')) {
+                statusText = 'responded';
+                statusClass = 'responded';
+            } else if (statusText === 'active' || statusText === 'pending') {
+                statusClass = 'pending';
+            } else if (statusText === 'matched' || statusText === 'fulfilled') {
+                statusClass = 'matched';
+            } else if (statusText === 'completed') {
+                statusClass = 'completed';
+            } else if (statusText === 'cancelled') {
+                statusClass = 'cancelled';
+            }
+
+            row.innerHTML = `
+                <td><strong>${request.emergency_id || request._id || 'N/A'}</strong></td>
+                <td>${request.patient_name || request.patient_id || 'Unknown'}</td>
+                <td>
+                    <span style="font-weight:700;color:#ec4899;">
+                        ${request.blood_type_needed || request.blood_group || 'N/A'}
+                    </span>
+                </td>
+                <td>
+                    <span style="color:${request.priority === 'critical' ? '#ef4444' : request.priority === 'high' ? '#f97316' : '#6b7280'};">
+                        ${request.priority || 'Normal'}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge badge-${donorStatusClass}">
+                        <span class="status-dot dot-${donorDotClass}"></span>
+                        ${donorStatusText}
+                    </span>
+                    ${uniqueDonors.length > 0 ? `
+                        <div style="font-size:0.7rem;color:var(--muted);margin-top:4px;">
+                            ${uniqueDonors.join(', ')}
+                        </div>
+                    ` : ''}
+                </td>
+                <td>
+                    <span class="arrival-badge ${arrivalClass}">
+                        ${arrivalStatusText}
+                    </span>
+                </td>
+                <td>
+                    <button class="view-btn" onclick='showRequestDetails(${JSON.stringify(request).replace(/'/g, "\\'")}, ${JSON.stringify(navHistory).replace(/'/g, "\\'")})'>
+                        📋 View
+                    </button>
+                    ${(statusText === 'active' || statusText === 'pending') && !hasArrived ? `
+                        <button class="view-btn red" onclick="cancelRequest('${request.emergency_id || request._id}')">
+                            Cancel
+                        </button>
+                    ` : ''}
+                    
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        emptyState.style.display = "block";
+        tableWrapper.style.display = "none";
+        document.getElementById("totalRequests").innerText = "0";
+        document.getElementById("pendingRequests").innerText = "0";
+        document.getElementById("respondedRequests").innerText = "0";
+        document.getElementById("arrivedRequests").innerText = "0";
+    }
+}
+
+// ============================================================
+//  SHOW REQUEST DETAILS WITH NAVIGATION HISTORY
+// ============================================================
+function showRequestDetails(request, navHistory = []) {
+    const modalContent = document.getElementById("modalContent");
+    
+    const responders = request.responding_donors || [];
+    let respondersHtml = 'No responders yet';
+    if (responders.length > 0) {
+        respondersHtml = responders.map(d => `
+            <div style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,.05);">
+                🩸 ${d.donor_name || 'Anonymous'} · ${d.blood_type || 'Unknown'} 
+                <span style="font-size:0.75rem;color:var(--muted);">
+                    (${d.responded_at ? new Date(d.responded_at).toLocaleString() : 'Just now'})
+                </span>
+            </div>
+        `).join('');
+    }
+    
+    // Build navigation timeline
+    let timelineHtml = '';
+    if (navHistory && navHistory.length > 0) {
+        timelineHtml = `
+            <div style="margin-top:12px;">
+                <strong>📍 Donor Journey Timeline:</strong>
+                <div class="nav-timeline">
+                    ${navHistory.map(item => `
+                        <div class="nav-item">
+                            <span class="nav-icon">
+                                ${item.action === 'responded' ? '🔄' : 
+                                  item.action === 'started' ? '🚗' :
+                                  item.action === 'arrived' ? '📍' : 
+                                  item.action === 'reached' ? '📍' :
+                                  item.action === 'completed' ? '✅' : '📋'}
+                            </span>
+                            <span>
+                                <strong>${item.donor_name || item.user_id || 'Donor'}</strong>
+                                ${item.action === 'responded' ? 'responded to request' : 
+                                  item.action === 'started' ? 'started journey to hospital' :
+                                  item.action === 'arrived' ? 'arrived at the hospital' :
+                                  item.action === 'reached' ? 'reached the hospital' :
+                                  item.action === 'completed' ? 'completed donation' : 'updated status'}
+                                ${item.status === 'arrived' ? ' ✅' : ''}
+                                <span style="color:var(--muted);font-size:0.7rem;">
+                                    (${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Just now'})
+                                </span>
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        timelineHtml = `
+            <div style="margin-top:12px;color:var(--muted);font-size:0.85rem;">
+                <strong>📍 Donor Journey:</strong> No donor has started their journey yet.
+            </div>
+        `;
+    }
+
+    const hasArrived = navHistory.some(h => h.action === 'arrived' || h.action === 'reached');
+    const hasResponded = responders.length > 0 || navHistory.some(h => h.action === 'responded');
+    const isEnRoute = navHistory.some(h => h.action === 'started' || h.status === 'in_progress');
+
+    modalContent.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><strong>Emergency ID:</strong></div>
+            <div>${request.emergency_id || request._id || '-'}</div>
+            
+            <div><strong>Hospital:</strong></div>
+            <div>${request.hospital_name || '-'}</div>
+            
+            <div><strong>Patient:</strong></div>
+            <div>${request.patient_name || request.patient_id || '-'}</div>
+            
+            <div><strong>Blood Type:</strong></div>
+            <div style="font-weight:700;color:#ec4899;">${request.blood_type_needed || request.blood_group || '-'}</div>
+            
+            <div><strong>Units Needed:</strong></div>
+            <div>${request.units_needed || request.units || 1}</div>
+            
+            <div><strong>Priority:</strong></div>
+            <div style="color:${request.priority === 'critical' ? '#ef4444' : request.priority === 'high' ? '#f97316' : '#6b7280'};">
+                ${request.priority || 'Normal'}
+            </div>
+            
+            <div><strong>Status:</strong></div>
+            <div>${request.status || 'Pending'}</div>
+            
+            <div><strong>Area:</strong></div>
+            <div>${request.area || request.hospital_address || '-'}</div>
+            
+            <div><strong>Reason:</strong></div>
+            <div>${request.reason || request.notes || '-'}</div>
+            
+            <div><strong>Created:</strong></div>
+            <div>${request.created_at ? new Date(request.created_at).toLocaleString() : '-'}</div>
+            
+            <div><strong>Responders:</strong></div>
+            <div>${responders.length} donor${responders.length > 1 ? 's' : ''}</div>
+            
+            <div><strong>Arrival Status:</strong></div>
+            <div>
+                ${hasArrived ? '✅ Donor has arrived!' : isEnRoute ? '🚗 Donor is en route' : hasResponded ? '⏳ Donor responded - preparing to travel' : '⏳ Waiting for donor response'}
+            </div>
+        </div>
+        ${respondersHtml ? `
+            <div style="margin-top:12px;">
+                <strong>🩸 Responding Donors:</strong>
+                <div style="margin-top:6px;font-size:0.85rem;">
+                    ${respondersHtml}
+                </div>
+            </div>
+        ` : ''}
+        ${timelineHtml}
+        ${hasArrived ? `
+            <div style="margin-top:12px;padding:12px;background:rgba(34,197,94,.1);border-radius:8px;border:1px solid #22c55e;">
+                ✅ <strong>Donor has arrived at the hospital!</strong> 
+                ${navHistory.some(h => h.action === 'completed') ? ' Donation completed successfully!' : ' Ready for donation.'}
+            </div>
+        ` : isEnRoute ? `
+            <div style="margin-top:12px;padding:12px;background:rgba(59,130,246,.1);border-radius:8px;border:1px solid #3b82f6;">
+                🚗 <strong>Donor is on their way!</strong> 
+                Journey started. Estimated arrival soon.
+            </div>
+        ` : hasResponded ? `
+            <div style="margin-top:12px;padding:12px;background:rgba(139,92,246,.1);border-radius:8px;border:1px solid #8b5cf6;">
+                🔄 <strong>Donor has responded!</strong> 
+                They are preparing to travel to the hospital.
+            </div>
+        ` : `
+            <div style="margin-top:12px;padding:12px;background:rgba(251,191,36,.1);border-radius:8px;border:1px solid #f59e0b;">
+                ⏳ <strong>Waiting for donor response...</strong>
+                Compatible donors have been notified. Check back for updates.
+            </div>
+        `}
+    `;
+
+    document.getElementById("requestModal").style.display = "flex";
+}
+
+// ============================================================
+//  TRACK DONOR
+// ============================================================
+function trackDonor(emergencyId) {
+    window.location.href = `route-tracking.html?emergency=${emergencyId}`;
+}
+
+// ============================================================
+//  CANCEL REQUEST
+// ============================================================
+async function cancelRequest(emergencyId) {
+    if (!confirm('Are you sure you want to cancel this request?')) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/hospital/request/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Id': HOSPITAL_ID
+            },
+            body: JSON.stringify({
+                emergency_id: emergencyId,
+                hospital_id: HOSPITAL_ID,
+                reason: 'Cancelled by hospital'
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Request cancelled successfully!');
+            loadRequests();
+        } else {
+            alert('❌ Failed to cancel: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Cancel error:', error);
+        alert('❌ Error cancelling request');
+    }
+}
+
+// ============================================================
+//  AUTO-REFRESH
+// ============================================================
+loadRequests();
+setInterval(loadRequests, 30000);
+
+console.log('🏥 Request Status Page initialized');
+console.log(`🔗 API: ${API_BASE}`);
+console.log(`🏛️ Hospital ID: ${HOSPITAL_ID}`);
+console.log('📊 Tracking: emergency_requests + navigation_history');
+</script>
+</body>
+</html>

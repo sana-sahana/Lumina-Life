@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lifeline · Route Navigation</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-0: #06070d;
+    --bg-1: #0d0f1a;
+    --glass: rgba(255,255,255,0.06);
+    --glass-strong: rgba(255,255,255,0.10);
+    --border: rgba(255,255,255,0.12);
+    --text: #eef1ff;
+    --muted: #8b93ad;
+    --accent: #ff3b6b;
+    --accent-2: #6c5cff;
+    --success: #2ee6a8;
+    --warn: #ffb547;
+  }
+  html, body {
+    height: 100%;
+    background: radial-gradient(1200px 800px at 10% -10%, #1a1240 0%, transparent 60%),
+                radial-gradient(900px 700px at 110% 10%, #3a0f2a 0%, transparent 55%),
+                var(--bg-0);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow: hidden;
+  }
+  .app {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    height: 100vh;
+    gap: 16px;
+    padding: 16px;
+  }
+  .sidebar {
+    display: flex; flex-direction: column; gap: 14px;
+    overflow-y: auto; padding-right: 4px;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 6px; }
+
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand-mark {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center; font-weight: 800;
+    box-shadow: 0 8px 24px rgba(255,59,107,0.35);
+  }
+  .brand h1 { font-size: 16px; letter-spacing: 0.2px; }
+  .brand small { color: var(--muted); font-size: 11px; }
+
+  .section-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.3px;
+    color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    flex: 1; min-width: 80px;
+    background: var(--glass-strong); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 12px;
+    font-size: 13px; cursor: pointer; transition: all .2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .pill:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.25); }
+  .pill.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+    box-shadow: 0 6px 20px rgba(108,92,255,0.4);
+  }
+
+  .avatar-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+  }
+  .avatar-cell {
+    aspect-ratio: 1/1; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all .2s;
+    background-size: cover; background-position: center;
+    background-color: rgba(255,255,255,0.08);
+    display: grid; place-items: center; font-size: 16px;
+  }
+  .avatar-cell.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255,59,107,0.3);
+    transform: scale(1.08);
+  }
+  .upload-cell {
+    background: var(--glass-strong); color: var(--muted); font-size: 18px;
+  }
+  .upload-cell input { display: none; }
+
+  .btn {
+    width: 100%; padding: 14px; border-radius: 14px; border: 0;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    box-shadow: 0 10px 30px rgba(255,59,107,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(255,59,107,0.5); }
+  .btn-ghost {
+    background: var(--glass-strong); color: var(--text); border: 1px solid var(--border);
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .stat {
+    background: var(--glass-strong); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px; text-align: center;
+  }
+  .stat .label { font-size: 10px; text-transform: uppercase; color: var(--muted); letter-spacing: 1px; }
+  .stat .value { font-size: 18px; font-weight: 700; margin-top: 4px; }
+
+  .progress {
+    height: 8px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--success));
+    border-radius: 999px; transition: width .4s ease;
+    box-shadow: 0 0 12px rgba(108,92,255,0.6);
+  }
+
+  .hospital-info {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px; background: var(--glass-strong);
+    border-radius: 12px; border: 1px solid var(--border);
+  }
+  .hospital-info .ic {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(46,230,168,0.25), rgba(108,92,255,0.25));
+    display: grid; place-items: center; font-size: 18px;
+  }
+  .hospital-info .name { font-size: 13px; font-weight: 600; }
+  .hospital-info .meta { font-size: 11px; color: var(--muted); }
+
+  .map-wrap {
+    position: relative; border-radius: 22px; overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  }
+  #map { width: 100%; height: 100%; background: var(--bg-1); }
+  .leaflet-container { background: #0a0d18; }
+  .leaflet-tile { filter: brightness(0.65) saturate(1.1) hue-rotate(200deg); }
+  .leaflet-control-attribution { background: rgba(0,0,0,0.5) !important; color: #999 !important; }
+  .leaflet-control-attribution a { color: #ccc !important; }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: rgba(15,18,30,0.9); backdrop-filter: blur(16px);
+    border: 1px solid var(--border); padding: 12px 18px; border-radius: 14px;
+    font-size: 13px; z-index: 9999; opacity: 0; transition: all .3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+  .donor-marker {
+    width: 44px; height: 44px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,59,107,0.35), 0 6px 18px rgba(0,0,0,0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255,59,107,0.35), 0 6px 18px rgba(0,0,0,0.6); }
+    50% { box-shadow: 0 0 0 12px rgba(255,59,107,0), 0 6px 18px rgba(0,0,0,0.6); }
+  }
+  .hospital-marker {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: linear-gradient(135deg, #2ee6a8, #6c5cff);
+    border: 2px solid white;
+    display: grid; place-items: center; color: white; font-size: 18px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+
+  .arrival-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(6,7,13,0.7); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .arrival-overlay.show { display: flex; }
+  .arrival-card {
+    background: linear-gradient(180deg, rgba(20,16,40,0.95), rgba(40,15,30,0.95));
+    border: 1px solid var(--border); border-radius: 22px; padding: 32px;
+    max-width: 380px; width: 90%; text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+  }
+  .arrival-card .emoji { font-size: 54px; margin-bottom: 8px; }
+  .arrival-card h2 { font-size: 22px; margin-bottom: 6px; }
+  .arrival-card p { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+
+  #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .sidebar { max-height: 45vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="glass brand">
+      <div class="brand-mark">L</div>
+      <div>
+        <h1>Lifeline Navigation</h1>
+        <small id="userGreeting">Loading donor…</small>
+      </div>
+    </div>
+
+    <div class="glass">
+      <div class="section-title">Your Avatar</div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <div class="glass">
+      <div class="section-title">Transport Mode</div>
+      <div class="row">
+        <button class="pill active" data-mode="drive">🚗 Drive</button>
+        <button class="pill" data-mode="bike">🏍️ Bike</button>
+        <button class="pill" data-mode="walk">🚶 Walk</button>
+      </div>
+    </div>
+
+    <div class="glass">
+      <div class="section-title">Destination</div>
+      <div class="hospital-info" id="destInfo">
+        <div class="ic">🏥</div>
+        <div>
+          <div class="name">Tap a hospital on the map</div>
+          <div class="meta">15+ Bangalore hospitals available</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass">
+      <div class="section-title">Live Tracking</div>
+      <div class="stat-row">
+        <div class="stat"><div class="label">ETA</div><div class="value" id="statEta">—</div></div>
+        <div class="stat"><div class="label">Distance</div><div class="value" id="statDist">—</div></div>
+        <div class="stat"><div class="label">Progress</div><div class="value" id="statProg">0%</div></div>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+
+    <div class="glass" style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary" id="startBtn" disabled>▶ Start Navigation</button>
+      <button class="btn btn-ghost" id="pauseBtn" disabled>⏸ Pause</button>
+    </div>
+  </aside>
+
+  <div class="map-wrap glass" style="padding:0;">
+    <div id="map"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div style="position: fixed; bottom: 30px; right: 30px; z-index: 99999; width: 180px;">
+  <button class="btn btn-primary" onclick="onArrival()" id="manualArrivalBtn" style="box-shadow: 0 10px 30px rgba(46,230,168,0.4); background: linear-gradient(135deg, var(--success), var(--accent-2));">
+    🏁 Mark Arrival
+  </button>
+</div>
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card">
+    <div class="emoji">🎉</div>
+    <h2>You've Arrived!</h2>
+    <p id="arrivalText">Thank you for being a lifeline. Your donation has been recorded.</p>
+    <button class="btn btn-primary" onclick="closeArrival()">Continue</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============== CONFIG ============== */
+// Use relative path to avoid CORS issues
+const API_BASE = '';
+
+  
+const AUTH = {
+  token: localStorage.getItem('lifelineUserToken') || '',
+  user_id: localStorage.getItem('lifelineUserId') || '',
+  profile: (() => { try { return JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}'); } catch { return {}; } })()
+};
+
+// ADD THIS RIGHT AFTER the AUTH object:
+if (!AUTH.token || !AUTH.user_id) {
+    window.location.href = 'login.html';
+}
+
+const AVATAR_PRESETS = [
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Aria',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Kai',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Maya',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Leo',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Zara',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Ravi',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Nina',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Omar',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Sara',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Vik',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Iris',
+  'https://api.dicebear.com/7.x/adventurer/svg?seed=Dev'
+];
+
+const HOSPITALS = [
+  { id:'h1',  name:'Manipal Hospital, Old Airport Road',  lat:12.9606, lng:77.6486 },
+  { id:'h2',  name:'Apollo Hospital, Kormangala',       lat:12.8932, lng:77.5970 },
+  { id:'h3',  name:'Fortis Hospital, Bannerghatta Road',  lat:12.8988, lng:77.5980 },
+  { id:'h4',  name:'Narayana Health City',                lat:12.8086, lng:77.6772 },
+  { id:'h5',  name:'Columbia Asia, Hebbal',               lat:13.0436, lng:77.5910 },
+  { id:'h6',  name:'Sakra World Hospital',                lat:12.9272, lng:77.6890 },
+  { id:'h7',  name:'Aster CMI Hospital',                  lat:13.0470, lng:77.5963 },
+  { id:'h8',  name:'BGS Gleneagles Global',               lat:12.9116, lng:77.5360 },
+  { id:'h9',  name:'St. John\'s Medical College',         lat:12.9270, lng:77.6210 },
+  { id:'h10', name:'Vikram Hospital, Millers Road',       lat:12.9892, lng:77.5928 },
+  { id:'h11', name:'MS Ramaiah Memorial',                 lat:13.0322, lng:77.5660 },
+  { id:'h12', name:'Sparsh Hospital, Yeshwantpur',        lat:13.0290, lng:77.5410 },
+  { id:'h13', name:'Bowring & Lady Curzon',               lat:12.9826, lng:77.6010 },
+  { id:'h14', name:'Victoria Hospital',                   lat:12.9620, lng:77.5739 },
+  { id:'h15', name:'Mallya Hospital',                     lat:12.9719, lng:77.5944 },
+  { id:'h16', name:'Cloudnine Hospital, Jayanagar',       lat:12.9255, lng:77.5832 }
+];
+
+const BLR_CENTER = [12.9716, 77.5946];
+
+/* ============== STATE ============== */
+const state = {
+  avatar: AUTH.profile.avatar || localStorage.getItem('lifelineAvatar') || AVATAR_PRESETS[0],
+  mode: 'drive',
+  destination: null,
+
+  // Default Bangalore location (will be replaced by GPS)
+  origin: [12.9716, 77.5946],
+
+  routeCoords: [],
+  totalDistanceKm: 0,
+  progress: 0,
+  running: false,
+  intervalId: null,
+  navigationId: null,
+  donorMarker: null,
+  routeLine: null
+};
+
+const MODE_SPEED_KMH = {
+  drive: 35,
+  bike: 28,
+  walk: 5
+};
+navigator.geolocation.watchPosition(
+  function(position) {
+    const newPos = [
+      position.coords.latitude,
+      position.coords.longitude
+    ];
+
+    state.origin = newPos;
+
+    if (state.donorMarker) {
+      state.donorMarker.setLatLng(newPos);
+    }
+  }
+);
+
+/* ============== MAP ============== */
+const map = L.map('map', { zoomControl: true }).setView(BLR_CENTER, 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png', {
+  attribution: '© OpenStreetMap, © CARTO', maxZoom: 19
+}).addTo(map);
+
+HOSPITALS.forEach(h => {
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="hospital-marker" title="${h.name}">🏥</div>`,
+    iconSize: [36, 36], iconAnchor: [18, 18]
+  });
+  const marker = L.marker([h.lat, h.lng], { icon }).addTo(map);
+  marker.bindTooltip(h.name, { direction: 'top', offset: [0, -16] });
+  marker.on('click', () => selectHospital(h));
+});
+
+/* Donor marker */
+function placeDonorMarker() {
+  if (state.donorMarker) map.removeLayer(state.donorMarker);
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="donor-marker" style="background-image:url('${state.avatar}')"></div>`,
+    iconSize: [44, 44], iconAnchor: [22, 22]
+  });
+  state.donorMarker = L.marker(state.origin, { icon, zIndexOffset: 1000 }).addTo(map);
+}
+placeDonorMarker();
+
+/* ============== UI WIRING ============== */
+const $ = id => document.getElementById(id);
+
+$('userGreeting').textContent = AUTH.profile.name ? `Hi, ${AUTH.profile.name}` : (AUTH.user_id ? `Donor ${AUTH.user_id}` : 'Guest donor (no token)');
+
+function renderAvatars() {
+  const grid = $('avatarGrid');
+  grid.innerHTML = '';
+  AVATAR_PRESETS.forEach(url => {
+    const cell = document.createElement('div');
+    cell.className = 'avatar-cell' + (url === state.avatar ? ' active' : '');
+    cell.style.backgroundImage = `url('${url}')`;
+    cell.onclick = () => setAvatar(url);
+    grid.appendChild(cell);
+  });
+  // upload cell
+  const up = document.createElement('label');
+  up.className = 'avatar-cell upload-cell';
+  up.innerHTML = `+ <input type="file" accept="image/*" />`;
+  up.querySelector('input').onchange = e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => setAvatar(ev.target.result);
+    r.readAsDataURL(f);
+  };
+  grid.appendChild(up);
+}
+function setAvatar(url) {
+  state.avatar = url;
+  localStorage.setItem('lifelineAvatar', url);
+  try {
+    const p = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+    p.avatar = url;
+    localStorage.setItem('lifelineUserProfile', JSON.stringify(p));
+  } catch {}
+  renderAvatars();
+  placeDonorMarker();
+}
+renderAvatars();
+
+document.querySelectorAll('[data-mode]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+    if (state.destination) recomputeRoute();
+  };
+});
+
+function selectHospital(h) {
+  state.destination = h;
+  $('destInfo').innerHTML = `
+    <div class="ic">🏥</div>
+    <div>
+      <div class="name">${h.name}</div>
+      <div class="meta">Lat ${h.lat.toFixed(4)}, Lng ${h.lng.toFixed(4)}</div>
+    </div>`;
+  recomputeRoute();
+  $('startBtn').disabled = false;
+  toast(`Destination set: ${h.name}`);
+}
+
+function recomputeRoute() {
+  const from = state.origin;
+  const to = [state.destination.lat, state.destination.lng];
+  // straight-line "route" with intermediate steps
+  const steps = 120;
+  const coords = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const lat = from[0] + (to[0] - from[0]) * t + Math.sin(t * Math.PI) * 0.003;
+    const lng = from[1] + (to[1] - from[1]) * t + Math.cos(t * Math.PI * 2) * 0.002;
+    coords.push([lat, lng]);
+  }
+  state.routeCoords = coords;
+  state.totalDistanceKm = haversine(from, to);
+  if (state.routeLine) map.removeLayer(state.routeLine);
+  state.routeLine = L.polyline(coords, {
+    color: '#6c5cff', weight: 5, opacity: 0.85,
+    dashArray: '8 10', lineCap: 'round'
+  }).addTo(map);
+  map.fitBounds(L.latLngBounds([from, to]).pad(0.3));
+  updateStats(0);
+}
+
+function haversine(a, b) {
+  const R = 6371;
+  const dLat = (b[0]-a[0]) * Math.PI/180;
+  const dLng = (b[1]-a[1]) * Math.PI/180;
+  const la1 = a[0]*Math.PI/180, la2 = b[0]*Math.PI/180;
+  const x = Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+function updateStats(progress) {
+  const speed = MODE_SPEED_KMH[state.mode];
+  const remainingKm = state.totalDistanceKm * (1 - progress);
+  const etaMin = (remainingKm / speed) * 60;
+  $('statEta').textContent = etaMin < 1 ? '<1 min' : `${Math.ceil(etaMin)} min`;
+  $('statDist').textContent = `${remainingKm.toFixed(1)} km`;
+  $('statProg').textContent = `${Math.round(progress * 100)}%`;
+  $('progressBar').style.width = `${progress * 100}%`;
+}
+
+/* ============== NAVIGATION ============== */
+$('startBtn').onclick = async () => {
+  if (!state.destination) return;
+  if (!state.running) {
+    await apiStartNavigation();
+    state.running = true;
+    $('startBtn').textContent = '⏹ Stop';
+    $('pauseBtn').disabled = false;
+    tick();
+  } else {
+    stopNavigation(false);
+  }
+};
+
+$('pauseBtn').onclick = () => {
+  if (state.intervalId) {
+    clearInterval(state.intervalId);
+    state.intervalId = null;
+    $('pauseBtn').textContent = '▶ Resume';
+    toast('Navigation paused');
+  } else {
+    tick();
+    $('pauseBtn').textContent = '⏸ Pause';
+    toast('Navigation resumed');
+  }
+};
+
+function tick() {
+  const totalSeconds = (state.totalDistanceKm / MODE_SPEED_KMH[state.mode]) * 3600;
+  const stepSec = 0.2; // 5 updates/sec
+  
+  // CHANGE THIS LINE: Set increment to 0 so the marker stays put until you click "Mark Arrival"
+  const increment = 0; 
+  
+  state.intervalId = setInterval(() => {
+    state.progress = Math.min(1, state.progress + increment);
+    const idx = Math.floor(state.progress * (state.routeCoords.length - 1));
+    const pos = state.routeCoords[idx];
+    state.donorMarker.setLatLng(pos);
+    updateStats(state.progress);
+  }, stepSec * 1000);
+}
+
+function stopNavigation(arrived) {
+  if (state.intervalId) clearInterval(state.intervalId);
+  state.intervalId = null;
+  state.running = false;
+  $('startBtn').textContent = '▶ Start Navigation';
+  $('pauseBtn').textContent = '⏸ Pause';
+  $('pauseBtn').disabled = true;
+  if (!arrived) {
+    state.progress = 0;
+    state.donorMarker.setLatLng(state.origin);
+    updateStats(0);
+  }
+}
+
+async function onArrival() {
+  // Add this line to kill the background loop immediately when clicked
+  if (state.intervalId) { clearInterval(state.intervalId); state.intervalId = null; }
+  
+  state.running = false;
+  $('startBtn').textContent = '▶ Start Navigation';
+  $('pauseBtn').disabled = true;
+  await apiCompleteNavigation();
+  await apiCompleteDonation();
+  fireConfetti();
+  $('arrivalOverlay').classList.add('show');
+}
+
+function closeArrival() {
+  $('arrivalOverlay').classList.remove('show');
+  state.progress = 0;
+  state.donorMarker.setLatLng(state.origin);
+  updateStats(0);
+}
+
+/* ============== API ============== */
+async function api(path, body) {
+  try {
+    // Ensure path starts with /
+    const url = path.startsWith('/') ? path : `/${path}`;
+    
+    console.log('📡 API Request:', {
+      url: url,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': AUTH.token ? `Bearer ${AUTH.token}` : 'No token',
+        'X-User-Id': AUTH.user_id || 'No user ID'
+      },
+      body: body
+    });
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': AUTH.token ? `Bearer ${AUTH.token}` : '',
+        'X-User-Id': AUTH.user_id || ''
+      },
+      body: JSON.stringify(body)
+    });
+    
+    // Check if response is OK
+    if (!res.ok) {
+      let errorMessage = `HTTP ${res.status}`;
+      try {
+        const errorData = await res.json();
+        errorMessage += `: ${errorData.error || errorData.message || JSON.stringify(errorData)}`;
+      } catch {
+        const errorText = await res.text();
+        errorMessage += `: ${errorText || 'Unknown error'}`;
+      }
+      console.error('❌ API Error:', errorMessage);
+      throw new Error(errorMessage);
+    }
+    
+    // Parse JSON response
+    const data = await res.json();
+    console.log('✅ API Response:', data);
+    return data;
+    
+  } catch (error) {
+    console.error('❌ API Failed:', error.message);
+    
+    // Show user-friendly error message
+    if (error.message.includes('Failed to fetch')) {
+      toast('❌ Cannot connect to server. Is the backend running?');
+    } else if (error.message.includes('HTTP 404')) {
+      toast('❌ API endpoint not found. Check the URL.');
+    } else if (error.message.includes('HTTP 500')) {
+      toast('❌ Server error. Check backend logs.');
+    } else {
+      toast(`❌ Error: ${error.message}`);
+    }
+    
+    return { 
+      success: false, 
+      error: error.message,
+      data: null 
+    };
+  }
+}
+
+async function apiStartNavigation() {
+  const r = await api('/api/navigation/start', {
+    user_id: AUTH.user_id,
+    donor_name: AUTH.profile.name || 'Donor',
+    hospital_id: state.destination.id,
+    hospital_name: state.destination.name,
+    hospital_lat: state.destination.lat,
+    hospital_lng: state.destination.lng,
+    donor_lat: state.origin[0],
+    donor_lng: state.origin[1],
+    mode: state.mode,
+    started_at: new Date().toISOString(),
+    distanceKm: state.totalDistanceKm
+  });
+  if (r && r.navigationId) state.navigationId = r.navigationId;
+  toast('Navigation started');
+}
+async function apiCompleteNavigation() {
+  await api('/api/navigation/complete', {
+    navigationId: state.navigationId,
+    user_id: AUTH.user_id,
+    hospital_id: state.destination.id,
+    completedAt: new Date().toISOString()
+  });
+}
+async function apiCompleteDonation() {
+  await api('/api/donations/complete', {
+    user_id: AUTH.user_id,
+    hospital_id: state.destination.id,
+    hospital_name: state.destination.name,
+    navigationId: state.navigationId,
+    completedAt: new Date().toISOString()
+  });
+}
+
+/* ============== TOAST ============== */
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ============== CONFETTI ============== */
+const cvs = $('confetti-canvas');
+const ctx = cvs.getContext('2d');
+function sizeCanvas() { cvs.width = innerWidth; cvs.height = innerHeight; }
+sizeCanvas(); addEventListener('resize', sizeCanvas);
+
+function fireConfetti() {
+  const colors = ['#ff3b6b','#6c5cff','#2ee6a8','#ffb547','#ffffff'];
+  const parts = Array.from({ length: 220 }, () => ({
+    x: innerWidth/2, y: innerHeight/2,
+    vx: (Math.random()-0.5) * 18,
+    vy: (Math.random()-0.9) * 18,
+    g: 0.4 + Math.random()*0.2,
+    s: 4 + Math.random()*5,
+    c: colors[Math.floor(Math.random()*colors.length)],
+    r: Math.random()*Math.PI, vr: (Math.random()-0.5)*0.3,
+    life: 0
+  }));
+  const start = performance.now();
+  function frame(now) {
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    parts.forEach(p => {
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life++;
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*0.6);
+      ctx.restore();
+    });
+    if (now - start < 3500) requestAnimationFrame(frame);
+    else ctx.clearRect(0,0,cvs.width,cvs.height);
+  }
+  requestAnimationFrame(frame);
+}
+
+window.closeArrival = closeArrival;
+</script>
+</body>
+</html>

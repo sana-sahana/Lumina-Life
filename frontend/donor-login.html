@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Life | Donor Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:linear-gradient(135deg,#fff7f8,#ffe4ea,#fff1f5);
+--surface:rgba(255,255,255,.82);
+--text:#1f2937;
+--muted:#6b7280;
+--border:rgba(255,255,255,.6);
+}
+body.dark{
+--bg:radial-gradient(circle at top left,rgba(239,68,68,.2),transparent 25%),
+radial-gradient(circle at top right,rgba(236,72,153,.15),transparent 30%),
+#0b1220;
+--surface:rgba(17,24,39,.78);
+--text:#fff;
+--muted:#94a3b8;
+--border:rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding:30px;transition:.4s}
+.topbar{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:auto}
+.logo{font-size:1.6rem;font-weight:900}
+.logo span{background:linear-gradient(135deg,#ef4444,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.theme{padding:12px 18px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer}
+.container{max-width:1200px;margin:25px auto}
+.card{
+background:var(--surface);
+backdrop-filter:blur(24px);
+border:1px solid var(--border);
+border-radius:30px;
+padding:30px;
+}
+.tabs{display:flex;gap:10px;margin-bottom:25px}
+.tab{
+padding:12px 18px;border-radius:14px;border:none;cursor:pointer;
+background:rgba(239,68,68,.15);color:var(--text);font-weight:600
+}
+.active{background:linear-gradient(135deg,#ef4444,#ec4899);color:#fff}
+.form-section{display:none}
+.show{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+input,select{
+width:100%;padding:14px;border-radius:14px;border:1px solid var(--border);
+background:rgba(255,255,255,.05);color:var(--text)
+}
+label{display:block;margin:12px 0 8px;font-weight:600}
+h2{margin-bottom:15px}
+p{color:var(--muted);margin-bottom:10px}
+.checks{display:flex;gap:20px;flex-wrap:wrap;margin-top:10px}
+.btn{
+margin-top:20px;padding:14px 20px;border:none;border-radius:14px;
+background:linear-gradient(135deg,#ef4444,#ec4899);
+color:white;font-weight:700;cursor:pointer
+}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="dark">
+
+<div class="topbar">
+<div class="logo">Lumina <span>Life</span></div>
+<button id="themeBtn" class="theme">Theme</button>
+</div>
+
+<div class="container">
+<div class="card">
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('login',this)">Login</button>
+<button class="tab" onclick="showTab('register',this)">Register</button>
+</div>
+
+<div id="login" class="form-section show">
+<h2>Donor Login</h2>
+<p>Access your donor account.</p>
+
+<label>Email Address</label>
+<input type="email" placeholder="Enter email">
+
+<label>Password</label>
+<input type="password" placeholder="Enter password">
+
+<button class="btn">Login</button>
+</div>
+
+<div id="register" class="form-section">
+<h2>Create Donor Account</h2>
+
+<div class="grid">
+
+<div>
+<label>Full Name</label>
+<input type="text" required>
+
+<label>Email Address</label>
+<input type="email" required>
+
+<label>Phone Number</label>
+<input type="tel" pattern="[0-9]{10}" required>
+
+<label>Date of Birth</label>
+<input type="date" required>
+
+<label>Gender</label>
+<select>
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+</div>
+
+<div>
+<label>Blood Group</label>
+<select>
+<option>A+</option><option>A-</option>
+<option>B+</option><option>B-</option>
+<option>AB+</option><option>AB-</option>
+<option>O+</option><option>O-</option>
+</select>
+
+<label>Area</label>
+<select>
+<option>Koramangala</option>
+<option>Whitefield</option>
+<option>Indiranagar</option>
+<option>Electronic City</option>
+<option>Hebbal</option>
+<option>Jayanagar</option>
+<option>Banashankari</option>
+<option>Marathahalli</option>
+<option>Yelahanka</option>
+<option>Rajajinagar</option>
+</select>
+
+<label>Weight (kg)</label>
+<input type="number" min="45">
+
+<label>Last Blood Donation Date</label>
+<input type="date">
+
+<label>Password</label>
+<input type="password" minlength="8">
+</div>
+
+</div>
+
+<label style="margin-top:20px">Organ Donation Consent</label>
+<div class="checks">
+<label><input type="checkbox"> Kidney</label>
+<label><input type="checkbox"> Liver</label>
+<label><input type="checkbox"> Bone Marrow</label>
+</div>
+
+<div class="checks" style="margin-top:20px">
+<label><input type="checkbox" required> I confirm that the information provided is accurate.</label>
+</div>
+
+<button class="btn">Create Donor Account</button>
+
+</div>
+
+</div>
+</div>
+
+<script>
+function showTab(id,btn){
+document.querySelectorAll('.form-section').forEach(x=>x.classList.remove('show'));
+document.getElementById(id).classList.add('show');
+document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+btn.classList.add('active');
+}
+
+const themeBtn=document.getElementById('themeBtn');
+if(localStorage.getItem('theme')==='light'){
+document.body.classList.remove('dark');
+}
+themeBtn.onclick=()=>{
+document.body.classList.toggle('dark');
+localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+}
+</script>
+
+</body>
+</html>

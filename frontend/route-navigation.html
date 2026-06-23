@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>LuminaLife — Route Navigation | AI-Powered Directions</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet Routing Machine -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       LUMINALIFE ROUTE NAVIGATION — LUXURY GLASSMORPHISM
+       ═══════════════════════════════════════════════════════ */
+
+    :root {
+      --midnight:     #06060f;
+      --deep-navy:    #0a0a1e;
+      --navy:         #0d0d2b;
+      --crimson:      #c0102a;
+      --rose:         #ff2d55;
+      --rose-light:   #ff6b8a;
+      --glass-white:  rgba(255, 255, 255, 0.07);
+      --glass-border: rgba(255, 255, 255, 0.13);
+      --glass-hover:  rgba(255, 255, 255, 0.12);
+      --text-primary: #f0f0ff;
+      --text-sec:     rgba(240, 240, 255, 0.55);
+      --text-dim:     rgba(240, 240, 255, 0.30);
+      --font-display: 'Orbitron', monospace;
+      --font-ui:      'Rajdhani', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --radius-card:  20px;
+      --radius-pill:  50px;
+      --blur:         blur(24px) saturate(1.8);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--midnight);
+      overflow: hidden;
+      font-family: var(--font-ui);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #map-container {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      background: var(--midnight);
+      z-index: 0;
+    }
+
+    .leaflet-container {
+      background: #060614 !important;
+    }
+
+    .map-vignette {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 401;
+      background:
+        radial-gradient(ellipse at 50% 100%, rgba(6,6,20,0.9) 0%, transparent 60%),
+        radial-gradient(ellipse at 0% 50%, rgba(192,16,42,0.08) 0%, transparent 50%),
+        linear-gradient(to bottom, rgba(6,6,15,0.55) 0%, transparent 18%, transparent 70%, rgba(6,6,15,0.6) 100%);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px; left: 20px;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass-white);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 10px 18px 10px 14px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .back-btn:hover {
+      background: var(--glass-hover);
+      transform: translateX(-2px);
+    }
+
+    .live-badge {
+      position: absolute;
+      top: 20px; right: 20px;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(192, 16, 42, 0.18);
+      backdrop-filter: var(--blur);
+      border: 1px solid rgba(255, 45, 85, 0.35);
+      color: var(--rose-light);
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--rose);
+      animation: livePulse 1.4s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--rose);
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .transport-bar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      display: flex;
+      gap: 8px;
+      background: rgba(6, 6, 20, 0.65);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
+      padding: 6px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .transport-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: var(--font-ui);
+      min-width: 72px;
+    }
+    .transport-btn .t-icon { font-size: 20px; line-height: 1; }
+    .transport-btn .t-label { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; }
+
+    .transport-btn.active {
+      background: linear-gradient(135deg, var(--crimson), var(--rose));
+      color: #fff;
+      border-color: rgba(255, 45, 85, 0.5);
+      box-shadow: 0 4px 20px rgba(255, 45, 85, 0.35), 0 0 0 1px rgba(255,45,85,0.2);
+      transform: scale(1.05);
+    }
+
+    .bottom-panel {
+      position: relative;
+      z-index: 600;
+      background: linear-gradient(180deg, rgba(8, 8, 22, 0.92) 0%, rgba(6, 6, 15, 0.98) 100%);
+      backdrop-filter: var(--blur);
+      border-top: 1px solid var(--glass-border);
+      padding: 0 20px 24px;
+      flex-shrink: 0;
+      box-shadow: 0 -20px 60px rgba(0,0,0,0.5), 0 -1px 0 rgba(255,255,255,0.06);
+    }
+
+    .drag-handle {
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      margin: 12px auto 18px;
+    }
+
+    .hospital-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(192, 16, 42, 0.1);
+      border: 1px solid rgba(255, 45, 85, 0.2);
+      border-radius: var(--radius-card);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hosp-left { display: flex; align-items: center; gap: 14px; }
+    .hosp-icon-wrap {
+      position: relative;
+      width: 46px; height: 46px;
+      flex-shrink: 0;
+    }
+    .hosp-cross {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, var(--crimson), var(--rose));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255, 45, 85, 0.4);
+      position: relative;
+      z-index: 1;
+    }
+    .hosp-pulse-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 18px;
+      border: 2px solid rgba(255, 45, 85, 0.4);
+      animation: ringPulse 2s ease-out infinite;
+    }
+    @keyframes ringPulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    .hosp-name {
+      font-family: var(--font-ui);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .hosp-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .blood-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 45, 85, 0.15);
+      border: 1px solid rgba(255, 45, 85, 0.3);
+      color: var(--rose-light);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .emg-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 200, 0, 0.1);
+      border: 1px solid rgba(255, 200, 0, 0.25);
+      color: #ffd60a;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .hosp-right { text-align: center; }
+    .hosp-eta {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--rose-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      background: var(--glass-white);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 12px 0;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .stat-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+    .stat-divider {
+      width: 1px;
+      height: 34px;
+      background: var(--glass-border);
+    }
+
+    .start-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      background: linear-gradient(135deg, #a00820, var(--crimson) 40%, var(--rose) 100%);
+      border: none;
+      border-radius: var(--radius-card);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 28px rgba(255, 45, 85, 0.4), 0 0 0 1px rgba(255,45,85,0.2);
+    }
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(255, 45, 85, 0.55);
+    }
+    .start-btn:active { transform: scale(0.98); }
+
+    .donor-avatar-marker {
+      position: relative;
+      width: 56px;
+      height: 56px;
+    }
+    .donor-avatar-marker .aura {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,45,85,0.35) 0%, transparent 70%);
+      animation: auraBreath 2s ease-in-out infinite;
+    }
+    @keyframes auraBreath {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+    .donor-avatar-marker .body {
+      position: relative;
+      z-index: 2;
+      width: 56px; height: 56px;
+      background: linear-gradient(145deg, #1a0a14, #2a0a1a);
+      border-radius: 50%;
+      border: 2.5px solid rgba(255,45,85,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(255,45,85,0.4);
+      overflow: hidden;
+    }
+    .donor-avatar-inner {
+      font-size: 28px;
+      line-height: 1;
+      animation: avatarBob 2.5s ease-in-out infinite;
+    }
+    @keyframes avatarBob {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .arrival-overlay {
+      position: fixed; inset: 0;
+      z-index: 2000;
+      background: rgba(4, 4, 14, 0.88);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    .arrival-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .arrival-card {
+      background: linear-gradient(145deg, rgba(20,8,16,0.95), rgba(10,10,30,0.98));
+      border: 1px solid rgba(255,45,85,0.3);
+      border-radius: 28px;
+      padding: 48px 40px;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+    }
+    .arrival-emoji { font-size: 64px; animation: heartBeat 1s ease-in-out infinite; }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.15); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.08); }
+    }
+    .arrival-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--rose-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .arrival-btn {
+      background: linear-gradient(135deg, var(--crimson), var(--rose));
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      padding: 14px 40px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    #confettiCanvas {
+      position: fixed; inset: 0;
+      z-index: 1999;
+      pointer-events: none;
+      width: 100vw; height: 100vh;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #confettiCanvas.show { opacity: 1; }
+    @media (min-width: 768px) {
+      .bottom-panel {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        max-width: 440px;
+        margin: 0 auto;
+        border-radius: 24px 24px 0 0;
+      }
+      .transport-bar { bottom: 310px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-shell">
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="map-vignette"></div>
+    <button class="back-btn" onclick="goBack()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      <span>Back</span>
+    </button>
+    <div class="live-badge"><span class="live-dot"></span><span>LIVE</span></div>
+    <div class="transport-bar" id="transportBar">
+      <button class="transport-btn active" data-mode="car" onclick="setMode('car')"><span class="t-icon">🚗</span><span class="t-label">Drive</span></button>
+      <button class="transport-btn" data-mode="bike" onclick="setMode('bike')"><span class="t-icon">🚴</span><span class="t-label">Bike</span></button>
+      <button class="transport-btn" data-mode="walk" onclick="setMode('walk')"><span class="t-icon">🚶</span><span class="t-label">Walk</span></button>
+    </div>
+  </div>
+
+  <div class="bottom-panel" id="bottomPanel">
+    <div class="drag-handle"></div>
+    <div class="hospital-card">
+      <div class="hosp-left">
+        <div class="hosp-icon-wrap"><div class="hosp-cross">✚</div><div class="hosp-pulse-ring"></div></div>
+        <div class="hosp-info">
+          <div class="hosp-name" id="hospName">Loading...</div>
+          <div class="hosp-meta"><span class="blood-badge" id="bloodBadge">🩸 -- Needed</span><span class="emg-badge" id="emgBadge">⚡ Emergency</span></div>
+        </div>
+      </div>
+      <div class="hosp-right"><div class="hosp-eta" id="hospEta">—</div><div class="hosp-eta-label">ETA</div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-icon">📍</div><div class="stat-val" id="statDist">—</div><div class="stat-lbl">Distance</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat-card"><div class="stat-icon">⏱</div><div class="stat-val" id="statEta">—</div><div class="stat-lbl">Minutes</div></div>
+      <div class="stat-divider"></div>
+      <div class="stat-card"><div class="stat-icon">🛣</div><div class="stat-val" id="statRoute">Fastest</div><div class="stat-lbl">Route</div></div>
+    </div>
+    <button class="start-btn" id="startBtn"><span class="start-icon">▶</span><span class="start-text">Start Navigation</span></button>
+  </div>
+</div>
+
+<div class="arrival-overlay" id="arrivalOverlay">
+  <div class="arrival-card"><div class="arrival-emoji">❤️</div><div class="arrival-title">You're a Hero!</div><div class="arrival-sub">Thank you for donating.<br/>You may save a life today.</div><button class="arrival-btn" onclick="completeDonation()">Complete Donation</button></div>
+</div>
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+  // ======================= BACKEND INTEGRATION =======================
+  const API_BASE = 'http://127.0.0.1:5000/api';
+  
+  // Get auth data
+  const token = localStorage.getItem('lifelineUserToken');
+  const userId = localStorage.getItem('lifelineUserId');
+  let userProfile = {};
+
+  try {
+    userProfile = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+  } catch(e) {}
+
+  // Get hospital data from localStorage (set by dashboard when accepting request)
+  let hospitalData = {
+    name: "Apollo Hospital",
+    lat: 12.9716,
+    lng: 77.5946,
+    blood: "O+",
+    emergency: true,
+    distance: 3.2,
+    eta: "7 min",
+    hospital_id: "H001",
+    request_id: null
+  };
+
+  try {
+    const saved = localStorage.getItem('destination_hospital');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      hospitalData.name = parsed.name || hospitalData.name;
+      hospitalData.lat = parsed.lat || hospitalData.lat;
+      hospitalData.lng = parsed.lng || hospitalData.lng;
+      hospitalData.blood = parsed.blood || hospitalData.blood;
+      hospitalData.emergency = parsed.emergency !== undefined ? parsed.emergency : hospitalData.emergency;
+      hospitalData.distance = parsed.distance || hospitalData.distance;
+      hospitalData.eta = parsed.eta || hospitalData.eta;
+      hospitalData.hospital_id = parsed.hospital_id || parsed.id || hospitalData.hospital_id;
+      hospitalData.request_id = parsed.request_id || null;
+    }
+  } catch(e) {}
+
+  // Also check URL params as fallback
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('name')) hospitalData.name = urlParams.get('name');
+  if (urlParams.get('lat')) hospitalData.lat = parseFloat(urlParams.get('lat'));
+  if (urlParams.get('lng')) hospitalData.lng = parseFloat(urlParams.get('lng'));
+  if (urlParams.get('blood')) hospitalData.blood = urlParams.get('blood');
+  if (urlParams.get('emg')) hospitalData.emergency = urlParams.get('emg') !== 'false';
+  if (urlParams.get('hospital_id')) hospitalData.hospital_id = urlParams.get('hospital_id');
+  if (urlParams.get('request_id')) hospitalData.request_id = urlParams.get('request_id');
+
+  // ======================= API HELPER =======================
+  async function authFetch(url, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    try {
+      const response = await fetch(url, { ...options, headers });
+      if (response.status === 401) {
+        console.warn('Auth failed, redirecting to login');
+        window.location.href = 'login.html';
+        return null;
+      }
+      return response;
+    } catch (error) {
+      console.warn('API unavailable:', error);
+      return null;
+    }
+  }
+
+  // ======================= BACKEND API CALLS =======================
+  
+  // Record when donor starts navigation
+  async function recordNavigationStart() {
+    try {
+      const response = await authFetch(`${API_BASE}/navigation/start`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          donor_name: userProfile.full_name || userProfile.name,
+          hospital_id: hospitalData.hospital_id,
+          hospital_name: hospitalData.name,
+          hospital_lat: hospitalData.lat,
+          hospital_lng: hospitalData.lng,
+          request_id: hospitalData.request_id,
+          mode: currentMode,
+          donor_lat: userLatLng?.lat || 12.9716,
+          donor_lng: userLatLng?.lng || 77.5946,
+          started_at: new Date().toISOString()
+        })
+      });
+      if (response && response.ok) {
+        console.log('Navigation start recorded in database');
+      }
+    } catch(e) { console.error('Error recording navigation start:', e); }
+  }
+
+  // Record when donor completes navigation (arrives at hospital)
+  async function recordNavigationComplete() {
+    try {
+      const response = await authFetch(`${API_BASE}/navigation/complete`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          donor_name: userProfile.full_name || userProfile.name,
+          hospital_id: hospitalData.hospital_id,
+          hospital_name: hospitalData.name,
+          request_id: hospitalData.request_id,
+          completed_at: new Date().toISOString()
+        })
+      });
+      if (response && response.ok) {
+        console.log('Navigation completion recorded in database');
+      }
+    } catch(e) { console.error('Error recording navigation complete:', e); }
+  }
+
+  // Mark donation as completed (sets 90-day cooldown)
+  async function completeDonation() {
+    try {
+      // 1. Record donation completion in backend
+      const response = await authFetch(`${API_BASE}/donations/complete`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          hospital_id: hospitalData.hospital_id,
+          hospital_name: hospitalData.name,
+          request_id: hospitalData.request_id,
+          blood_type: hospitalData.blood,
+          completed_at: new Date().toISOString()
+        })
+      });
+      
+      if (response && response.ok) {
+        const data = await response.json();
+        console.log('Donation completed:', data);
+      }
+      
+      // 2. Update donor stats in backend
+      await authFetch(`${API_BASE}/donor/update-stats`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          totalDonations: (userProfile.total_donations || 0) + 1,
+          livesSaved: (userProfile.lives_saved || 0) + 3,
+          lastDonationDate: new Date().toISOString(),
+          isRecovered: false
+        })
+      });
+      
+      // 3. Send notification to hospital
+      await authFetch(`${API_BASE}/notifications/create`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: hospitalData.hospital_id,
+          title: '✅ Donor Arrived',
+          message: `${userProfile.full_name || 'A donor'} has arrived at ${hospitalData.name} to complete blood donation.`,
+          type: 'donation_complete',
+          priority: 'high'
+        })
+      });
+      
+      // 4. Send confirmation to donor
+      await authFetch(`${API_BASE}/notifications/create`, {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: userId,
+          title: '🎉 Thank You for Donating!',
+          message: `Your donation at ${hospitalData.name} has been recorded. You are now in a 90-day recovery period.`,
+          type: 'donation_confirmation',
+          priority: 'high'
+        })
+      });
+      
+      // 5. Clear pending navigation flag
+      localStorage.removeItem('pending_navigation');
+      localStorage.removeItem('destination_hospital');
+      
+      // 6. Set last donation date in localStorage for cooldown
+      localStorage.setItem('last_donation_date', new Date().toISOString());
+      
+      // 7. Show success and redirect
+      showToast('✅ Donation completed! Thank you for saving lives!');
+      
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error completing donation:', error);
+      // Still redirect even if API fails (local fallback)
+      localStorage.setItem('last_donation_date', new Date().toISOString());
+      localStorage.removeItem('pending_navigation');
+      localStorage.removeItem('destination_hospital');
+      showToast('✅ Donation recorded locally. Thank you!');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+    }
+  }
+
+  // ======================= MAP & ROUTING =======================
+  let map, routingControl, routeLatLngs = [];
+  let currentMode = 'car';
+  let donorMarker, hospitalMarker;
+  let isNavigating = false;
+  let animationFrameId = null;
+  let userLatLng = null;
+  let totalRouteLength = 0;
+  let navigationStarted = false;
+
+  const MODE_CONFIG = {
+    car:  { speed: 40, label: 'Drive', color: '#ff2d55', trailColor: 'rgba(255,45,85,0.7)', routeWeight: 7, etaMult: 1 },
+    bike: { speed: 18, label: 'Bike',  color: '#00bfff', trailColor: 'rgba(0,191,255,0.7)', routeWeight: 6, etaMult: 2.2 },
+    walk: { speed: 5,  label: 'Walk',  color: '#00e676', trailColor: 'rgba(0,230,118,0.7)', routeWeight: 5, etaMult: 8 }
+  };
+
+  function initMap() {
+    map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+    
+    // Update UI with hospital data
+    document.getElementById('hospName').textContent = hospitalData.name;
+    document.getElementById('bloodBadge').innerHTML = `🩸 ${hospitalData.blood} Needed`;
+    if (!hospitalData.emergency) document.getElementById('emgBadge').style.display = 'none';
+    
+    getUserLocation();
+  }
+
+  function getUserLocation() {
+    if (!navigator.geolocation) { fallbackLocation(); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        userLatLng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+        onLocationReady();
+      },
+      () => fallbackLocation(),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }
+
+  function fallbackLocation() {
+    userLatLng = L.latLng(12.9716, 77.5946);
+    onLocationReady();
+  }
+
+  function onLocationReady() {
+    const hospLatLng = L.latLng(hospitalData.lat, hospitalData.lng);
+    
+    donorMarker = L.marker(userLatLng, { icon: createDonorIcon(), zIndexOffset: 1000 }).addTo(map);
+    hospitalMarker = L.marker(hospLatLng, { icon: createHospitalIcon() }).addTo(map);
+    
+    map.fitBounds([userLatLng, hospLatLng], { padding: [60, 60] });
+    buildRoute(userLatLng, hospLatLng);
+  }
+
+  function createDonorIcon() {
+    const html = `<div class="donor-avatar-marker"><div class="aura"></div><div class="body"><div class="donor-avatar-inner">🧑‍⚕️</div></div></div>`;
+    return L.divIcon({ html, className: '', iconSize: [56, 56], iconAnchor: [28, 28] });
+  }
+
+  function createHospitalIcon() {
+    const html = `<div style="width:44px;height:44px;background:linear-gradient(145deg,#1a0814,#2d0820);border:2px solid rgba(255,45,85,0.8);border-radius:14px 14px 0 14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;">✚</div>`;
+    return L.divIcon({ html, className: '', iconSize: [44, 44], iconAnchor: [22, 44] });
+  }
+
+  function buildRoute(from, to) {
+    if (routingControl) { map.removeControl(routingControl); routingControl = null; }
+    map.eachLayer(l => { if (l._isRouteLayer) map.removeLayer(l); });
+    
+    const cfg = MODE_CONFIG[currentMode];
+    routingControl = L.Routing.control({
+      waypoints: [from, to],
+      routeWhileDragging: false,
+      addWaypoints: false,
+      showAlternatives: false,
+      lineOptions: { styles: [], extendToWaypoints: false },
+      createMarker: () => null,
+      router: L.Routing.osrmv1({
+        serviceUrl: 'https://router.project-osrm.org/route/v1',
+        profile: currentMode === 'car' ? 'driving' : currentMode === 'bike' ? 'cycling' : 'foot',
+      }),
+    }).addTo(map);
+
+    routingControl.on('routesfound', e => {
+      const route = e.routes[0];
+      routeLatLngs = route.coordinates;
+      totalRouteLength = route.summary.totalDistance;
+      drawStyledRoute(routeLatLngs, cfg);
+      updateStats(route.summary.totalDistance, currentMode);
+    });
+
+    routingControl.on('routingerror', () => {
+      routeLatLngs = [from, to];
+      drawStyledRoute(routeLatLngs, cfg);
+      updateStats(from.distanceTo(to), currentMode);
+    });
+  }
+
+  function drawStyledRoute(coords, cfg) {
+    const glow = L.polyline(coords, { color: cfg.trailColor, weight: cfg.routeWeight + 8, opacity: 0.18 });
+    glow._isRouteLayer = true; glow.addTo(map);
+    const main = L.polyline(coords, { color: cfg.color, weight: cfg.routeWeight, opacity: 0.92 });
+    main._isRouteLayer = true; main.addTo(map);
+  }
+
+  function updateStats(distMetres, mode) {
+    const cfg = MODE_CONFIG[mode];
+    const km = (distMetres / 1000).toFixed(1);
+    const minutes = Math.round((distMetres / 1000) / cfg.speed * 60);
+    document.getElementById('hospEta').textContent = minutes + ' min';
+    document.getElementById('statDist').textContent = km + ' km';
+    document.getElementById('statEta').textContent = minutes;
+    document.getElementById('statRoute').textContent = cfg.label;
+  }
+
+  // ======================= NAVIGATION CONTROLS =======================
+  function setMode(mode) {
+    if (mode === currentMode) return;
+    currentMode = mode;
+    document.querySelectorAll('.transport-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    if (userLatLng) {
+      buildRoute(userLatLng, L.latLng(hospitalData.lat, hospitalData.lng));
+    }
+  }
+
+  function startNavigation() {
+    if (routeLatLngs.length < 2) return;
+    isNavigating = true;
+    
+    // Record navigation start in backend (only once)
+    if (!navigationStarted) {
+      recordNavigationStart();
+      navigationStarted = true;
+    }
+    
+    const btn = document.getElementById('startBtn');
+    btn.innerHTML = `<span class="start-icon">⏸</span><span class="start-text">Navigating...</span>`;
+    btn.onclick = pauseNavigation;
+    travelAlongRoute();
+  }
+
+  function pauseNavigation() {
+    isNavigating = false;
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    const btn = document.getElementById('startBtn');
+    btn.innerHTML = `<span class="start-icon">▶</span><span class="start-text">Resume Navigation</span>`;
+    btn.onclick = startNavigation;
+  }
+
+  function travelAlongRoute() {
+    if (!isNavigating) return;
+    const DURATION_MS = 28000;
+    let startTime = null;
+    const segLengths = [];
+    let total = 0;
+    for (let i = 1; i < routeLatLngs.length; i++) {
+      const d = routeLatLngs[i-1].distanceTo(routeLatLngs[i]);
+      segLengths.push(d);
+      total += d;
+    }
+
+    function step(ts) {
+      if (!isNavigating) return;
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const t = Math.min(elapsed / DURATION_MS, 1);
+      const eased = easeInOutCubic(t);
+      const target = eased * total;
+      let accumulated = 0;
+      let pos = null;
+      for (let i = 0; i < segLengths.length; i++) {
+        if (accumulated + segLengths[i] >= target) {
+          const frac = (target - accumulated) / segLengths[i];
+          const a = routeLatLngs[i];
+          const b = routeLatLngs[i+1];
+          pos = L.latLng(a.lat + (b.lat - a.lat) * frac, a.lng + (b.lng - a.lng) * frac);
+          break;
+        }
+        accumulated += segLengths[i];
+      }
+      if (pos) {
+        donorMarker.setLatLng(pos);
+        map.panTo(pos, { animate: true, duration: 0.3 });
+        const pctLeft = 1 - eased;
+        const cfg = MODE_CONFIG[currentMode];
+        const remainMin = Math.round((total * pctLeft / 1000) / cfg.speed * 60);
+        document.getElementById('hospEta').textContent = remainMin + ' min';
+      }
+      if (t < 1) {
+        animationFrameId = requestAnimationFrame(step);
+      } else {
+        onArrival();
+      }
+    }
+    animationFrameId = requestAnimationFrame(step);
+  }
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function onArrival() {
+    isNavigating = false;
+    donorMarker.setLatLng(L.latLng(hospitalData.lat, hospitalData.lng));
+    recordNavigationComplete();
+    launchConfetti();
+    document.getElementById('arrivalOverlay').classList.add('show');
+    const btn = document.getElementById('startBtn');
+    btn.innerHTML = `<span class="start-icon">▶</span><span class="start-text">Arrived!</span>`;
+  }
+
+  function goBack() {
+    window.location.href = 'dashboard.html';
+  }
+
+  // ======================= CONFETTI =======================
+  let confettiRunning = false;
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function launchConfetti() {
+    canvas.classList.add('show');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    confettiRunning = true;
+    particles = [];
+    for (let i = 0; i < 140; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * -0.5,
+        r: 3 + Math.random() * 7,
+        color: ['#ff2d55','#ff6b8a','#c0102a','#fff','#ffd60a','#00bfff'][Math.floor(Math.random() * 6)],
+        rot: Math.random() * 360,
+        vx: (Math.random() - 0.5) * 3,
+        vy: 2 + Math.random() * 4,
+        vr: (Math.random() - 0.5) * 8,
+        shape: Math.random() > 0.5 ? 'rect' : 'circle',
+      });
+    }
+    runConfetti();
+  }
+
+  function runConfetti() {
+    if (!confettiRunning) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vy += 0.08;
+      if (p.y < canvas.height + 30) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - (p.y / canvas.height));
+      if (p.shape === 'rect') ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r);
+      else { ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.fill(); }
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(runConfetti);
+    else stopConfetti();
+  }
+
+  function stopConfetti() {
+    confettiRunning = false;
+    particles = [];
+    canvas.classList.remove('show');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:100px;left:20px;right:20px;background:#10b981;color:white;padding:12px;border-radius:40px;text-align:center;z-index:3000';
+    toast.innerHTML = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Make functions global for HTML onclick
+  window.setMode = setMode;
+  window.startNavigation = startNavigation;
+  window.completeDonation = completeDonation;
+  window.goBack = goBack;
+
+  // Initialize
+  window.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(MotionPathPlugin);
+    initMap();
+    gsap.from('.bottom-panel', { y: 80, opacity: 0, duration: 0.6, delay: 0.3 });
+  });
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+</script>
+</body>
+</html>

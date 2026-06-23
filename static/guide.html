@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuminaLife · Donor Guidelines</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ════════════════════════════════════════════════════════
+   PREMIUM GLASSMORPHISM DESIGN
+════════════════════════════════════════════════════════ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.04);
+  --glass-blur: blur(24px) saturate(180%);
+  
+  --crimson: #C4183C;
+  --crimson-glow: rgba(196, 24, 60, 0.15);
+  --crimson-l: #E2264F;
+  --rose: #F9A8B8;
+  --rose-l: #FDDEE5;
+  --sage: #7BB597;
+  --sage-glow: rgba(123, 181, 151, 0.15);
+  --amber: #F0A855;
+  --gold: #D4A055;
+  --sky: #38BDF8;
+  --purple: #8B5CF6;
+  --navy: #0A1628;
+  --text: #0A1628;
+  --text-muted: #6B7280;
+  --bg: #F0F2F6;
+  --bg-glass: rgba(255,255,255,0.3);
+}
+
+[data-theme="dark"] {
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  --bg: #080C18;
+  --text: #F2F5FA;
+  --text-muted: #94A3B8;
+  --bg-glass: rgba(15, 23, 42, 0.3);
+  --crimson-glow: rgba(196, 24, 60, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .4s ease, color .4s ease;
+  overflow-x: hidden;
+}
+
+/* ── FLOATING PARTICLES ── */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  animation: float-particle linear infinite;
+}
+@keyframes float-particle {
+  0% { transform: translateY(100vh) rotate(0deg) scale(0); opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(-10vh) rotate(720deg) scale(1); opacity: 0; }
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 64px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 0;
+  z-index: 100;
+  transition: all .4s ease;
+}
+.sidebar:hover {
+  background: var(--glass-bg);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+}
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--crimson), var(--crimson-l));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: white;
+  box-shadow: 0 4px 20px var(--crimson-glow);
+  cursor: pointer;
+  transition: all .3s ease;
+  margin-bottom: 1.8rem;
+  flex-shrink: 0;
+}
+.sidebar-logo:hover { transform: scale(1.08) rotate(-5deg); }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin: 0 8px;
+  border-radius: 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1rem;
+  position: relative;
+  transition: all .3s ease;
+  text-decoration: none;
+}
+.nav-item i {
+  transition: all .3s ease;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: var(--bg-glass);
+}
+.nav-item.active {
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.nav-item.active i {
+  transform: scale(1.1);
+}
+.nav-item .tip {
+  position: absolute;
+  left: calc(100% + 14px);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s ease;
+  color: var(--text);
+  box-shadow: var(--glass-shadow);
+}
+.nav-item:hover .tip { opacity: 1; }
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.theme-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.theme-toggle-btn:hover {
+  color: var(--text);
+  background: var(--glass-bg);
+}
+.avatar-sb {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  border: 2px solid var(--glass-border);
+  transition: all .3s ease;
+}
+.avatar-sb:hover { transform: scale(1.06); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 96px;
+  max-width: 1320px;
+  padding: 20px 24px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.8rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+.topbar-left h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.topbar-left h2 span { color: var(--crimson); }
+.topbar-left .sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.glass-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  transition: all .3s ease;
+  position: relative;
+}
+.glass-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0.8rem 0.2rem 0.3rem;
+  border-radius: 60px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.user-chip:hover { border-color: var(--crimson); }
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  color: white;
+  font-weight: 700;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-name { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+.user-role { font-size: 0.55rem; color: var(--text-muted); }
+
+/* ── GLASS CARD ── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 1.4rem 1.6rem;
+  transition: all .4s ease;
+}
+.glass-card:hover {
+  box-shadow: 0 12px 48px rgba(0,0,0,0.06);
+}
+.glass-card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.glass-card .head h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.glass-card .head h3 i { color: var(--crimson); font-size: 0.9rem; }
+.badge {
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 0.1rem 0.6rem;
+  border-radius: 60px;
+}
+.badge-green { background: var(--sage-glow); color: #1a6b42; }
+.badge-red { background: var(--crimson-glow); color: var(--crimson); }
+.badge-gold { background: rgba(208,160,85,0.15); color: #8a5a00; }
+.badge-purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+.badge-blue { background: rgba(56,189,248,0.15); color: #1E40AF; }
+.badge-sage { background: var(--sage-glow); color: #1a6b42; }
+
+/* ── HERO ── */
+.hero-glass {
+  background: linear-gradient(135deg, rgba(10,22,40,0.85), rgba(10,22,40,0.7));
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 28px;
+  padding: 2.2rem 2.8rem;
+  margin-bottom: 1.8rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.hero-glass::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,24,60,0.08), transparent 70%);
+  pointer-events: none;
+}
+.hero-glass .hero-content {
+  position: relative;
+  z-index: 2;
+}
+.hero-glass h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.hero-glass h1 span { color: var(--rose); }
+.hero-glass .sub {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+.hero-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.7rem;
+  border-radius: 60px;
+}
+.tag-blood { background: var(--crimson-glow); color: var(--rose); border: 1px solid rgba(196,24,60,0.2); }
+.tag-vital { background: var(--sage-glow); color: var(--sage); border: 1px solid rgba(123,181,151,0.2); }
+.tag-gold { background: rgba(208,160,85,0.15); color: var(--gold); border: 1px solid rgba(208,160,85,0.2); }
+.tag-sky { background: rgba(56,189,248,0.15); color: var(--sky); border: 1px solid rgba(56,189,248,0.2); }
+
+/* ── GRIDS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+
+/* ── CHECKLIST ── */
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+.checklist li {
+  padding: 0.5rem 0 0.5rem 2rem;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%237BB597" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>') left center no-repeat;
+  background-size: 1.1rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li strong { color: var(--crimson); }
+.checklist-danger li {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23C4183C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>');
+}
+.checklist-danger li strong { color: var(--crimson); }
+
+/* ── TIMELINE ── */
+.timeline-step {
+  display: flex;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.timeline-step:last-child { border-bottom: none; }
+.timeline-step .step-num {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--crimson);
+  min-width: 2rem;
+  background: var(--crimson-glow);
+  border-radius: 60px;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.timeline-step .step-content { flex: 1; }
+.timeline-step .step-content strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.timeline-step .step-content span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── DISCLAIMER ── */
+.disclaimer-box {
+  background: linear-gradient(135deg, rgba(196,24,60,0.05), rgba(10,22,40,0.05));
+  border: 2px solid var(--crimson);
+  border-radius: 20px;
+  padding: 1.8rem 2rem;
+  margin-top: 2rem;
+}
+.disclaimer-box .head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.disclaimer-box .head i {
+  font-size: 2rem;
+  color: var(--crimson);
+}
+.disclaimer-box .head h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--crimson);
+}
+.disclaimer-box ul {
+  list-style: none;
+  padding: 0;
+}
+.disclaimer-box ul li {
+  padding: 0.3rem 0 0.3rem 1.5rem;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23C4183C" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>') left center no-repeat;
+  background-size: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: white;
+  padding: 0.7rem 1.8rem;
+  border-radius: 60px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: 0 8px 28px rgba(10,22,40,.2);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0;
+  transition: .3s;
+  pointer-events: none;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-2-1 { grid-template-columns: 1fr; }
+  .grid-1-2 { grid-template-columns: 1fr; }
+}
+@media(max-width:768px){
+  .sidebar { left: 8px; top: 8px; bottom: 8px; width: 52px; padding: 0.8rem 0; }
+  .sidebar .tip { display: none; }
+  .main { margin-left: 68px; padding: 12px; }
+  .hero-glass { padding: 1.2rem; }
+  .hero-glass h1 { font-size: 1.5rem; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .topbar { padding: 0.6rem 1rem; }
+  .user-name { display: none; }
+  .disclaimer-box { padding: 1.2rem; }
+}
+@media(max-width:480px){
+  .hero-glass h1 { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo" onclick="window.location.href='/dashboard.html'">
+    <i class="fas fa-heart-pulse"></i>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" data-page="dashboard" href="/dashboard.html">
+      <i class="fas fa-grid-2"></i><span class="tip">Dashboard</span>
+    </a>
+    <a class="nav-item" data-page="donate" href="/donor.html">
+      <i class="fas fa-droplet"></i><span class="tip">Donate</span>
+    </a>
+    <a class="nav-item" data-page="health" href="/health.html">
+      <i class="fas fa-heartbeat"></i><span class="tip">Health</span>
+    </a>
+    <a class="nav-item" data-page="navigation" href="/route-navigation.html">
+      <i class="fas fa-route"></i><span class="tip">Navigate</span>
+    </a>
+    <a class="nav-item" data-page="notifications" href="/notifications.html">
+      <i class="fas fa-bell"></i><span class="tip">Alerts</span>
+    </a>
+    <a class="nav-item" data-page="profile" href="/profile.html">
+      <i class="fas fa-user"></i><span class="tip">Profile</span>
+    </a>
+    <a class="nav-item" data-page="settings" href="/settings.html">
+      <i class="fas fa-sliders"></i><span class="tip">Settings</span>
+    </a>
+    <a class="nav-item active" data-page="guidelines" href="guide.html">
+      <i class="fas fa-book"></i><span class="tip">Guidelines</span>
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="theme-toggle-btn" id="themeToggle">
+      <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    <div class="avatar-sb" id="sbAvatar">U</div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <h2>Lumina<span>Life</span></h2>
+        <div class="sub" id="pageTitle">Donor Guidelines</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="glass-btn" id="notifBtn" onclick="window.location.href='/notifications.html'">
+        <i class="fas fa-bell"></i>
+      </div>
+      <div class="glass-btn" id="settingsBtn" onclick="window.location.href='/settings.html'">
+        <i class="fas fa-sliders"></i>
+      </div>
+      <div class="user-chip" id="profileChip" onclick="window.location.href='/profile.html'">
+        <div class="avatar" id="avatarEl">U</div>
+        <div>
+          <div class="user-name" id="userNameEl">Loading...</div>
+          <div class="user-role" id="userRoleEl">🩸 Loading...</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero-glass">
+    <div class="hero-content">
+      <h1>📋 Donor <span>Guidelines</span></h1>
+      <div class="sub">Everything you need to know before becoming a life saver.</div>
+      <div class="hero-tags">
+        <span class="tag tag-blood"><i class="fas fa-droplet"></i> Blood Donation</span>
+        <span class="tag tag-vital"><i class="fas fa-heart"></i> Organ Donation</span>
+        <span class="tag tag-gold"><i class="fas fa-shield"></i> Safety Standards</span>
+        <span class="tag tag-sky"><i class="fas fa-question-circle"></i> FAQs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1: WHO CAN DONATE ===== -->
+  <div class="glass-card" style="margin-bottom:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-user-check"></i> Who Can Donate Blood?</h3>
+      <span class="badge badge-green">Eligibility Criteria</span>
+    </div>
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:0.85rem;color:var(--sage);margin-bottom:0.5rem;"><i class="fas fa-check-circle"></i> You are eligible if:</h4>
+        <ul class="checklist">
+          <li><strong>Age:</strong> 18 – 65 years</li>
+          <li><strong>Weight:</strong> Minimum 50 kg</li>
+          <li><strong>Hemoglobin:</strong> Male ≥ 13 g/dL · Female ≥ 12.5 g/dL</li>
+          <li><strong>Good general health</strong> with no recent illness</li>
+          <li><strong>No recent medication</strong> that affects blood</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="font-size:0.85rem;color:var(--crimson);margin-bottom:0.5rem;"><i class="fas fa-times-circle"></i> You are NOT eligible if:</h4>
+        <ul class="checklist checklist-danger">
+          <li><strong>Recent surgery</strong> (within 6 months)</li>
+          <li><strong>Pregnancy</strong> or recent childbirth</li>
+          <li><strong>Active infection</strong> or fever</li>
+          <li><strong>Recent tattoo</strong> or piercing (within 6 months)</li>
+          <li><strong>Certain medications</strong> (blood thinners, etc.)</li>
+          <li><strong>Recent blood donation</strong> (within 56 days)</li>
+          <li><strong>HIV/AIDS, Hepatitis B/C, Malaria</strong> (permanent deferral)</li>
+          <li><strong>Currently Menstruating</strong> (please wait until your menstrual cycle is complete before donating)</li>
+
+<li><strong>Low Hemoglobin During Menstruation</strong> (iron levels may be temporarily affected)</li>
+
+<li><strong>Weakness, Fatigue, or Dizziness</strong> (donation is recommended only when you feel fully well)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: ORGAN DONATION ELIGIBILITY ===== -->
+  <div class="glass-card" style="margin-bottom:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-heart"></i> Who Can Donate Organs?</h3>
+      <span class="badge badge-gold">Organ Donation</span>
+    </div>
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:0.85rem;color:var(--sage);margin-bottom:0.5rem;">Living Donation</h4>
+        <ul class="checklist">
+          <li><strong>Kidney</strong> — Healthy individual, 18-65 years</li>
+          <li><strong>Part of Liver</strong> — Healthy donor, compatible blood type</li>
+          <li>Must be in <strong>excellent health</strong></li>
+          <li>No <strong>major medical conditions</strong></li>
+          <li>Must undergo <strong>full medical evaluation</strong></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="font-size:0.85rem;color:var(--crimson);margin-bottom:0.5rem;">Deceased Donation</h4>
+        <ul class="checklist checklist-danger">
+          <li><strong>Heart, Lungs, Liver, Kidneys</strong></li>
+          <li><strong>Pancreas, Intestines, Corneas, Skin</strong></li>
+          <li>Donation <strong>does not depend on age</strong></li>
+          <li>Medical condition determines <strong>suitability</strong></li>
+          <li>Must have <strong>registered consent</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: HOW TO DONATE ===== -->
+  <div class="glass-card" style="margin-bottom:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-clock"></i> How to Donate Blood</h3>
+      <span class="badge badge-blue">Process Guide</span>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Registration</strong>
+        <span>Provide valid ID and donor details at the donation center</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Health Screening</strong>
+        <span>Blood pressure, hemoglobin check, weight verification, and medical history review</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Donation</strong>
+        <span>Actual blood draw takes 8–10 minutes. You'll donate approximately 450ml of blood</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Refreshment & Recovery</strong>
+        <span>Rest for 15–20 minutes, enjoy light refreshments, and hydrate</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>Blood Processing</strong>
+        <span>Blood is separated into components (red cells, plasma, platelets) for different patients</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: BEFORE & AFTER ===== -->
+  <div class="grid-2" style="margin-bottom:1.5rem;">
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-sun"></i> Before Donation</h3>
+        <span class="badge badge-green">Preparation</span>
+      </div>
+      <ul class="checklist">
+        <li><strong>Sleep well</strong> — Get 7-8 hours of rest</li>
+        <li><strong>Eat a healthy meal</strong> — Avoid fatty foods</li>
+        <li><strong>Drink plenty of water</strong> — Stay hydrated</li>
+        <li><strong>Carry valid ID proof</strong> — Aadhaar, Passport, or Driver's License</li>
+        <li><strong>Avoid alcohol</strong> — 24 hours before donation</li>
+        <li><strong>No smoking</strong> — 2 hours before donation</li>
+        <li><strong>Wear comfortable clothes</strong> — Easy access to arms</li>
+      </ul>
+    </div>
+    <div class="glass-card">
+      <div class="head">
+        <h3><i class="fas fa-moon"></i> After Donation</h3>
+        <span class="badge badge-gold">Recovery</span>
+      </div>
+      <ul class="checklist">
+        <li><strong>Drink extra fluids</strong> — Water, juice, electrolyte drinks</li>
+        <li><strong>Avoid heavy exercise</strong> — For 24 hours</li>
+        <li><strong>Keep bandage on</strong> — For at least 4 hours</li>
+        <li><strong>Eat iron-rich foods</strong> — Spinach, red meat, beans</li>
+        <li><strong>Rest if feeling dizzy</strong> — Lie down and elevate legs</li>
+        <li><strong>No alcohol</strong> — For 24 hours after donation</li>
+        <li><strong>Remove bandage</strong> — After 4 hours, wash gently</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: ORGAN DONATION PROCESS ===== -->
+  <div class="glass-card" style="margin-bottom:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-hand-holding-heart"></i> How to Become an Organ Donor</h3>
+      <span class="badge badge-purple">Registration</span>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Register as Donor</strong>
+        <span>Sign up through the National Organ Donation Registry or LuminaLife platform</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Choose Donation Preferences</strong>
+        <span>Select which organs and tissues you wish to donate</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Add Emergency Contacts</strong>
+        <span>Provide family members and healthcare contacts for consent</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Inform Family Members</strong>
+        <span>Discuss your decision with loved ones to ensure your wishes are honored</span>
+      </div>
+    </div>
+    <div class="timeline-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>Maintain Updated Medical Information</strong>
+        <span>Keep your health records current for accurate matching</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6: TERMS & CONDITIONS ===== -->
+  <div class="glass-card" style="margin-bottom:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-file-contract"></i> Terms & Conditions</h3>
+      <span class="badge badge-red">Important</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.8rem;">
+      <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--crimson);">
+        <h4 style="font-size:0.78rem;font-weight:600;color:var(--crimson);">1. Donor Consent</h4>
+        <p style="font-size:0.7rem;color:var(--text-muted);">Donation is entirely voluntary. You must provide informed consent before any procedure. You have the right to withdraw consent at any time.</p>
+      </div>
+      <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--gold);">
+        <h4 style="font-size:0.78rem;font-weight:600;color:var(--gold);">2. Medical Evaluation</h4>
+        <p style="font-size:0.7rem;color:var(--text-muted);">All donors undergo rigorous medical screening to ensure safety for both donor and recipient. Results may affect eligibility.</p>
+      </div>
+      <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--sage);">
+        <h4 style="font-size:0.78rem;font-weight:600;color:var(--sage);">3. Privacy Protection</h4>
+        <p style="font-size:0.7rem;color:var(--text-muted);">Your personal and medical information is strictly confidential. Data is protected under national privacy laws and hospital policies.</p>
+      </div>
+      <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--sky);">
+        <h4 style="font-size:0.78rem;font-weight:600;color:var(--sky);">4. Post-Donation Care</h4>
+        <p style="font-size:0.7rem;color:var(--text-muted);">Medical staff will monitor you after donation. Follow all post-donation care instructions for your safety.</p>
+      </div>
+      <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--purple);">
+        <h4 style="font-size:0.78rem;font-weight:600;color:var(--purple);">5. Organ Allocation</h4>
+        <p style="font-size:0.7rem;color:var(--text-muted);">Organ donation follows national allocation guidelines. Matching is based on medical urgency, blood type compatibility, and organ size.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7: DISCLAIMER ===== -->
+  <div class="disclaimer-box">
+    <div class="head">
+      <i class="fas fa-triangle-exclamation"></i>
+      <h2>⚠️ Legal Disclaimer</h2>
+    </div>
+    <p style="font-size:0.9rem;color:var(--text);margin-bottom:0.8rem;font-weight:600;">
+      LuminaLife is a donor information and referral platform. We are NOT responsible for:
+    </p>
+    <ul>
+      <li><strong>Medical outcomes</strong> — All medical procedures are performed by licensed healthcare professionals at partner hospitals</li>
+      <li><strong>Donor eligibility</strong> — Final eligibility is determined by medical professionals during screening</li>
+      <li><strong>Donation complications</strong> — We provide information, but do not perform medical procedures</li>
+      <li><strong>Hospital services</strong> — Partner hospitals are independent and responsible for their services</li>
+      <li><strong>Organ allocation</strong> — Allocation follows national guidelines set by government authorities</li>
+      <li><strong>Data accuracy</strong> — While we strive for accuracy, please verify critical information with medical professionals</li>
+      <li><strong>Emergency responses</strong> — Emergency services are provided by partner hospitals and emergency services</li>
+      <li><strong>Organ Donor Registration</strong> — Registration through LuminaLife indicates your willingness to be considered as a potential organ donor. It does not constitute a medical approval, donor-recipient match, or transplantation agreement.</li>
+      <li><strong>Authorized Medical Process Only</strong> — Organ donation and transplantation can only be coordinated through authorized hospitals, transplant authorities, and certified medical professionals. Users should not respond to private requests or arrange organ donations independently.</li>
+      <li><strong>Communication & Liability</strong> — Any donor evaluation, matching, consent verification, and transplantation process will be managed solely by authorized healthcare institutions. LuminaLife serves only as a registration platform and is not responsible for medical decisions, donor matching, transplant outcomes, or communications outside official channels.</li>
+    </ul>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.8rem;border-top:1px solid var(--glass-border);padding-top:0.8rem;">
+      <i class="fas fa-info-circle" style="color:var(--crimson);"></i>
+      For medical emergencies, please contact your nearest hospital or emergency services immediately.
+      Always consult with healthcare professionals for medical advice.
+    </p>
+  </div>
+
+  <!-- ===== SECTION 8: EMERGENCY CONTACTS ===== -->
+  <div class="glass-card" style="margin-top:1.5rem;">
+    <div class="head">
+      <h3><i class="fas fa-phone-alt"></i> Emergency Contacts</h3>
+      <span class="badge badge-red">📞 24/7</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">
+      <div style="padding:0.6rem;background:var(--bg-glass);border-radius:14px;text-align:center;">
+        <i class="fas fa-hospital" style="font-size:1.5rem;color:var(--crimson);display:block;margin-bottom:0.3rem;"></i>
+        <div style="font-size:0.7rem;font-weight:600;">National Organ & Tissue</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);">1800-11-4770</div>
+      </div>
+      <div style="padding:0.6rem;background:var(--bg-glass);border-radius:14px;text-align:center;">
+        <i class="fas fa-tint" style="font-size:1.5rem;color:var(--crimson);display:block;margin-bottom:0.3rem;"></i>
+        <div style="font-size:0.7rem;font-weight:600;">National Blood Transfusion</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);">011-2391 4410</div>
+      </div>
+      <div style="padding:0.6rem;background:var(--bg-glass);border-radius:14px;text-align:center;">
+        <i class="fas fa-ambulance" style="font-size:1.5rem;color:var(--crimson);display:block;margin-bottom:0.3rem;"></i>
+        <div style="font-size:0.7rem;font-weight:600;">Emergency Medical Services</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);">108</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 9: CALL TO ACTION ===== -->
+  <div class="glass-card" style="margin-top:1.5rem;text-align:center;background:linear-gradient(135deg, var(--crimson-glow), var(--bg-glass));border-color:var(--crimson);">
+    <h3 style="font-size:1.2rem;font-weight:700;color:var(--crimson);">❤️ Ready to Make a Difference?</h3>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin:0.5rem 0 1rem;">Join thousands of donors who are saving lives every day.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;">
+      <a href="/donor.html" class="btn-primary" style="padding:0.6rem 2rem;border:none;border-radius:60px;background:linear-gradient(135deg,var(--crimson),var(--crimson-l));color:white;font-weight:600;font-size:0.85rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all .3s;">
+        <i class="fas fa-droplet"></i> Register for Blood Donation
+      </a>
+      <a href="/donor.html" class="btn-secondary" style="padding:0.6rem 2rem;border:2px solid var(--crimson);border-radius:60px;color:var(--crimson);font-weight:600;font-size:0.85rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all .3s;">
+        <i class="fas fa-heart"></i> Register for Organ Donation
+      </a>
+    </div>
+  </div>
+
+  <!-- SYNC STATUS -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;font-size:0.6rem;color:var(--text-muted);padding-top:0.8rem;border-top:1px solid var(--glass-border);margin-top:1.5rem;">
+    <span class="sync-dot" style="width:7px;height:7px;border-radius:60px;background:var(--sage);display:inline-block;animation:pulse-dot 2s infinite;"></span>
+    <span id="syncStatus">Connected to LuminaLife Network</span>
+    <span>·</span>
+    <span id="syncTime">just now</span>
+  </div>
+
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <i class="fas fa-circle-check" style="color:var(--sage);"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  LUMINALIFE GUIDELINES PAGE - WITH PROFILE & THEME
+// ═══════════════════════════════════════════════════════════
+
+const USER_ID = localStorage.getItem('lifelineUserId') || sessionStorage.getItem('lifelineUserId') || 'D001';
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ── PARTICLES ─────────────────────────────────────────────
+function initParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#C4183C', '#F9A8B8', '#7BB597', '#38BDF8', '#D4A055'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      width:${Math.random()*4+2}px;height:${Math.random()*4+2}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;animation-duration:${Math.random()*30+20}s;
+      animation-delay:${Math.random()*20}s;opacity:${Math.random()*.08+.04};
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── THEME ──────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('lumina_theme', next);
+  const icon = document.getElementById('themeIcon');
+  icon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem('lumina_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  const icon = document.getElementById('themeIcon');
+  icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── API ────────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  try {
+    const url = `${API_BASE}${path}`;
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': USER_ID },
+      ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.warn('API Error:', e.message);
+    return null;
+  }
+}
+
+// ── LOAD PROFILE ───────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const profileRes = await apiFetch(`/profile/${USER_ID}`);
+    const profile = profileRes?.profile || profileRes || {
+      full_name: 'Ira',
+      blood_group: 'O+',
+      age: 21,
+      weight_kg: 62,
+      location: 'Bengaluru',
+      total_donations: 4,
+      lives_saved: 7,
+      last_donation_date: null,
+      hemoglobin: 14.5,
+      height_cm: 165,
+      blood_pressure: '120/80',
+      is_recovered: true,
+      donor_status: 'available'
+    };
+
+    // Update UI with profile data
+    const name = profile.full_name || 'Donor';
+    document.getElementById('userNameEl').textContent = name.split(' ')[0];
+    document.getElementById('userRoleEl').textContent = `🩸 ${profile.blood_group || 'O+'}`;
+    document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('sbAvatar').textContent = name.charAt(0).toUpperCase();
+
+    // Store in localStorage for other pages
+    localStorage.setItem('userName', name);
+    localStorage.setItem('userBloodGroup', profile.blood_group || 'O+');
+
+    toast('✅ Profile loaded');
+  } catch (e) {
+    console.error('Profile load error:', e);
+    // Use fallback from localStorage
+    const name = localStorage.getItem('userName') || 'Ira';
+    document.getElementById('userNameEl').textContent = name.split(' ')[0];
+    document.getElementById('userRoleEl').textContent = `🩸 ${localStorage.getItem('userBloodGroup') || 'O+'}`;
+    document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('sbAvatar').textContent = name.charAt(0).toUpperCase();
+    toast('📡 Using cached profile');
+  }
+}
+
+// ── SYNC STATUS ────────────────────────────────────────────
+function updateSyncStatus() {
+  document.getElementById('syncTime').textContent = new Date().toLocaleTimeString();
+}
+
+// ── INIT ──────────────────────────────────────────────────
+loadTheme();
+initParticles();
+loadProfile();
+updateSyncStatus();
+
+// Auto-refresh sync time every 30 seconds
+setInterval(updateSyncStatus, 30000);
+
+// Make functions globally accessible
+window.toggleTheme = toggleTheme;
+window.toast = toast;
+</script>
+</body>
+</html>

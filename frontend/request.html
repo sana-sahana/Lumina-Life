@@ -1,0 +1,966 @@
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lumina Life - Create Request</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--bg:
+linear-gradient(
+135deg,
+#fff8fa,
+#fff1f2,
+#fdf2f8
+);
+
+--card:
+rgba(255,255,255,.88);
+
+--text:#1f2937;
+
+--muted:#6b7280;
+
+--accent:
+linear-gradient(
+135deg,
+#ef4444,
+#ec4899
+);
+
+}
+
+body.dark{
+
+--bg:
+linear-gradient(
+135deg,
+#0b1220,
+#111827,
+#1f2937
+);
+
+--card:
+rgba(17,24,39,.85);
+
+--text:#ffffff;
+
+--muted:#94a3b8;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,sans-serif;
+}
+
+body{
+
+background:var(--bg);
+
+color:var(--text);
+
+min-height:100vh;
+
+padding:24px;
+
+transition:.3s;
+
+}
+
+.topbar{
+
+max-width:1300px;
+
+margin:auto;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+.logo{
+
+font-size:1.7rem;
+
+font-weight:800;
+
+}
+
+.logo span{
+
+color:#ec4899;
+
+}
+
+.theme-btn{
+
+padding:12px 18px;
+
+border:none;
+
+border-radius:999px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.container{
+
+max-width:1300px;
+
+margin:24px auto;
+
+display:grid;
+
+grid-template-columns:
+320px 1fr;
+
+gap:22px;
+
+}
+
+.card{
+
+background:var(--card);
+
+backdrop-filter:blur(20px);
+
+border-radius:28px;
+
+padding:24px;
+
+}
+
+.profile{
+
+text-align:center;
+
+}
+
+.avatar{
+
+width:110px;
+
+height:110px;
+
+border-radius:50%;
+
+margin:auto;
+
+background:
+linear-gradient(
+135deg,
+#ef4444,
+#ec4899
+);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:2rem;
+
+font-weight:800;
+
+color:white;
+
+}
+
+.profile h2{
+
+margin-top:15px;
+
+}
+
+.profile p{
+
+color:var(--muted);
+
+}
+
+.info{
+
+margin-top:20px;
+
+text-align:left;
+
+}
+
+.info div{
+
+margin:12px 0;
+
+}
+
+.request-title{
+
+margin-bottom:10px;
+
+}
+
+.request-subtitle{
+
+color:var(--muted);
+
+margin-bottom:24px;
+
+}
+
+.form-grid{
+
+display:grid;
+
+grid-template-columns:
+1fr 1fr;
+
+gap:20px;
+
+}
+
+label{
+
+display:block;
+
+margin-bottom:6px;
+
+font-weight:600;
+
+}
+
+input,
+select,
+textarea{
+
+width:100%;
+
+padding:14px;
+
+border-radius:12px;
+
+border:1px solid #d1d5db;
+
+margin-bottom:18px;
+
+font-size:14px;
+
+}
+
+textarea{
+
+resize:vertical;
+
+min-height:120px;
+
+}
+
+.section{
+
+padding:18px;
+
+border-radius:18px;
+
+background:
+rgba(236,72,153,.06);
+
+margin-bottom:18px;
+
+}
+
+.section h3{
+
+margin-bottom:8px;
+
+}
+
+.section p{
+
+color:var(--muted);
+
+font-size:.95rem;
+
+}
+
+.primary-btn{
+
+padding:14px 22px;
+
+border:none;
+
+border-radius:12px;
+
+background:
+linear-gradient(
+135deg,
+#ef4444,
+#ec4899
+);
+
+color:white;
+
+font-weight:700;
+
+cursor:pointer;
+
+}
+
+#organSection{
+
+display:none;
+
+}
+
+@media(max-width:950px){
+
+.container{
+
+grid-template-columns:1fr;
+
+}
+
+.form-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body class="dark">
+
+<div class="topbar">
+
+<div class="logo">
+Lumina
+<span>Life</span>
+</div>
+
+<div class="topbar">
+
+<div class="logo">
+Lumina
+<span>Life</span>
+</div>
+
+<div style="display:flex;gap:12px;">
+
+<button
+onclick="window.location.href='hospital-dashboard.html'"
+class="theme-btn">
+Dashboard
+</button>
+
+<button
+id="themeBtn"
+class="theme-btn">
+Theme
+</button>
+
+</div>
+
+</div>
+
+<button
+id="themeBtn"
+class="theme-btn">
+Theme </button>
+
+</div>
+
+<div class="container">
+
+<div class="card profile">
+
+<div
+class="avatar"
+id="avatar">
+H
+</div>
+
+<h2 id="hospitalName">
+Hospital Name
+</h2>
+
+<p id="hospitalArea">
+Area
+</p>
+
+<div class="info">
+
+<div>
+<strong>Email:</strong>
+<span id="hospitalEmail">
+Not Available
+</span>
+</div>
+
+<div>
+<strong>Area:</strong>
+<span id="hospitalArea2">
+Not Available
+</span>
+</div>
+
+<div>
+<strong>Status:</strong>
+Active
+</div>
+
+<div>
+<strong>Role:</strong>
+Hospital
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h1 class="request-title">
+Create Donation Request
+</h1>
+
+<p class="request-subtitle">
+Create blood or organ requests that can later be matched with eligible donors.
+</p>
+
+<div class="section">
+
+<h3>Request Information</h3>
+
+<p>
+Every request created here will be stored and used by the request status page, donor dashboard and tracker page.
+</p>
+
+</div>
+
+<div class="form-grid">
+
+<div>
+
+<label>
+Patient ID
+</label>
+
+<input
+id="patientId"
+placeholder="P1001">
+
+<label>
+Request Type
+</label>
+
+<select
+id="requestType">
+
+<option>
+Blood
+</option>
+
+<option>
+Organ
+</option>
+
+</select>
+
+<div id="bloodSection">
+
+<label>
+Blood Group
+</label>
+
+<select id="bloodGroup">
+
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+
+</select>
+
+</div>
+
+<div id="organSection">
+
+<label>
+Organ Type
+</label>
+
+<select id="organ">
+
+<option>
+Kidney
+</option>
+
+<option>
+Liver
+</option>
+
+<option>
+Bone Marrow
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div>
+
+<label>
+Priority
+</label>
+
+<select id="priority">
+
+<option>
+Normal
+</option>
+
+<option>
+Urgent
+</option>
+
+<option>
+Critical
+</option>
+
+</select>
+
+<label>
+Area
+</label>
+
+<select id="area">
+
+<option>Koramangala</option>
+<option>Whitefield</option>
+<option>Indiranagar</option>
+<option>Electronic City</option>
+<option>Hebbal</option>
+<option>Jayanagar</option>
+<option>Banashankari</option>
+<option>Marathahalli</option>
+<option>Yelahanka</option>
+<option>Rajajinagar</option>
+
+</select>
+
+<label>
+Additional Notes
+</label>
+
+<textarea
+id="notes">
+</textarea>
+
+</div>
+
+</div>
+
+<button
+class="primary-btn"
+id="createRequestBtn">
+
+Create Request
+
+</button>
+<!-- Success Modal -->
+
+<div
+id="modal"
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(8px);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div
+style="
+background:white;
+padding:30px;
+border-radius:24px;
+width:420px;
+max-width:90%;
+text-align:center;
+">
+
+<h2
+id="modalTitle">
+Request Created
+</h2>
+
+<p
+id="modalMessage"
+style="
+margin:15px 0;
+color:#6b7280;
+">
+</p>
+
+<button
+id="viewStatusBtn"
+class="primary-btn">
+View Request Status </button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* ==========================
+   THEME SYSTEM
+========================== */
+
+if(
+localStorage.getItem(
+"theme"
+) === "light"
+){
+document.body.classList.remove(
+"dark"
+);
+}
+
+document
+.getElementById(
+"themeBtn"
+)
+.onclick = () => {
+
+document.body.classList.toggle(
+"dark"
+);
+
+localStorage.setItem(
+"theme",
+document.body.classList.contains(
+"dark"
+)
+?
+"dark"
+:
+"light"
+);
+
+};
+
+/* ==========================
+   LOAD HOSPITAL PROFILE
+========================== */
+
+const hospitalProfile =
+JSON.parse(
+localStorage.getItem(
+"hospitalProfile"
+)
+) || {};
+
+document.getElementById(
+"hospitalName"
+).innerText =
+hospitalProfile.name
+||
+"Hospital Name";
+
+document.getElementById(
+"hospitalEmail"
+).innerText =
+hospitalProfile.email
+||
+"Not Available";
+
+document.getElementById(
+"hospitalArea"
+).innerText =
+hospitalProfile.area
+||
+"Area";
+
+document.getElementById(
+"hospitalArea2"
+).innerText =
+hospitalProfile.area
+||
+"Area";
+
+if(
+hospitalProfile.name
+){
+
+document.getElementById(
+"avatar"
+).innerText =
+hospitalProfile.name
+.charAt(0)
+.toUpperCase();
+
+}
+
+/* ==========================
+   REQUEST TYPE SWITCHING
+========================== */
+
+document
+.getElementById(
+"requestType"
+)
+.addEventListener(
+"change",
+function(){
+
+if(
+this.value === "Blood"
+){
+
+document.getElementById(
+"bloodSection"
+).style.display =
+"block";
+
+document.getElementById(
+"organSection"
+).style.display =
+"none";
+
+}
+else{
+
+document.getElementById(
+"bloodSection"
+).style.display =
+"none";
+
+document.getElementById(
+"organSection"
+).style.display =
+"block";
+
+}
+
+}
+);
+
+/* ==========================
+   CREATE REQUEST
+========================== */
+
+document
+.getElementById(
+"createRequestBtn"
+)
+.addEventListener(
+"click",
+function(){
+
+const patientId =
+document
+.getElementById(
+"patientId"
+)
+.value
+.trim();
+
+if(
+patientId === ""
+){
+
+alert(
+"Please enter Patient ID"
+);
+
+return;
+
+}
+
+const requestType =
+document.getElementById(
+"requestType"
+).value;
+
+const request = {
+
+requestId:
+"REQ-" +
+Date.now(),
+
+hospitalId:
+hospitalProfile.hospitalId
+||
+"",
+
+hospitalName:
+hospitalProfile.name
+||
+"",
+
+hospitalArea:
+hospitalProfile.area
+||
+"",
+
+patientId:
+
+patientId,
+
+requestType:
+
+requestType,
+
+bloodGroup:
+
+requestType === "Blood"
+
+?
+
+document.getElementById(
+"bloodGroup"
+).value
+
+:
+
+"",
+
+organ:
+
+requestType === "Organ"
+
+?
+
+document.getElementById(
+"organ"
+).value
+
+:
+
+"",
+
+priority:
+
+document.getElementById(
+"priority"
+).value,
+
+area:
+
+document.getElementById(
+"area"
+).value,
+
+notes:
+
+document.getElementById(
+"notes"
+).value,
+
+status:
+
+"Open",
+
+createdAt:
+
+new Date()
+.toISOString()
+
+};
+
+/* ==========================
+   STORE REQUEST
+========================== */
+
+let requests =
+
+JSON.parse(
+localStorage.getItem(
+"hospitalRequests"
+)
+)
+
+||
+
+[];
+
+requests.push(
+request
+);
+
+localStorage.setItem(
+"hospitalRequests",
+JSON.stringify(
+requests
+)
+);
+
+/* ==========================
+   SHOW SUCCESS MODAL
+========================== */
+
+document.getElementById(
+"modal"
+).style.display =
+"flex";
+
+document.getElementById(
+"modalMessage"
+).innerHTML =
+`
+<strong>
+Request ID
+</strong>
+<br>
+${request.requestId}
+`;
+
+document.getElementById(
+"viewStatusBtn"
+).onclick =
+function(){
+
+window.location =
+"request-status.html";
+
+};
+
+}
+);
+
+</script>
+
+</body>
+
+</html>

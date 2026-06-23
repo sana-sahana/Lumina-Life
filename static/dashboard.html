@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuminaLife · Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ════════════════════════════════════════════════════════
+   ULTRA PREMIUM GLASSMORPHISM DESIGN
+════════════════════════════════════════════════════════ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.04);
+  --glass-blur: blur(24px) saturate(180%);
+  
+  --crimson: #C4183C;
+  --crimson-glow: rgba(196, 24, 60, 0.15);
+  --crimson-l: #E2264F;
+  --rose: #F9A8B8;
+  --rose-l: #FDDEE5;
+  --sage: #7BB597;
+  --sage-glow: rgba(123, 181, 151, 0.15);
+  --amber: #F0A855;
+  --gold: #D4A055;
+  --sky: #38BDF8;
+  --purple: #8B5CF6;
+  --navy: #0A1628;
+  --text: #0A1628;
+  --text-muted: #6B7280;
+  --bg: #F0F2F6;
+  --bg-glass: rgba(255,255,255,0.3);
+}
+
+[data-theme="dark"] {
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  --bg: #080C18;
+  --text: #F2F5FA;
+  --text-muted: #94A3B8;
+  --bg-glass: rgba(15, 23, 42, 0.3);
+  --crimson-glow: rgba(196, 24, 60, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .4s ease, color .4s ease;
+  overflow-x: hidden;
+}
+
+/* ── FLOATING PARTICLES ── */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  animation: float-particle linear infinite;
+}
+@keyframes float-particle {
+  0% { transform: translateY(100vh) rotate(0deg) scale(0); opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(-10vh) rotate(720deg) scale(1); opacity: 0; }
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: 64px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 0;
+  z-index: 100;
+  transition: all .4s ease;
+}
+.sidebar:hover {
+  background: var(--glass-bg);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+}
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--crimson), var(--crimson-l));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: white;
+  box-shadow: 0 4px 20px var(--crimson-glow);
+  cursor: pointer;
+  transition: all .3s ease;
+  margin-bottom: 1.8rem;
+  flex-shrink: 0;
+}
+.sidebar-logo:hover { transform: scale(1.08) rotate(-5deg); }
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin: 0 8px;
+  border-radius: 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1rem;
+  position: relative;
+  transition: all .3s ease;
+  text-decoration: none;
+}
+.nav-item i {
+  transition: all .3s ease;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: var(--bg-glass);
+}
+.nav-item.active {
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.nav-item.active i {
+  transform: scale(1.1);
+}
+.nav-item .tip {
+  position: absolute;
+  left: calc(100% + 14px);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  padding: 0.25rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s ease;
+  color: var(--text);
+  box-shadow: var(--glass-shadow);
+}
+.nav-item:hover .tip { opacity: 1; }
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.theme-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.theme-toggle-btn:hover {
+  color: var(--text);
+  background: var(--glass-bg);
+}
+.avatar-sb {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  border: 2px solid var(--glass-border);
+  transition: all .3s ease;
+}
+.avatar-sb:hover { transform: scale(1.06); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 96px;
+  max-width: 1320px;
+  padding: 20px 24px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.8rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+.topbar-left h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.topbar-left h2 span { color: var(--crimson); }
+.topbar-left .sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.glass-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  transition: all .3s ease;
+  position: relative;
+}
+.glass-btn:hover {
+  border-color: var(--crimson);
+  color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 60px;
+  background: var(--crimson);
+  box-shadow: 0 0 12px var(--crimson);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0.8rem 0.2rem 0.3rem;
+  border-radius: 60px;
+  background: var(--bg-glass);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.user-chip:hover { border-color: var(--crimson); }
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  color: white;
+  font-weight: 700;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-name { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+.user-role { font-size: 0.55rem; color: var(--text-muted); }
+
+/* ── GLASS CARD ── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 1.4rem 1.6rem;
+  transition: all .4s ease;
+}
+.glass-card:hover {
+  box-shadow: 0 12px 48px rgba(0,0,0,0.06);
+}
+.glass-card .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.glass-card .head h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.glass-card .head h3 i { color: var(--crimson); font-size: 0.9rem; }
+.badge {
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 0.1rem 0.6rem;
+  border-radius: 60px;
+}
+.badge-green { background: var(--sage-glow); color: #1a6b42; }
+.badge-red { background: var(--crimson-glow); color: var(--crimson); }
+.badge-gold { background: rgba(208,160,85,0.15); color: #8a5a00; }
+.badge-purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+.badge-blue { background: rgba(56,189,248,0.15); color: #1E40AF; }
+.badge-sage { background: var(--sage-glow); color: #1a6b42; }
+
+/* ── HERO ── */
+.hero-glass {
+  background: linear-gradient(135deg, rgba(10,22,40,0.85), rgba(10,22,40,0.7));
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 28px;
+  padding: 2.2rem 2.8rem;
+  margin-bottom: 1.8rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="dark"] .hero-glass {
+  background: linear-gradient(135deg, rgba(10,22,40,0.95), rgba(20,10,30,0.85));
+}
+.hero-glass::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,24,60,0.08), transparent 70%);
+  pointer-events: none;
+}
+.hero-glass::after {
+  content: '🩸';
+  position: absolute;
+  bottom: -30px;
+  right: 20px;
+  font-size: 14rem;
+  opacity: 0.03;
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2.5rem;
+  position: relative;
+  z-index: 2;
+}
+.hero-left h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.hero-left h1 span { color: var(--rose); }
+.hero-left .sub {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+.hero-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.7rem;
+  border-radius: 60px;
+}
+.tag-blood { background: var(--crimson-glow); color: var(--rose); border: 1px solid rgba(196,24,60,0.2); }
+.tag-vital { background: var(--sage-glow); color: var(--sage); border: 1px solid rgba(123,181,151,0.2); }
+.tag-gold { background: rgba(208,160,85,0.15); color: var(--gold); border: 1px solid rgba(208,160,85,0.2); }
+.tag-sky { background: rgba(56,189,248,0.15); color: var(--sky); border: 1px solid rgba(56,189,248,0.2); }
+
+.hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2rem;
+}
+.readiness-ring {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+.readiness-ring svg { transform: rotate(-90deg); }
+.readiness-ring .ring-val {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.readiness-ring .ring-val .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}
+.readiness-ring .ring-val .lbl {
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.hero-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  text-align: right;
+}
+.hero-stats .stat-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+}
+.hero-stats .stat-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── GRIDS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+
+/* ── COUNTDOWN ── */
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.2rem;
+}
+.countdown-item {
+  text-align: center;
+  padding: 0.4rem;
+  background: var(--bg-glass);
+  border-radius: 12px;
+}
+.countdown-item .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--crimson);
+}
+.countdown-item .label {
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── ACHIEVEMENTS ── */
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.ach-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  text-align: center;
+  transition: all .3s ease;
+  opacity: 0.35;
+  border: 1px solid transparent;
+}
+.ach-item.unlocked {
+  opacity: 1;
+  border-color: var(--glass-border);
+}
+.ach-item:hover { transform: translateY(-2px); }
+.ach-item .icon { font-size: 1.8rem; margin-bottom: 0.1rem; }
+.ach-item .name { font-size: 0.55rem; font-weight: 600; color: var(--text); }
+.ach-item .desc { font-size: 0.45rem; color: var(--text-muted); }
+
+/* ── HOSPITALS ── */
+.hospital-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.hospital-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all .3s ease;
+  cursor: pointer;
+}
+.hospital-card:hover {
+  border-color: var(--crimson);
+  background: var(--crimson-glow);
+}
+.hospital-card .h-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rose-l);
+  color: var(--crimson);
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+.hospital-card .h-info { flex: 1; }
+.hospital-card .h-name { font-size: 0.7rem; font-weight: 600; color: var(--text); }
+.hospital-card .h-dist { font-size: 0.55rem; color: var(--text-muted); }
+.hospital-card .h-status { font-size: 0.5rem; font-weight: 600; padding: 0.05rem 0.4rem; border-radius: 60px; }
+
+/* ── EMERGENCY ── */
+.emergency-card {
+  border-color: var(--rose-l);
+  position: relative;
+}
+.emergency-card.active {
+  background: linear-gradient(135deg, var(--crimson-glow), rgba(196,24,60,0.02));
+  border-color: var(--crimson);
+}
+.em-content { display: flex; align-items: center; gap: 1rem; }
+.em-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 60px;
+  background: var(--crimson-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--crimson);
+  flex-shrink: 0;
+  animation: em-pulse 1.5s infinite;
+}
+@keyframes em-pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.05);} }
+.em-info h4 { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.em-info p { font-size: 0.7rem; color: var(--text-muted); }
+.em-meta { display: flex; gap: 0.6rem; margin-top: 0.2rem; flex-wrap: wrap; }
+.em-meta span { font-size: 0.6rem; color: var(--slate); display: flex; align-items: center; gap: 0.2rem; }
+.em-meta span i { color: var(--crimson); font-size: 0.6rem; }
+.em-actions { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+.em-actions button {
+  padding: 0.4rem 1.2rem;
+  border-radius: 60px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--crimson), var(--crimson-l));
+  color: white;
+  box-shadow: 0 4px 20px var(--crimson-glow);
+}
+.btn-primary:hover { transform: scale(0.97); }
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--glass-border);
+}
+.btn-outline:hover { border-color: var(--crimson); color: var(--crimson); }
+.em-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem 0;
+  gap: 0.2rem;
+}
+.em-empty i { font-size: 2.5rem; color: var(--text-muted); opacity: 0.2; }
+.em-empty h4 { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.em-empty p { font-size: 0.7rem; color: var(--text-muted); }
+
+/* ── PROFILE ── */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--glass-border);
+}
+.impact-item {
+  background: var(--bg-glass);
+  border-radius: 14px;
+  padding: 0.6rem;
+  text-align: center;
+}
+.impact-item .num { font-size: 1.3rem; font-weight: 800; }
+.impact-item .num.crimson { color: var(--crimson); }
+.impact-item .num.sage { color: var(--sage); }
+.impact-item .num.gold { color: var(--gold); }
+.impact-item .label { font-size: 0.55rem; color: var(--text-muted); }
+
+/* ── QUICK STATS ── */
+.quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-glass);
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all .3s ease;
+}
+.quick-stat:hover { border-color: var(--glass-border); }
+.quick-stat .qs-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+.quick-stat .qs-icon.red { background: var(--crimson-glow); color: var(--crimson); }
+.quick-stat .qs-icon.green { background: var(--sage-glow); color: var(--sage); }
+.quick-stat .qs-icon.gold { background: rgba(208,160,85,0.15); color: var(--gold); }
+.quick-stat .qs-icon.purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+.quick-stat .qs-info { flex: 1; }
+.quick-stat .qs-info .val { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.quick-stat .qs-info .lbl { font-size: 0.55rem; color: var(--text-muted); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: white;
+  padding: 0.7rem 1.8rem;
+  border-radius: 60px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: 0 8px 28px rgba(10,22,40,.2);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  opacity: 0;
+  transition: .3s;
+  pointer-events: none;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-right { justify-content: flex-start; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-2-1 { grid-template-columns: 1fr; }
+}
+@media(max-width:768px){
+  .sidebar { left: 8px; top: 8px; bottom: 8px; width: 52px; padding: 0.8rem 0; }
+  .sidebar .tip { display: none; }
+  .main { margin-left: 68px; padding: 12px; }
+  .hero-glass { padding: 1.2rem; }
+  .hero-left h1 { font-size: 1.5rem; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .hospital-grid { grid-template-columns: 1fr; }
+  .achievement-grid { grid-template-columns: repeat(2,1fr); }
+  .countdown-grid { grid-template-columns: repeat(2,1fr); }
+  .impact-grid { grid-template-columns: 1fr; }
+  .topbar { padding: 0.6rem 1rem; }
+  .user-name { display: none; }
+}
+@media(max-width:480px){
+  .hero-right { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+  .hero-stats { flex-direction: row; gap: 1rem; }
+  .readiness-ring { width: 80px; height: 80px; }
+  .readiness-ring .ring-val .num { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+  <div class="sidebar-logo" onclick="navigateTo('dashboard')">
+    <i class="fas fa-heart-pulse"></i>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+      <i class="fas fa-grid-2"></i><span class="tip">Dashboard</span>
+    </a>
+    <a class="nav-item" data-page="donate" onclick="navigateTo('donate')">
+      <i class="fas fa-droplet"></i><span class="tip">Donate</span>
+    </a>
+    <a class="nav-item" data-page="health" onclick="navigateTo('health')">
+      <i class="fas fa-heartbeat"></i><span class="tip">Health</span>
+    </a>
+    <a class="nav-item" data-page="navigation" onclick="navigateTo('navigation')">
+      <i class="fas fa-route"></i><span class="tip">Navigate</span>
+    </a>
+    <a class="nav-item" data-page="notifications" onclick="navigateTo('notifications')">
+      <i class="fas fa-bell"></i><span class="tip">Alerts</span>
+    </a>
+    <a class="nav-item" data-page="profile" onclick="navigateTo('profile')">
+      <i class="fas fa-user"></i><span class="tip">Profile</span>
+    </a>
+    <a class="nav-item" data-page="settings" onclick="navigateTo('settings')">
+      <i class="fas fa-sliders"></i><span class="tip">Settings</span>
+    </a>
+    <a class="nav-item" data-page="guide" href="/guide.html">
+
+      <i class="fas fa-book"></i><span class="tip">Guidelines</span>
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="theme-toggle-btn" id="themeToggle">
+      <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    <div class="avatar-sb" id="sbAvatar">U</div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <h2>Lumina<span>Life</span></h2>
+        <div class="sub" id="pageTitle">Mission Control</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="glass-btn" id="notifBtn" onclick="navigateTo('notifications')">
+        <i class="fas fa-bell"></i><div class="notif-dot"></div>
+      </div>
+      <div class="glass-btn" id="settingsBtn" onclick="navigateTo('settings')">
+        <i class="fas fa-sliders"></i>
+      </div>
+      <div class="user-chip" id="profileChip" onclick="navigateTo('profile')">
+        <div class="avatar" id="avatarEl">U</div>
+        <div>
+          <div class="user-name" id="userNameEl">Loading...</div>
+          <div class="user-role" id="userRoleEl">🩸 Donor</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="pageContent"></div>
+
+  <!-- SYNC STATUS -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;font-size:0.6rem;color:var(--text-muted);padding-top:0.8rem;border-top:1px solid var(--glass-border);margin-top:1.5rem;">
+    <span class="sync-dot" style="width:7px;height:7px;border-radius:60px;background:var(--sage);display:inline-block;animation:pulse-dot 2s infinite;"></span>
+    <span id="syncStatus">Connected to LuminaLife Network</span>
+    <span>·</span>
+    <span id="syncTime">just now</span>
+  </div>
+
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <i class="fas fa-circle-check" style="color:var(--sage);"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  LUMINALIFE MISSION CONTROL - ULTRA PREMIUM
+//  Fully backend-integrated with MongoDB Atlas
+// ═══════════════════════════════════════════════════════════
+
+const USER_ID = localStorage.getItem('lifelineUserId') || sessionStorage.getItem('lifelineUserId') || 'D001';
+const API_BASE = 'http://127.0.0.1:5000/api';
+const $ = id => document.getElementById(id);
+
+// ── STATE ──────────────────────────────────────────────────
+let S = {
+  profile: { full_name: 'Donor', blood_group: 'O+', total_donations: 0, lives_saved: 0, last_donation_date: null, is_recovered: true, age: 25, weight_kg: 0 },
+  health: { hemoglobin: 0, hydration: 0, energy: 0, sleep_hours: 0 },
+  emergency: null,
+  currentPage: 'dashboard'
+};
+
+// ── API ──────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  try {
+    const url = `${API_BASE}${path}`;
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': USER_ID },
+      ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.warn('API Error:', e.message);
+    return null;
+  }
+}
+
+// ── PARTICLES ─────────────────────────────────────────────
+function initParticles() {
+  const canvas = document.getElementById('particles');
+  const colors = ['#C4183C', '#F9A8B8', '#7BB597', '#38BDF8', '#D4A055'];
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      width:${Math.random()*4+2}px;height:${Math.random()*4+2}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;animation-duration:${Math.random()*30+20}s;
+      animation-delay:${Math.random()*20}s;opacity:${Math.random()*.08+.04};
+    `;
+    canvas.appendChild(p);
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard: 'Mission Control',
+  donate: 'Donation Center',
+  health: 'Health Status',
+  navigation: 'Route Navigation',
+  notifications: 'Alert Center',
+  profile: 'My Profile',
+  settings: 'Settings',
+  guidelines: 'Donor Guidelines'
+};
+
+const PAGE_ROUTES = {
+  dashboard: '/dashboard.html',
+  donate: '/donor.html',
+  health: '/health.html',
+  navigation: '/route-navigation.html',
+  notifications: '/notifications.html',
+  profile: '/profile.html',
+  settings: '/settings.html',
+  guidelines: '/guide.html'
+};
+function navigateTo(page) {
+  const url = PAGE_ROUTES[page];
+  if (url && url !== window.location.pathname && page !== 'dashboard') {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+    document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
+    window.location.href = url;
+    return;
+  }
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
+  renderPage(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Refresh data when navigating to profile
+  if (page === 'profile') {
+    loadData();
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg) {
+  const el = $('toast');
+  $('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── RENDER PAGES ──────────────────────────────────────────
+function renderPage(page) {
+  const container = $('pageContent');
+  const p = S.profile;
+  const h = S.health;
+  const name = p.full_name?.split(' ')[0] || 'Donor';
+  const hour = new Date().getHours();
+  let greeting = 'Good Morning';
+  if (hour >= 12 && hour < 17) greeting = 'Good Afternoon';
+  else if (hour >= 17 && hour < 21) greeting = 'Good Evening';
+  else if (hour >= 21 || hour < 5) greeting = 'Good Night';
+
+  // ── ELIGIBILITY ──
+ // ── ELIGIBILITY ──
+let isEligible = false;
+let days = 0, hours = 0, minutes = 0, seconds = 0;
+if (p.last_donation_date) {
+  const last = new Date(p.last_donation_date);
+  const next = new Date(last);
+  next.setDate(next.getDate() + 90);  // ← CHANGE THIS (was 84)
+  const now = new Date();
+  if (now >= next) isEligible = true;
+  else { const diff = Math.floor((next - now) / 1000);
+    days = Math.floor(diff / 86400);
+    hours = Math.floor((diff % 86400) / 3600);
+    minutes = Math.floor((diff % 3600) / 60);
+    seconds = diff % 60; }
+} else isEligible = true;
+
+  // ── ACHIEVEMENTS ──
+  const donations = p.total_donations || 0;
+  const achievements = [
+    { id: 'first', icon: '🎯', name: 'First Donation', desc: 'First blood donation', unlocked: donations >= 1 },
+    { id: 'lifesaver', icon: '🩸', name: 'Life Saver', desc: 'Save 3 lives', unlocked: p.lives_saved >= 3 },
+    { id: 'gold', icon: '🥇', name: 'Gold Donor', desc: '5 donations', unlocked: donations >= 5 },
+    { id: 'hero', icon: '🦸', name: 'Community Hero', desc: '10+ donations', unlocked: donations >= 10 }
+  ];
+
+  // ── HOSPITALS ──
+  const hospitals = [
+    { name: 'Apollo Hospitals', dist: '2.3 km', status: '🟢 Available', blood: 'O+ Available' },
+    { name: 'Narayana Health', dist: '4.1 km', status: '🟡 Moderate', blood: 'A+ Needed' },
+    { name: 'Manipal Hospital', dist: '5.6 km', status: '🟢 Available', blood: 'B+ Available' },
+    { name: 'Victoria Hospital', dist: '3.8 km', status: '🔴 Urgent', blood: 'O- Critical' }
+  ];
+
+  // ── EMERGENCY ──
+  let emergencyHTML = '';
+  if (S.emergency) {
+    const e = S.emergency;
+    emergencyHTML = `
+      <div class="em-content">
+        <div class="em-icon"><i class="fas fa-siren"></i></div>
+        <div class="em-info">
+          <h4>${e.hospital || 'Emergency'}</h4>
+          <p>Needs <strong>${e.blood_type || p.blood_group || 'O+'}</strong> blood</p>
+          <div class="em-meta">
+            <span><i class="fas fa-location-dot"></i> ${e.distance || 3.2} km</span>
+            <span><i class="fas fa-clock"></i> ETA: ${e.eta || 12} min</span>
+          </div>
+        </div>
+      </div>
+      <div class="em-actions">
+        <button class="btn-primary" onclick="respondToEmergency()"><i class="fas fa-hand-holding-heart"></i> Respond</button>
+        <button class="btn-outline" onclick="toast('🗺️ Opening route…')"><i class="fas fa-route"></i> Route</button>
+      </div>
+    `;
+  } else {
+    emergencyHTML = `
+      <div class="em-empty">
+        <i class="fas fa-heart-circle-check"></i>
+        <h4>No Active Requests</h4>
+        <p>You're ready to help when needed.</p>
+      </div>
+    `;
+  }
+
+  // ── RENDER ──────────────────────────────────────────────
+  const html = {
+    dashboard: `
+      <div class="hero-glass">
+        <div class="hero-grid">
+          <div class="hero-left">
+            <h1>${greeting}, <span>${name}</span> 🌸</h1>
+            <div class="sub">Stay well, stay ready to save lives.</div>
+            <div class="hero-tags">
+              <span class="tag tag-blood"><i class="fas fa-droplet"></i> ${p.blood_group || 'O+'}</span>
+              <span class="tag tag-vital"><i class="fas fa-circle-check"></i> ${p.is_recovered ? 'Active Donor' : 'Recovering'}</span>
+              <span class="tag tag-gold"><i class="fas fa-star"></i> ${donations >= 5 ? 'Platinum Donor' : donations >= 1 ? 'Donor' : 'New Donor'}</span>
+              <span class="tag tag-sky"><i class="fas fa-heart"></i> ${p.lives_saved || 0} Lives Saved</span>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="readiness-ring">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#7BB597" stroke-width="5" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="${Math.max(0, 263.89 * (1 - Math.min(1, (p.lives_saved || 1) / 10)))}"/>
+              </svg>
+              <div class="ring-val">
+                <span class="num">${Math.min(100, Math.round(((p.total_donations || 0) / 10) * 100))}</span>
+                <span class="lbl">Readiness</span>
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div><div class="stat-num">${donations}</div><div class="stat-label">Donations</div></div>
+              <div><div class="stat-num">${p.lives_saved || donations * 3}</div><div class="stat-label">Lives Impacted</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card">
+          <div class="head">
+            <h3><i class="fas fa-calendar-check"></i> Donation Eligibility</h3>
+            <span class="badge ${isEligible ? 'badge-green' : 'badge-gold'}">${isEligible ? '✅ Eligible' : '⏳ Waiting'}</span>
+          </div>
+          ${isEligible ? `
+            <div style="text-align:center;padding:0.5rem 0;">
+              <i class="fas fa-circle-check" style="font-size:2.5rem;color:var(--sage);"></i>
+              <h3 style="font-size:1.2rem;font-weight:600;margin-top:0.3rem;">Ready to Donate!</h3>
+              <p style="font-size:0.8rem;color:var(--text-muted);">Schedule your next donation</p>
+              <button class="btn-primary" style="margin-top:0.5rem;padding:0.5rem 1.5rem;border:none;border-radius:60px;cursor:pointer;" onclick="window.location.href='/donor.html'">
+                <i class="fas fa-calendar-plus"></i> Schedule Now
+              </button>
+            </div>
+          ` : `
+            <div style="text-align:center;">
+              <div class="countdown-grid">
+                <div class="countdown-item"><div class="num">${String(days).padStart(2,'0')}</div><div class="label">Days</div></div>
+                <div class="countdown-item"><div class="num">${String(hours).padStart(2,'0')}</div><div class="label">Hours</div></div>
+                <div class="countdown-item"><div class="num">${String(minutes).padStart(2,'0')}</div><div class="label">Minutes</div></div>
+                <div class="countdown-item"><div class="num">${String(seconds).padStart(2,'0')}</div><div class="label">Seconds</div></div>
+              </div>
+              <p style="font-size:0.7rem;color:var(--text-muted);">Until you're eligible again</p>
+            </div>
+          `}
+        </div>
+
+        <div class="glass-card emergency-card ${S.emergency ? 'active' : ''}">
+          <div class="head">
+            <h3><i class="fas fa-triangle-exclamation"></i> Emergency Pulse</h3>
+            <span class="badge ${S.emergency ? 'badge-red' : 'badge-green'}">${S.emergency ? '🚨 Active' : '● All Clear'}</span>
+          </div>
+          ${emergencyHTML}
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="glass-card">
+          <div class="head"><h3><i class="fas fa-heartbeat"></i> Health Metrics</h3></div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div class="quick-stat">
+              <div class="qs-icon red"><i class="fas fa-tint"></i></div>
+              <div class="qs-info"><div class="val">${h.hemoglobin || 14.2} g/dL</div><div class="lbl">Hemoglobin</div></div>
+            </div>
+            <div class="quick-stat">
+              <div class="qs-icon green"><i class="fas fa-glass-water"></i></div>
+              <div class="qs-info"><div class="val">${h.hydration || 82}%</div><div class="lbl">Hydration</div></div>
+            </div>
+            <div class="quick-stat">
+              <div class="qs-icon gold"><i class="fas fa-bolt"></i></div>
+              <div class="qs-info"><div class="val">${h.energy || 88}%</div><div class="lbl">Energy</div></div>
+            </div>
+          </div>
+          <button class="btn-outline" style="width:100%;margin-top:0.5rem;padding:0.3rem;border-radius:12px;cursor:pointer;background:transparent;border:1px solid var(--glass-border);font-size:0.65rem;" onclick="window.location.href='/health.html'">
+            <i class="fas fa-arrow-right"></i> View Full Health
+          </button>
+        </div>
+
+        <div class="glass-card">
+          <div class="head"><h3><i class="fas fa-award"></i> Achievements</h3></div>
+          <div class="achievement-grid">
+            ${achievements.map(a => `
+              <div class="ach-item ${a.unlocked ? 'unlocked' : ''}">
+                <div class="icon">${a.icon}</div>
+                <div class="name">${a.name}</div>
+                <div class="desc">${a.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="glass-card" style="background:linear-gradient(135deg, var(--crimson-glow), var(--bg-glass));border-color:var(--crimson);">
+          <div class="head"><h3><i class="fas fa-graduation-cap"></i> Quick Guidelines</h3></div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.65rem;padding:0.2rem 0;">
+              <i class="fas fa-check-circle" style="color:var(--sage);"></i> Age 18-65, Weight ≥ 50kg
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.65rem;padding:0.2rem 0;">
+              <i class="fas fa-check-circle" style="color:var(--sage);"></i> Hemoglobin ≥ 12.5 g/dL
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.65rem;padding:0.2rem 0;">
+              <i class="fas fa-check-circle" style="color:var(--sage);"></i> No recent illness or medication
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:0.5rem;padding:0.3rem;border:none;border-radius:12px;cursor:pointer;font-size:0.65rem;" onclick="navigateTo('guidelines')">
+            <i class="fas fa-book"></i> Full Guidelines
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="head">
+          <h3><i class="fas fa-hospital"></i> Nearby Hospitals</h3>
+          <span class="badge badge-blue">${hospitals.length}</span>
+        </div>
+        <div class="hospital-grid">
+          ${hospitals.map(h => `
+            <div class="hospital-card" onclick="toast('📍 Navigating to ${h.name}…')">
+              <div class="h-icon"><i class="fas fa-hospital"></i></div>
+              <div class="h-info">
+                <div class="h-name">${h.name}</div>
+                <div class="h-dist">${h.dist} · ${h.blood}</div>
+              </div>
+              <span class="h-status">${h.status}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `,
+
+    donate: `
+      <div class="glass-card" style="text-align:center;padding:3rem 2rem;">
+        <i class="fas fa-hand-holding-heart" style="font-size:4rem;color:var(--crimson);opacity:0.4;margin-bottom:1rem;"></i>
+        <h2 style="font-size:1.6rem;font-weight:800;">Donation Center</h2>
+        <p style="color:var(--text-muted);margin:0.5rem 0 1.5rem;">Find nearby hospitals and book your appointment</p>
+        <button class="btn-primary" style="padding:0.8rem 2.5rem;font-size:0.9rem;border:none;border-radius:60px;cursor:pointer;" onclick="window.location.href='/donor.html'">
+          <i class="fas fa-calendar-plus"></i> Find a Hospital
+        </button>
+      </div>
+    `,
+
+    health: `
+      <div class="glass-card">
+        <div class="head"><h3><i class="fas fa-heartbeat"></i> Health Status</h3><span class="badge badge-green">Updated</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;padding:0.5rem 0;">
+          <div style="background:var(--bg-glass);border-radius:14px;padding:0.8rem;text-align:center;">
+            <div style="font-size:1.2rem;font-weight:800;color:var(--crimson);">${h.hemoglobin || 14.2}</div>
+            <div style="font-size:0.55rem;color:var(--text-muted);">Hemoglobin</div>
+          </div>
+          <div style="background:var(--bg-glass);border-radius:14px;padding:0.8rem;text-align:center;">
+            <div style="font-size:1.2rem;font-weight:800;color:var(--sage);">${h.hydration || 82}%</div>
+            <div style="font-size:0.55rem;color:var(--text-muted);">Hydration</div>
+          </div>
+          <div style="background:var(--bg-glass);border-radius:14px;padding:0.8rem;text-align:center;">
+            <div style="font-size:1.2rem;font-weight:800;color:var(--gold);">${h.energy || 88}%</div>
+            <div style="font-size:0.55rem;color:var(--text-muted);">Energy</div>
+          </div>
+        </div>
+        <div style="margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--glass-border);display:flex;gap:0.5rem;">
+          <button class="btn-primary" style="padding:0.5rem 1.5rem;border:none;border-radius:60px;cursor:pointer;font-size:0.75rem;" onclick="window.location.href='/health.html'">
+            <i class="fas fa-chart-line"></i> Full Health Dashboard
+          </button>
+        </div>
+      </div>
+    `,
+
+    navigation: `
+      <div class="glass-card" style="text-align:center;padding:2.5rem 2rem;">
+        <i class="fas fa-route" style="font-size:4rem;color:var(--crimson);opacity:0.4;margin-bottom:1rem;"></i>
+        <h2 style="font-size:1.6rem;font-weight:800;">Route Navigation</h2>
+        <p style="color:var(--text-muted);margin:0.5rem 0 1.5rem;">Navigate to nearby hospitals for emergency donations</p>
+        <button class="btn-primary" style="padding:0.8rem 2.5rem;font-size:0.9rem;border:none;border-radius:60px;cursor:pointer;" onclick="window.location.href='/route-navigation.html'">
+          <i class="fas fa-map-location-dot"></i> Open Navigation
+        </button>
+      </div>
+    `,
+
+    notifications: `
+      <div class="glass-card">
+        <div class="head"><h3><i class="fas fa-bell"></i> Alert Center</h3><span class="badge badge-red">2 Unread</span></div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;background:var(--bg-glass);border-radius:12px;border-left:3px solid var(--crimson);">
+            <span><i class="fas fa-hand-holding-heart" style="color:var(--crimson);"></i></span>
+            <span style="flex:1;font-size:0.75rem;">You're eligible to donate! Schedule today.</span>
+            <span style="font-size:0.5rem;color:var(--text-muted);">2h ago</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;background:var(--bg-glass);border-radius:12px;border-left:3px solid var(--crimson);">
+            <span><i class="fas fa-hospital" style="color:var(--crimson);"></i></span>
+            <span style="flex:1;font-size:0.75rem;">Apollo Hospital needs O+ blood. Emergency request active.</span>
+            <span style="font-size:0.5rem;color:var(--text-muted);">4h ago</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;background:var(--bg-glass);border-radius:12px;">
+            <span><i class="fas fa-circle-check" style="color:var(--sage);"></i></span>
+            <span style="flex:1;font-size:0.75rem;">Your health status was updated successfully.</span>
+            <span style="font-size:0.5rem;color:var(--text-muted);">1d ago</span>
+          </div>
+        </div>
+      </div>
+    `,
+
+    profile: `
+  <div class="glass-card">
+    <div class="head"><h3><i class="fas fa-user"></i> My Profile</h3><span class="badge ${p.is_recovered ? 'badge-green' : 'badge-gold'}">${p.is_recovered ? '✅ Active' : '⏳ Recovering'}</span></div>
+    <div style="display:flex;align-items:center;gap:1.5rem;padding:0.8rem 0;">
+      <div class="avatar" style="width:70px;height:70px;font-size:1.8rem;border-radius:60px;background:linear-gradient(135deg,var(--crimson),var(--rose));color:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        ${(p.full_name || 'User').split(' ').map(n=>n[0]).join('')}
+      </div>
+      <div>
+        <h2 style="font-size:1.3rem;font-weight:700;">${p.full_name || 'User'}</h2>
+        <p style="color:var(--text-muted);font-size:0.85rem;">
+          🩸 ${p.blood_group || 'O+'} · 
+          ${p.age || 25} yrs · 
+          ${p.weight_kg || 0} kg · 
+          📍 ${p.location || 'Unknown'}
+        </p>
+      </div>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-item"><div class="num crimson">${p.total_donations || 0}</div><div class="label">Donations</div></div>
+      <div class="impact-item"><div class="num sage">${p.lives_saved || 0}</div><div class="label">Lives Saved</div></div>
+      <div class="impact-item"><div class="num gold">${p.last_donation_date ? new Date(p.last_donation_date).toLocaleDateString() : 'Never'}</div><div class="label">Last Donation</div></div>
+    </div>
+    <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--glass-border);display:flex;gap:0.8rem;">
+      <button class="btn-primary" style="padding:0.5rem 1.5rem;border:none;border-radius:60px;cursor:pointer;" onclick="window.location.href='/profile.html'">
+        <i class="fas fa-edit"></i> Edit Profile
+      </button>
+      <button class="btn-outline" style="padding:0.5rem 1.5rem;border-radius:60px;cursor:pointer;background:transparent;border:1px solid var(--glass-border);" onclick="loadData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+`,
+     
+
+    settings: `
+      <div class="glass-card">
+        <div class="head"><h3><i class="fas fa-sliders"></i> Settings</h3></div>
+        <div style="padding:0.3rem 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--glass-border);">
+            <div><h4 style="font-size:0.8rem;font-weight:600;">Dark Mode</h4><p style="font-size:0.65rem;color:var(--text-muted);">Toggle theme</p></div>
+            <button class="btn-primary" style="padding:0.2rem 0.8rem;border:none;border-radius:60px;cursor:pointer;font-size:0.7rem;" onclick="toggleTheme()">Toggle</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--glass-border);">
+            <div><h4 style="font-size:0.8rem;font-weight:600;">Notifications</h4><p style="font-size:0.65rem;color:var(--text-muted);">Emergency alerts</p></div>
+            <span class="badge badge-green">Enabled</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;">
+            <div><h4 style="font-size:0.8rem;font-weight:600;">Account</h4><p style="font-size:0.65rem;color:var(--text-muted);">Manage account</p></div>
+            <button class="btn-outline" style="padding:0.2rem 0.8rem;border-radius:60px;cursor:pointer;background:transparent;border:1px solid var(--glass-border);" onclick="toast('🔐 Account settings')">Manage</button>
+          </div>
+        </div>
+      </div>
+    `,
+
+    guidelines: `
+      <div class="glass-card">
+        <div class="head"><h3><i class="fas fa-book"></i> Donor Guidelines</h3><span class="badge badge-gold">📋 Important</span></div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;padding:0.3rem 0;">
+          <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--sage);">
+            <h4 style="font-size:0.78rem;font-weight:600;">✅ Eligibility Criteria</h4>
+            <p style="font-size:0.68rem;color:var(--text-muted);">Age 18-65, weight ≥ 50kg, hemoglobin ≥ 12.5 g/dL</p>
+          </div>
+          <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--gold);">
+            <h4 style="font-size:0.78rem;font-weight:600;">⏰ Donation Process</h4>
+            <p style="font-size:0.68rem;color:var(--text-muted);">Registration → Health Check → Donation (8-10 min) → Refreshment</p>
+          </div>
+          <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--crimson);">
+            <h4 style="font-size:0.78rem;font-weight:600;">📋 What to Bring</h4>
+            <p style="font-size:0.68rem;color:var(--text-muted);">Valid ID, donor card, positive attitude!</p>
+          </div>
+          <div style="padding:0.6rem 0.8rem;background:var(--bg-glass);border-radius:14px;border-left:3px solid var(--sky);">
+            <h4 style="font-size:0.78rem;font-weight:600;">💡 Post-Donation Tips</h4>
+            <p style="font-size:0.68rem;color:var(--text-muted);">Rest 15-20 min, eat a snack, stay hydrated 24 hours</p>
+          </div>
+          <button class="btn-primary" style="padding:0.6rem;border:none;border-radius:12px;cursor:pointer;font-size:0.75rem;margin-top:0.2rem;" onclick="window.location.href='/guide.html'">
+            <i class="fas fa-arrow-right"></i> View Full Guidelines
+          </button>
+        </div>
+      </div>
+    `
+  };
+
+  container.innerHTML = html[page] || html.dashboard;
+
+  if (page === 'dashboard' && !isEligible && p.last_donation_date) {
+    startCountdown();
+  }
+}
+
+// ── COUNTDOWN ──────────────────────────────────────────────
+let countdownInterval = null;
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    const p = S.profile;
+    if (!p.last_donation_date) { clearInterval(countdownInterval); return; }
+    const last = new Date(p.last_donation_date);
+    const next = new Date(last);
+    next.setDate(next.getDate() + 90);  // ← 56 days is the standard
+    const now = new Date();
+    if (now >= next) { clearInterval(countdownInterval); renderPage('dashboard'); return; }
+    const diff = Math.floor((next - now) / 1000);
+    const days = Math.floor(diff / 86400);
+    const hours = Math.floor((diff % 86400) / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    const seconds = diff % 60;
+    const nums = document.querySelectorAll('.countdown-item .num');
+    if (nums.length === 4) {
+      nums[0].textContent = String(days).padStart(2, '0');
+      nums[1].textContent = String(hours).padStart(2, '0');
+      nums[2].textContent = String(minutes).padStart(2, '0');
+      nums[3].textContent = String(seconds).padStart(2, '0');
+    }
+  }, 1000);
+}
+
+// ── EMERGENCY ─────────────────────────────────────────────
+async function respondToEmergency() {
+  toast('🚨 Responding to emergency…');
+  try {
+    await apiFetch('/emergency/respond', {
+      method: 'POST',
+      body: { user_id: USER_ID, emergency_id: S.emergency?.id || 'EMG001', status: 'accepted' }
+    });
+    toast('✅ Emergency response recorded! Hospital notified.');
+  } catch (e) {
+    toast('⚠️ Error responding. Please try again.');
+  }
+}
+
+// ── THEME ──────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('lumina_theme', next);
+  const icon = document.getElementById('themeIcon');
+  icon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem('lumina_theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const icon = document.getElementById('themeIcon');
+    icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+  }
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────
+// ── LOAD DATA ─────────────────────────────────────────────
+async function loadData() {
+  try {
+    // Fetch BOTH profile AND health data
+    const [profileRes, healthRes] = await Promise.all([
+      apiFetch(`/profile/${USER_ID}`),
+      apiFetch(`/health/${USER_ID}`)
+    ]);
+
+    // Get profile data
+    const profileData = profileRes?.profile || profileRes || {
+      full_name: 'Ira',
+      blood_group: 'O+',
+      age: 21,
+      weight_kg: 62,
+      location: 'Bengaluru',
+      total_donations: 4,
+      lives_saved: 7,
+      last_donation_date: null,
+      hemoglobin: 14.5,
+      height_cm: 165,
+      blood_pressure: '120/80',
+      is_recovered: true,
+      donor_status: 'available'
+    };
+
+    // Get health data
+    const h = healthRes || {};
+
+    // Update profile
+    S.profile = {
+      ...S.profile,
+      full_name: profileData.full_name || 'Ira',
+      blood_group: profileData.blood_group || 'O+',
+      age: profileData.age || 21,
+      weight_kg: profileData.weight_kg || 62,
+      location: profileData.location || 'Bengaluru',
+      total_donations: profileData.total_donations || 0,
+      lives_saved: profileData.lives_saved || 0,
+      last_donation_date: profileData.last_donation_date || null,
+      hemoglobin: profileData.hemoglobin || 14.5,
+      height_cm: profileData.height_cm || 165,
+      blood_pressure: profileData.blood_pressure || '120/80',
+      is_recovered: profileData.is_recovered !== undefined ? profileData.is_recovered : true,
+      donor_status: profileData.donor_status || 'available'
+    };
+
+    // Update health
+    S.health = {
+      ...S.health,
+      hydration: h.hydration || 85,
+      stress: h.stress || 35,
+      exercise_minutes: h.exercise_minutes || 28,
+      exercise_weekly: h.exercise_weekly || 112,
+      hemoglobin: h.hemoglobin || profileData.hemoglobin || 14.5,
+      menstrual_day: h.menstrual_day || 0,
+      menstrual_total: 28,
+      mood: h.mood || 'good',
+      steps: h.steps || 6200
+    };
+
+    S.emergency = null;
+
+    // Update UI
+    const name = S.profile.full_name || 'Donor';
+    document.getElementById('userNameEl').textContent = name.split(' ')[0];
+    document.getElementById('userRoleEl').textContent = `🩸 ${S.profile.blood_group || 'O+'}`;
+    document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('sbAvatar').textContent = name.charAt(0).toUpperCase();
+
+    // Determine current page from URL
+    const path = window.location.pathname;
+    let page = 'dashboard';
+    if (path.includes('donor')) page = 'donate';
+    else if (path.includes('health')) page = 'health';
+    else if (path.includes('route-navigation')) page = 'navigation';
+    else if (path.includes('notifications')) page = 'notifications';
+    else if (path.includes('profile')) page = 'profile';
+    else if (path.includes('settings')) page = 'settings';
+    else if (path.includes('guide')) page = 'guidelines';
+
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.page === page);
+    });
+    document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || 'Mission Control';
+
+    renderPage(page);
+    document.getElementById('syncTime').textContent = new Date().toLocaleTimeString();
+    toast('✅ Connected to LuminaLife Network');
+
+  } catch (e) {
+    console.error('Load error:', e);
+    toast('⚠️ Loading data…');
+  }
+}
+// ── INIT ──────────────────────────────────────────────────
+loadTheme();
+initParticles();
+loadData();
+
+// Make functions globally accessible
+window.navigateTo = navigateTo;
+window.toast = toast;
+window.toggleTheme = toggleTheme;
+window.respondToEmergency = respondToEmergency;
+window.renderPage = renderPage;
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script>
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyBGMPyUU78tvaahRWapYNayHhhn5owDZ94",
+  authDomain: "luminalife-7f217.firebaseapp.com",
+  projectId: "luminalife-7f217",
+  storageBucket: "luminalife-7f217.firebasestorage.app",
+  messagingSenderId: "865095311959",
+  appId: "1:865095311959:web:4efe29f8b1ea5699ebf912",
+  measurementId: "G-HFNEZ3WGYN"
+};
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+async function setupFirebaseNotifications() {
+
+    const permission =
+        await Notification.requestPermission();
+
+    if(permission !== "granted") return;
+
+    const token = await firebase.messaging().getToken({
+    vapidKey: "BE3-fvUJM368BXnV0bXovEal8JqgXKhcxzICdqkhF_cxbKZaTmAzK5PBEAKAiMMvoWEhMdcLtcVcxDsjgjLKOIQ"
+});
+
+    console.log(token);
+
+    await fetch(
+      `${API_BASE}/save-fcm-token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+          user_id: USER_ID,
+          token: token
+        })
+      }
+    );
+}
+messaging.onMessage((payload) => {
+
+   new Notification(
+      payload.notification.title,
+      {
+         body: payload.notification.body,
+         icon: "/i.png"
+      }
+   );
+
+});
+setupFirebaseNotifications();
+</script>
+</body>
+</html>

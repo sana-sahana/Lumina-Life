@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LuminaLife — Donor Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    /* ── ALL STYLES (UNCHANGED) ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red:         #B91C1C;
+      --red-bright:  #DC2626;
+      --red-muted:   #FEF2F2;
+      --red-border:  #FECACA;
+      --green:       #16A34A;
+      --green-muted: #F0FDF4;
+      --green-border:#BBF7D0;
+      --amber:       #D97706;
+      --amber-muted: #FFFBEB;
+      --bg:          #F8FAFC;
+      --surface:     #FFFFFF;
+      --surface-2:   #F1F5F9;
+      --border:      #E2E8F0;
+      --border-2:    #CBD5E1;
+      --text:        #0F172A;
+      --text-2:      #475569;
+      --text-3:      #94A3B8;
+      --shadow-xs:   0 1px 2px rgba(15,23,42,.06);
+      --shadow-sm:   0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.06);
+      --shadow-md:   0 4px 6px -1px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.06);
+      --shadow-lg:   0 10px 24px -3px rgba(15,23,42,.10), 0 4px 8px -4px rgba(15,23,42,.06);
+      --shadow-xl:   0 20px 48px -6px rgba(15,23,42,.14), 0 8px 16px -6px rgba(15,23,42,.08);
+      --radius-sm:   8px;
+      --radius:      12px;
+      --radius-lg:   16px;
+      --radius-xl:   20px;
+      --radius-2xl:  24px;
+      --ease:        cubic-bezier(.2,.9,.4,1);
+    }
+
+    [data-theme="dark"] {
+      --bg:          #020617;
+      --surface:     #0F172A;
+      --surface-2:   #1E293B;
+      --border:      #1E293B;
+      --border-2:    #334155;
+      --text:        #F8FAFC;
+      --text-2:      #94A3B8;
+      --text-3:      #475569;
+      --red-muted:   rgba(185,28,28,.12);
+      --red-border:  rgba(185,28,28,.25);
+      --green-muted: rgba(22,163,74,.10);
+      --green-border:rgba(22,163,74,.25);
+      --amber-muted: rgba(217,119,6,.10);
+      --shadow-xs:   0 1px 2px rgba(0,0,0,.4);
+      --shadow-sm:   0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.4);
+      --shadow-md:   0 4px 6px -1px rgba(0,0,0,.5), 0 2px 4px -2px rgba(0,0,0,.4);
+      --shadow-lg:   0 10px 24px -3px rgba(0,0,0,.6), 0 4px 8px -4px rgba(0,0,0,.4);
+      --shadow-xl:   0 20px 48px -6px rgba(0,0,0,.7), 0 8px 16px -6px rgba(0,0,0,.5);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background .25s var(--ease), color .25s var(--ease);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: 56px;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 0;
+      transition: background .25s var(--ease), border-color .25s var(--ease);
+    }
+    [data-theme="dark"] .navbar { background: rgba(9,15,36,.88); }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-bright) 100%);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-logo-mark svg { color: #fff; width:15px; height:15px; }
+    .nav-logo-text {
+      font-size: 15px; font-weight: 700; letter-spacing: -.3px;
+      color: var(--text);
+    }
+
+    .nav-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-link {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px; font-weight: 500;
+      color: var(--text-2);
+      text-decoration: none;
+      transition: all .15s ease;
+      cursor: pointer;
+      border: none; background: none;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface-2); }
+    .nav-link.active { color: var(--red); background: var(--red-muted); }
+    .nav-link svg { width:14px; height:14px; flex-shrink:0; }
+
+    .nav-right {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .nav-icon-btn {
+      width: 34px; height: 34px;
+      border-radius: var(--radius-sm);
+      border: none; background: none; cursor: pointer;
+      color: var(--text-2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      transition: all .15s ease;
+    }
+    .nav-icon-btn:hover { background: var(--surface-2); color: var(--text); }
+    .nav-icon-btn svg { width:16px; height:16px; }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      background: var(--red); border-radius: 50%;
+      border: 2px solid var(--surface);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--red-bright));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 12px; font-weight: 700;
+      cursor: pointer; flex-shrink: 0;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color .15s ease;
+    }
+    .nav-avatar:hover { border-color: var(--red-bright); }
+    .nav-avatar img { width:100%; height:100%; object-fit:cover; }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeUp .3s var(--ease); }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .wrapper { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    .hero {
+      padding: 72px 24px 64px;
+      text-align: center;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--red);
+      background: var(--red-muted);
+      border: 1px solid var(--red-border);
+      border-radius: 100px;
+      padding: 4px 12px;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow svg { width:12px; height:12px; }
+    .hero h1 {
+      font-size: clamp(32px, 5.5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      color: var(--text);
+      max-width: 720px;
+      margin: 0 auto 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--red), #F43F5E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 16px; font-weight: 400; color: var(--text-2);
+      max-width: 480px; margin: 0 auto 48px;
+      line-height: 1.65;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      text-align: left;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top:0; left:0; right:0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--red-bright));
+      border-radius: 3px 3px 0 0;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .stat-card-icon {
+      width: 36px; height: 36px;
+      background: var(--red-muted);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+      color: var(--red);
+    }
+    .stat-card-icon svg { width:18px; height:18px; }
+    .stat-number {
+      font-size: 28px; font-weight: 800; letter-spacing: -1px;
+      color: var(--text); line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 12.5px; color: var(--text-2); font-weight: 500;
+    }
+
+    .section-header {
+      margin-bottom: 32px;
+    }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--red); margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 24px; font-weight: 700; letter-spacing: -.5px;
+      color: var(--text);
+    }
+    .section-sub {
+      font-size: 14px; color: var(--text-2); margin-top: 6px;
+    }
+
+    .donation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 860px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .dtype-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 36px 32px;
+      cursor: pointer;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s ease;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .dtype-card.blood { border-top: 3px solid var(--red); }
+    .dtype-card.organ { border-top: 3px solid var(--green); }
+    .dtype-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-xl); }
+    .dtype-card.blood:hover { border-color: var(--red); }
+    .dtype-card.organ:hover { border-color: var(--green); }
+
+    .dtype-icon-wrap {
+      width: 56px; height: 56px; border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .dtype-card.blood .dtype-icon-wrap { background: var(--red-muted); color: var(--red); }
+    .dtype-card.organ .dtype-icon-wrap { background: var(--green-muted); color: var(--green); }
+    .dtype-icon-wrap svg { width:26px; height:26px; }
+
+    .dtype-card h3 { font-size:18px; font-weight:700; letter-spacing:-.3px; margin-bottom:8px; }
+    .dtype-card p { font-size:13.5px; color:var(--text-2); line-height:1.6; margin-bottom:20px; }
+
+    .dtype-tags {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px;
+    }
+    .dtype-tag {
+      font-size: 11.5px; font-weight: 500; padding: 3px 10px;
+      border-radius: 100px; border: 1px solid;
+    }
+    .dtype-card.blood .dtype-tag { color: var(--red); border-color: var(--red-border); background: var(--red-muted); }
+    .dtype-card.organ .dtype-tag { color: var(--green); border-color: var(--green-border); background: var(--green-muted); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 13.5px; font-weight: 600; padding: 9px 18px;
+      border-radius: var(--radius);
+      border: none; cursor: pointer;
+      transition: all .15s ease;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .btn svg { width:14px; height:14px; flex-shrink:0; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-bright) 100%);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(185,28,28,.3), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(185,28,28,.35), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary.green {
+      background: linear-gradient(135deg, var(--green) 0%, #22C55E 100%);
+      box-shadow: 0 1px 2px rgba(22,163,74,.3), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .btn-primary.green:hover { box-shadow: 0 4px 12px rgba(22,163,74,.35), inset 0 1px 0 rgba(255,255,255,.1); }
+    .btn-outline {
+      background: var(--surface);
+      color: var(--text-2);
+      border: 1px solid var(--border-2);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-outline:hover { background: var(--surface-2); color: var(--text); border-color: var(--border-2); }
+    .btn-ghost {
+      background: transparent; color: var(--text-2);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+    .btn-lg { padding: 12px 24px; font-size: 14.5px; border-radius: var(--radius-lg); }
+    .btn-full { width: 100%; justify-content: center; }
+
+    .trust-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      margin-bottom: 0;
+    }
+    .trust-bar-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      gap: 40px; flex-wrap: wrap;
+    }
+    .trust-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12.5px; font-weight: 500; color: var(--text-2);
+    }
+    .trust-badge-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--green);
+    }
+    .trust-badge-icon svg { width:14px; height:14px; }
+
+    .page-shell {
+      max-width: 1120px; margin: 0 auto; padding: 40px 24px 80px;
+    }
+
+    .step-progress {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 40px;
+    }
+    .step-item {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      flex: 1; position: relative;
+    }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute; top: 16px; left: calc(50% + 16px);
+      right: calc(-50% + 16px);
+      height: 1px;
+      background: var(--border);
+      transition: background .3s ease;
+    }
+    .step-item.done:not(:last-child)::after,
+    .step-item.active:not(:last-child)::after { background: var(--red); }
+    .step-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text-3);
+      transition: all .25s ease;
+      z-index: 1;
+    }
+    .step-item.active .step-circle {
+      border-color: var(--red); background: var(--red); color: #fff;
+    }
+    .step-item.done .step-circle {
+      border-color: var(--green); background: var(--green); color: #fff;
+    }
+    .step-label {
+      font-size: 11px; font-weight: 500; color: var(--text-3);
+      text-align: center; white-space: nowrap;
+    }
+    .step-item.active .step-label { color: var(--red); }
+    .step-item.done .step-label { color: var(--green); }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; animation: fadeUp .25s var(--ease); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-card-title {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .form-card-title svg { width:16px; height:16px; color: var(--red); }
+    .form-card-title.green svg { color: var(--green); }
+
+    .field {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 22px 14px 8px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px; font-weight: 500;
+      font-family: inherit;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(185,28,28,.08);
+    }
+    .field label {
+      position: absolute; left: 14px; top: 14px;
+      font-size: 12px; font-weight: 500; color: var(--text-3);
+      pointer-events: none;
+      transition: all .15s ease;
+      letter-spacing: .2px;
+    }
+    .field input:focus ~ label,
+    .field input:not(:placeholder-shown) ~ label,
+    .field select:focus ~ label,
+    .field select:not([value=""]) ~ label,
+    .field.has-value label {
+      top: 7px; font-size: 10.5px; color: var(--red);
+    }
+    .field select { cursor: pointer; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .option-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .option-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      cursor: pointer;
+      font-size: 12.5px; font-weight: 500; color: var(--text-2);
+      transition: all .15s ease;
+      user-select: none;
+    }
+    .option-chip input { position:absolute; opacity:0; width:0; height:0; }
+    .option-chip:has(input:checked) {
+      background: var(--red-muted); border-color: var(--red); color: var(--red);
+    }
+    .option-chip.green:has(input:checked) {
+      background: var(--green-muted); border-color: var(--green); color: var(--green);
+    }
+    .option-chip .chip-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor; opacity: 0;
+      transition: opacity .15s;
+    }
+    .option-chip:has(input:checked) .chip-dot { opacity: 1; }
+
+    .info-panel {
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-top: 16px;
+    }
+    .info-panel.red { background: var(--red-muted); border: 1px solid var(--red-border); }
+    .info-panel.green { background: var(--green-muted); border: 1px solid var(--green-border); }
+    .info-panel-title {
+      font-size: 12.5px; font-weight: 700; margin-bottom: 10px; color: var(--text);
+    }
+    .info-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12.5px; color: var(--text-2);
+      margin-bottom: 7px; line-height: 1.5;
+    }
+    .info-item svg { width:13px; height:13px; flex-shrink:0; margin-top:2px; color: var(--green); }
+
+    .elig-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; padding: 5px 12px;
+      border-radius: 100px;
+    }
+    .elig-badge.eligible { background: var(--green-muted); color: var(--green); border: 1px solid var(--green-border); }
+    .elig-badge.cooldown { background: var(--amber-muted); color: var(--amber); border: 1px solid #FDE68A; }
+    .elig-badge svg { width:12px; height:12px; }
+
+    .form-actions {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 32px; gap: 12px;
+    }
+
+    .requests-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .requests-controls {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      min-width: 220px;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .search-box:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px rgba(185,28,28,.08); }
+    .search-box svg { width:14px; height:14px; color: var(--text-3); flex-shrink:0; }
+    .search-box input {
+      border: none; background: none; outline: none;
+      font-size: 13px; font-family: inherit; color: var(--text); font-weight: 500;
+      flex: 1;
+    }
+    .search-box input::placeholder { color: var(--text-3); }
+
+    .filter-chip {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12px; font-weight: 500; color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .filter-chip:hover { background: var(--surface-2); }
+    .filter-chip.active { background: var(--red-muted); border-color: var(--red); color: var(--red); }
+    .filter-chip svg { width:12px; height:12px; }
+
+    .requests-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .req-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+    .req-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .req-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px;
+    }
+    .req-hospital {
+      font-size: 14.5px; font-weight: 700; color: var(--text); line-height: 1.3;
+    }
+    .req-time { font-size: 11.5px; color: var(--text-3); margin-top: 3px; }
+
+    .priority-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: .4px;
+      text-transform: uppercase; padding: 3px 8px;
+      border-radius: 100px; flex-shrink: 0;
+    }
+    .priority-badge svg { width:9px; height:9px; }
+    .priority-badge.critical { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+    .priority-badge.high     { background: #FFF7ED; color: #C2410C; border: 1px solid #FDBA74; }
+    .priority-badge.medium   { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+    .priority-badge.low      { background: var(--green-muted); color: var(--green); border: 1px solid var(--green-border); }
+    [data-theme="dark"] .priority-badge.critical { background: rgba(185,28,28,.15); border-color: rgba(185,28,28,.3); }
+    [data-theme="dark"] .priority-badge.high     { background: rgba(194,65,12,.15); border-color: rgba(194,65,12,.3); }
+    [data-theme="dark"] .priority-badge.medium   { background: rgba(180,83,9,.15);  border-color: rgba(180,83,9,.3); }
+
+    .req-meta-row {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .req-meta-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12.5px; color: var(--text-2); font-weight: 500;
+    }
+    .req-meta-item svg { width:13px; height:13px; color: var(--text-3); }
+
+    .blood-type-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--red-muted); color: var(--red);
+      border: 1px solid var(--red-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 800; padding: 3px 10px;
+    }
+    .blood-type-pill svg { width:12px; height:12px; }
+
+    .match-indicator {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--red-bright));
+    }
+
+    .req-actions { display: flex; gap: 8px; }
+
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 72px 24px;
+      color: var(--text-3);
+    }
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      border-radius: var(--radius-xl);
+      background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .empty-state-icon svg { width:28px; height:28px; color: var(--text-3); }
+    .empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
+    .empty-state p { font-size: 13.5px; color: var(--text-3); }
+
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; color: var(--green);
+      background: var(--green-muted); border: 1px solid var(--green-border);
+      border-radius: 100px; padding: 3px 10px;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.5; transform:scale(.8); }
+    }
+
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(15,23,42,.6);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; visibility: hidden;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+    .modal-overlay.open { opacity:1; visibility:visible; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 32px;
+      max-width: 480px; width: 100%;
+      box-shadow: var(--shadow-xl);
+      transform: scale(.95);
+      transition: transform .25s var(--ease);
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .modal-title { font-size: 18px; font-weight: 700; letter-spacing: -.3px; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      border: none; background: var(--surface-2); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-2); transition: all .15s ease; flex-shrink:0;
+    }
+    .modal-close:hover { background: var(--red-muted); color: var(--red); }
+    .modal-close svg { width:14px; height:14px; }
+    .modal-info-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-bottom: 20px;
+    }
+    .modal-info-cell {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    .modal-info-label { font-size: 10.5px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .modal-info-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    .consent-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .consent-row:hover { background: var(--surface-2); }
+    .consent-row input { margin-top: 2px; accent-color: var(--red); cursor: pointer; }
+    .consent-row label { font-size: 12.5px; color: var(--text-2); line-height: 1.5; cursor: pointer; }
+
+    .notif-panel {
+      position: fixed; top: 64px; right: 16px; z-index: 300;
+      width: 340px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      transform: translateY(-8px) scale(.97);
+      opacity: 0; visibility: hidden;
+      transition: all .2s var(--ease);
+    }
+    .notif-panel.open { transform: translateY(0) scale(1); opacity:1; visibility:visible; }
+    .notif-panel-header {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .notif-panel-title { font-size: 13.5px; font-weight: 700; }
+    .notif-mark-read { font-size: 11.5px; font-weight: 500; color: var(--red); cursor: pointer; }
+    .notif-list { max-height: 380px; overflow-y: auto; }
+    .notif-item {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 10px;
+      transition: background .1s ease;
+    }
+    .notif-item:hover { background: var(--surface-2); }
+    .notif-item.unread { background: var(--red-muted); }
+    .notif-dot-unread { width:7px; height:7px; border-radius:50%; background:var(--red); flex-shrink:0; margin-top:4px; }
+    .notif-item-content { flex:1; }
+    .notif-item-text { font-size:12.5px; color:var(--text); font-weight:500; line-height:1.5; }
+    .notif-item-time { font-size:11px; color:var(--text-3); margin-top:3px; }
+    .notif-empty { padding:32px; text-align:center; font-size:13px; color:var(--text-3); }
+
+    .toast-stack {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13.5px; font-weight: 500; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+      animation: toastIn .25s var(--ease);
+      pointer-events: all;
+      max-width: 360px;
+    }
+    .toast-icon { width:18px; height:18px; flex-shrink:0; }
+    .toast.success .toast-icon { color:var(--green); }
+    .toast.error   .toast-icon { color:var(--red); }
+    .toast.info    .toast-icon { color:#3B82F6; }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateX(24px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand { font-size: 13px; font-weight: 600; color: var(--text-2); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 12.5px; color: var(--text-3); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: var(--text); }
+
+    @media (max-width:900px) {
+      .donation-grid { grid-template-columns:1fr; max-width:480px; }
+      .hero-stats { grid-template-columns:1fr; max-width:360px; }
+      .form-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:768px) {
+      .navbar { padding: 0 16px; }
+      .nav-center { display:none; }
+      .hero { padding:48px 16px 40px; }
+      .donation-grid { padding:0 16px; }
+      .page-shell { padding:24px 16px 60px; }
+      .modal-info-row { grid-template-columns:1fr; }
+      .field-row { grid-template-columns:1fr; }
+    }
+    @media (max-width:480px) {
+      .hero h1 { font-size:28px; }
+      .requests-grid { grid-template-columns:1fr; }
+      .toast-stack { left:16px; right:16px; }
+      .toast { max-width:100%; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes shimmer {
+      0% { background-position:200% 0; }
+      100% { background-position:-200% 0; }
+    }
+
+    .count-up { display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+<nav class="navbar">
+  <a class="nav-logo" href="#" onclick="navigateTo('home'); return false;">
+    <div class="nav-logo-mark">
+      <i data-lucide="heart"></i>
+    </div>
+    <span class="nav-logo-text">LuminaLife</span>
+  </a>
+
+  <div class="nav-center">
+    <button class="nav-link active" data-page="home" onclick="navigateTo('home')">
+      <i data-lucide="home"></i> Home
+    </button>
+    <button class="nav-link" data-page="blood" onclick="navigateTo('blood')">
+      <i data-lucide="droplets"></i> Blood Donation
+    </button>
+    <button class="nav-link" data-page="organ" onclick="navigateTo('organ')">
+      <i data-lucide="activity"></i> Organ Donation
+    </button>
+    <button class="nav-link" data-page="requests" onclick="navigateTo('requests')">
+      <i data-lucide="building-2"></i> Emergency Requests
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <button class="nav-icon-btn" id="notifToggle" aria-label="Notifications">
+      <i data-lucide="bell"></i>
+      <span class="notif-dot" id="notifDot" style="display:none"></span>
+    </button>
+    <button class="nav-icon-btn" id="themeToggle" aria-label="Toggle theme">
+      <i data-lucide="moon" id="themeIconMoon"></i>
+      <i data-lucide="sun" id="themeIconSun" style="display:none"></i>
+    </button>
+    <div class="nav-avatar" id="navAvatar" title="Profile">S</div>
+  </div>
+</nav>
+
+<!-- Notification Panel -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <span class="notif-mark-read" id="markAllRead">Mark all read</span>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty">No notifications yet</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ HOME PAGE ═══════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <i data-lucide="shield-check"></i>
+      India's Trusted Donor Network
+    </div>
+    <h1>Every donation creates<br><em>another tomorrow</em></h1>
+    <p class="hero-sub">
+      Connecting blood and organ donors with hospitals across India in real time. Register once, save lives continuously.
+    </p>
+    <div class="hero-stats">
+  <div class="stat-card">
+    <div class="stat-card-icon"><i data-lucide="users"></i></div>
+    <div class="stat-number static" style="font-size:16px; font-weight:600;">Join a Community of Lifesavers</div>
+    <div class="stat-label">Connect with donors across India</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon"><i data-lucide="heart-pulse"></i></div>
+    <div class="stat-number static" style="font-size:16px; font-weight:600;">Every Donation Saves Lives</div>
+    <div class="stat-label">Your contribution makes a difference</div>
+  </div>
+  <div class="stat-card" style="--local-color: var(--amber);">
+    <div class="stat-card-icon" style="background:var(--amber-muted); color:var(--amber);">
+      <i data-lucide="zap"></i>
+    </div>
+    <div class="stat-number static" style="font-size:16px; font-weight:600;">Real-Time Emergency Requests</div>
+    <div class="stat-label">Respond to urgent needs instantly</div>
+  </div>
+</div>
+    
+  </div>
+
+  <div class="trust-bar">
+    <div class="trust-bar-inner">
+      <div class="trust-badge">
+        <div class="trust-badge-icon"><i data-lucide="check-circle"></i></div>
+        Government Approved
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon"><i data-lucide="shield"></i></div>
+        HIPAA-Compliant Security
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon"><i data-lucide="badge-check"></i></div>
+        Verified Donor Registry
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-icon"><i data-lucide="ambulance"></i></div>
+        Emergency Response Certified
+      </div>
+    </div>
+  </div>
+
+  <div class="donation-grid" style="margin-top:60px;">
+    <div class="dtype-card blood" onclick="navigateTo('blood')">
+      <div class="dtype-icon-wrap"><i data-lucide="droplets"></i></div>
+      <h3>Blood Donation</h3>
+      <p>Your blood donation can directly save up to three lives. Whole blood, plasma, and platelet donations are all accepted.</p>
+      <div class="dtype-tags">
+        <span class="dtype-tag">Whole Blood</span>
+        <span class="dtype-tag">Plasma</span>
+        <span class="dtype-tag">Platelets</span>
+      </div>
+      <button class="btn btn-primary btn-lg">
+        Register as Donor <i data-lucide="arrow-right"></i>
+      </button>
+    </div>
+    <div class="dtype-card organ" onclick="navigateTo('organ')">
+      <div class="dtype-icon-wrap" style="background:var(--green-muted); color:var(--green);">
+        <i data-lucide="activity"></i>
+      </div>
+      <h3>Organ &amp; Tissue Donation</h3>
+      <p>A single donor can transform the lives of up to eight people. Pledge your organs for living donation or posthumous gift.</p>
+      <div class="dtype-tags">
+        <span class="dtype-tag" style="color:var(--green);border-color:var(--green-border);background:var(--green-muted);">Living Donation</span>
+        <span class="dtype-tag" style="color:var(--green);border-color:var(--green-border);background:var(--green-muted);">Organ Pledge</span>
+        <span class="dtype-tag" style="color:var(--green);border-color:var(--green-border);background:var(--green-muted);">Tissue Donation</span>
+      </div>
+      <button class="btn btn-primary btn-lg green">
+        Register as Donor <i data-lucide="arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ BLOOD DONATION PAGE ═══════════════════════════ -->
+<div class="page" id="page-blood">
+  <div class="page-shell">
+
+    <div class="section-header">
+      <div class="section-eyebrow">Blood Donation</div>
+      <div class="section-title">Donor Registration</div>
+      <div class="section-sub">Complete your registration to start connecting with hospitals in need.</div>
+    </div>
+
+    <div class="step-progress" id="bloodStepProgress">
+      <div class="step-item active" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Personal Details</div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Medical Info</div>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Preferences</div>
+      </div>
+      <div class="step-item" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Confirm</div>
+      </div>
+    </div>
+
+    <div class="step-panel active" id="blood-step-1">
+      <div class="form-grid">
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="user"></i> Personal Information</div>
+          <div class="field has-value">
+            <input type="text" id="bloodName" placeholder=" " value="">
+            <label>Full Name</label>
+          </div>
+          <div class="field-row">
+            <div class="field has-value">
+              <input type="number" id="bloodAge" placeholder=" " value="">
+              <label>Age (18–65)</label>
+            </div>
+            <div class="field has-value">
+              <select id="bloodGender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other / Prefer not to say</option>
+              </select>
+              <label>Gender</label>
+            </div>
+          </div>
+          <div class="field has-value">
+            <input type="tel" id="bloodPhone" placeholder=" ">
+            <label>Phone Number</label>
+          </div>
+          <div class="field has-value">
+            <input type="text" id="bloodCity" placeholder=" " value="Bengaluru">
+            <label>City</label>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="info"></i> Why Donate Blood?</div>
+          <div class="info-panel red">
+            <div class="info-panel-title">Your donation makes an immediate impact</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Saves up to 3 lives with a single donation</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Free basic health screening included</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Blood replenishes fully within 56 days</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Reduces risk of cardiovascular disease</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Critical for emergency trauma care</div>
+          </div>
+          <div style="margin-top:16px;">
+            <div id="eligStatus"></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <div></div>
+        <button class="btn btn-primary btn-lg" onclick="bloodNextStep(2)">
+          Continue <i data-lucide="arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="step-panel" id="blood-step-2">
+      <div class="form-grid">
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="droplets"></i> Medical Information</div>
+          <div class="field has-value">
+            <select id="bloodGroup">
+              <option value="A+">A+</option><option value="A-">A-</option>
+              <option value="B+">B+</option><option value="B-">B-</option>
+              <option value="O+" selected>O+</option><option value="O-">O-</option>
+              <option value="AB+">AB+</option><option value="AB-">AB-</option>
+            </select>
+            <label>Blood Group</label>
+          </div>
+          <div class="field has-value">
+            <input type="number" id="bloodWeight" placeholder=" " min="45" max="200">
+            <label>Weight in kg (min. 45 kg)</label>
+          </div>
+          <div class="field has-value">
+            <input type="date" id="lastDonationDate" placeholder=" ">
+            <label>Last Donation Date (if any)</label>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="shield-check"></i> Eligibility Checklist</div>
+          <p style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">Confirm all apply to you before proceeding.</p>
+          <label class="option-chip" style="width:100%;margin-bottom:8px;border-radius:var(--radius);">
+            <input type="checkbox" id="elig1">
+            <span class="chip-dot"></span>
+            I am between 18 and 65 years old
+          </label>
+          <label class="option-chip" style="width:100%;margin-bottom:8px;border-radius:var(--radius);">
+            <input type="checkbox" id="elig2">
+            <span class="chip-dot"></span>
+            I weigh at least 45 kg
+          </label>
+          <label class="option-chip" style="width:100%;margin-bottom:8px;border-radius:var(--radius);">
+            <input type="checkbox" id="elig3">
+            <span class="chip-dot"></span>
+            I have not donated blood in the last 90 days
+          </label>
+          <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" id="elig4">
+            <span class="chip-dot"></span>
+            I am in good health with no active infections
+          </label>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline btn-lg" onclick="bloodNextStep(1)">
+          <i data-lucide="arrow-left"></i> Back
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="bloodNextStep(3)">
+          Continue <i data-lucide="arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="step-panel" id="blood-step-3">
+      <div class="form-grid">
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="settings"></i> Donation Preferences</div>
+          <p style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">Select the types of donation you are willing to make.</p>
+          <div class="option-group" style="flex-direction:column;gap:8px;">
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="donationType" value="whole" checked>
+              <span class="chip-dot"></span>
+              Whole Blood
+            </label>
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="donationType" value="plasma">
+              <span class="chip-dot"></span>
+              Plasma
+            </label>
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="donationType" value="platelets">
+              <span class="chip-dot"></span>
+              Platelets
+            </label>
+          </div>
+          <div style="margin-top:20px;">
+            <p style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Availability</p>
+            <div class="option-group">
+              <label class="option-chip">
+                <input type="radio" name="avail" value="now" checked>
+                <span class="chip-dot"></span> Available Now
+              </label>
+              <label class="option-chip">
+                <input type="radio" name="avail" value="request">
+                <span class="chip-dot"></span> On Request Only
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="bell"></i> Notification Preferences</div>
+          <p style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">When should we contact you for emergency requests?</p>
+          <div class="option-group" style="flex-direction:column;gap:8px;">
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="notif" value="anytime" checked>
+              <span class="chip-dot"></span>
+              Any time — I want to be the first responder
+            </label>
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="notif" value="daytime">
+              <span class="chip-dot"></span>
+              Daytime only (8 AM – 8 PM)
+            </label>
+            <label class="option-chip" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" name="notif" value="nearby">
+              <span class="chip-dot"></span>
+              Only hospitals within 10 km
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline btn-lg" onclick="bloodNextStep(2)">
+          <i data-lucide="arrow-left"></i> Back
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="bloodNextStep(4)">
+          Review &amp; Confirm <i data-lucide="arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="step-panel" id="blood-step-4">
+      <div style="max-width:560px;margin:0 auto;">
+        <div class="form-card" style="margin-bottom:20px;">
+          <div class="form-card-title"><i data-lucide="user-check"></i> Review Your Registration</div>
+          <div id="bloodReviewContent" style="font-size:13.5px;color:var(--text-2);line-height:2;"></div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="file-text"></i> Declaration</div>
+          <p style="font-size:12.5px;color:var(--text-2);margin-bottom:16px;">By registering, you confirm the information provided is accurate and you consent to be contacted for donation requests.</p>
+          <label class="consent-row" for="bloodConsent">
+            <input type="checkbox" id="bloodConsent">
+            <label for="bloodConsent">I confirm I am medically eligible, my information is accurate, and I consent to be contacted by partner hospitals.</label>
+          </label>
+          <button class="btn btn-primary btn-lg btn-full" id="bloodRegisterBtn">
+            <i data-lucide="check-circle"></i> Complete Registration
+          </button>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline btn-lg" onclick="bloodNextStep(3)">
+          <i data-lucide="arrow-left"></i> Back
+        </button>
+        <div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ORGAN DONATION PAGE ═══════════════════════════ -->
+<div class="page" id="page-organ">
+  <div class="page-shell">
+    <div class="section-header">
+      <div class="section-eyebrow">Organ &amp; Tissue Donation</div>
+      <div class="section-title">Donor Registry</div>
+      <div class="section-sub">Your pledge can give multiple people a second chance at life.</div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-card">
+        <div class="form-card-title green" style="color:var(--green)">
+          <i data-lucide="heart" style="color:var(--green)"></i>
+          Living Donation
+        </div>
+        <p style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">Organs and tissues you can donate while alive.</p>
+        <div class="option-group" style="flex-direction:column;gap:8px;">
+          <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" value="kidney_living">
+            <span class="chip-dot"></span> Kidney (one kidney)
+          </label>
+          <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" value="kidney_living">
+            <span class="chip-dot"></span> Bone Marrow
+          </label>
+          <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" value="kidney_living">
+            <span class="chip-dot"></span> Plasma
+          </label>
+          <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" value="liver_living">
+            <span class="chip-dot"></span> Liver (partial)
+          </label>
+          <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+            <input type="checkbox" value="bone_marrow">
+            <span class="chip-dot"></span> Bone Marrow / Stem Cells
+          </label>
+        </div>
+
+        <div style="margin-top:24px;">
+          <div class="form-card-title green" style="color:var(--green);margin-bottom:14px;">
+            <i data-lucide="activity" style="color:var(--green)"></i>
+            Posthumous Pledge
+          </div>
+          <p style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">Organs and tissues you pledge to donate after passing.</p>
+          <div class="option-group" style="flex-direction:column;gap:8px;" id="organCheckboxes">
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="heart">
+              <span class="chip-dot"></span> Heart
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="lungs">
+              <span class="chip-dot"></span> Lungs
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="corneas">
+              <span class="chip-dot"></span> Corneas (Eyes)
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="kidney">
+              <span class="chip-dot"></span> Kidney
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="liver">
+              <span class="chip-dot"></span> Liver
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="pancreas">
+              <span class="chip-dot"></span> Pancreas
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="skin">
+              <span class="chip-dot"></span> Skin Tissue
+            </label>
+            <label class="option-chip green" style="width:100%;border-radius:var(--radius);">
+              <input type="checkbox" value="all" id="organAll">
+              <span class="chip-dot"></span> All Eligible Organs &amp; Tissues
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="form-card">
+          <div class="form-card-title green"><i data-lucide="book-open" style="color:var(--green)"></i> About Organ Donation</div>
+          <div class="info-panel green">
+            <div class="info-panel-title">Why register as an organ donor?</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> One donor can transform up to 8 lives</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Over 500,000 patients are on transplant waiting lists</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Your pledge is registered in a national database</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Family is always consulted before donation</div>
+            <div class="info-item"><i data-lucide="check-circle"></i> Medical suitability is assessed at the time of donation</div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="form-card-title"><i data-lucide="link" style="color:var(--green)"></i> Learn More</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">Kidney Donation</span>
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">Liver Donation</span>
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">Bone Marrow</span>
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">Cornea Donation</span>
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">The Process</span>
+            <span class="btn btn-outline" style="font-size:12px;cursor:pointer;">FAQs</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg btn-full green" id="registerOrganBtn">
+          <i data-lucide="check-circle"></i> Register as Organ Donor
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ REQUESTS PAGE ═══════════════════════════ -->
+<div class="page" id="page-requests">
+  <div class="page-shell">
+    <div class="requests-header">
+      <div>
+        <div class="section-eyebrow">Live Matching</div>
+        <div class="section-title">Emergency Requests</div>
+        <div class="section-sub" id="requestSub">Showing all active requests</div>
+      </div>
+      <div class="requests-controls">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="requestSearch" placeholder="Search hospitals...">
+        </div>
+        <button class="filter-chip active" data-filter="all" onclick="setFilter(this,'all')">
+          <i data-lucide="list"></i> All
+        </button>
+        <button class="filter-chip" data-filter="critical" onclick="setFilter(this,'critical')">
+          <i data-lucide="zap"></i> Critical
+        </button>
+        <!-- Update the filter chips section in the requests page -->
+<button class="filter-chip" data-filter="match" onclick="setFilter(this,'match')">
+  <i data-lucide="target"></i> Compatible Only
+</button>
+        <span class="live-badge"><span class="live-dot"></span> Live</span>
+      </div>
+    </div>
+
+    <div class="requests-grid" id="emergencyContainer">
+      <!-- Dynamic content -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RESPONSE MODAL ═══════════════════════════ -->
+<div class="modal-overlay" id="registrationModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Response</div>
+      <button class="modal-close" id="closeModalBtn"><i data-lucide="x"></i></button>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;">You are about to respond to an emergency blood request from:</p>
+    <div class="modal-info-row">
+      <div class="modal-info-cell">
+        <div class="modal-info-label">Hospital</div>
+        <div class="modal-info-value" id="modalHospital">—</div>
+      </div>
+      <div class="modal-info-cell">
+        <div class="modal-info-label">Blood Type Needed</div>
+        <div class="modal-info-value" id="modalBloodType">—</div>
+      </div>
+      <div class="modal-info-cell">
+        <div class="modal-info-label">Distance</div>
+        <div class="modal-info-value" id="modalDistance">—</div>
+      </div>
+      <div class="modal-info-cell">
+        <div class="modal-info-label">Estimated ETA</div>
+        <div class="modal-info-value" id="modalEta">—</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:var(--text-2);">
+      <strong style="color:var(--text);">Your donor profile: </strong><span id="modalDonorInfo">—</span>
+    </div>
+
+    <label class="consent-row" for="modalConsent">
+      <input type="checkbox" id="modalConsent">
+      <label for="modalConsent">I confirm that I am medically eligible at this time and agree to present myself at the hospital as stated.</label>
+    </label>
+
+    <button class="btn btn-primary btn-lg btn-full" id="modalConfirmBtn" disabled>
+      <i data-lucide="check-circle"></i> Confirm &amp; Respond
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ TOAST STACK ═══════════════════════════ -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-brand">LuminaLife — Donor Platform</span>
+    <nav class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Support</a>
+      <a href="#">Emergency: 104</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ══════════════════════════════════════════════════
+// Add this function after the CONFIG section (around line 1068)
+
+// ══════════════════════════════════════════════════
+// BLOOD TYPE COMPATIBILITY
+// ══════════════════════════════════════════════════
+function getCompatibleBloodTypes(donorBloodType) {
+    // Maps donor blood type to recipients they can donate to
+    const compatibilityMap = {
+        'O-': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'], // Universal donor
+        'O+': ['O+', 'A+', 'B+', 'AB+'],
+        'A-': ['A-', 'A+', 'AB-', 'AB+'],
+        'A+': ['A+', 'AB+'],
+        'B-': ['B-', 'B+', 'AB-', 'AB+'],
+        'B+': ['B+', 'AB+'],
+        'AB-': ['AB-', 'AB+'],
+        'AB+': ['AB+'] // Universal recipient
+    };
+    
+    return compatibilityMap[donorBloodType] || [];
+}
+
+function getCompatibleDonorsForBloodType(recipientBloodType) {
+    // Maps recipient blood type to donors who can donate to them
+    const donorMap = {
+        'O-': ['O-'],
+        'O+': ['O-', 'O+'],
+        'A-': ['O-', 'A-'],
+        'A+': ['O-', 'O+', 'A-', 'A+'],
+        'B-': ['O-', 'B-'],
+        'B+': ['O-', 'O+', 'B-', 'B+'],
+        'AB-': ['O-', 'A-', 'B-', 'AB-'],
+        'AB+': ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'] // Universal recipient
+    };
+    
+    return donorMap[recipientBloodType] || [];
+}
+
+function isBloodTypeCompatible(donorType, recipientType) {
+    const compatible = getCompatibleBloodTypes(donorType);
+    return compatible.includes(recipientType);
+}
+// STATE
+// ══════════════════════════════════════════════════
+// In the donor object initialization (around line 1068)
+let donor = {
+  fullName: 'Donor', 
+  bloodGroup: 'O+',
+  totalDonations: 0, 
+  livesSaved: 0,
+  lastDonationDate: null, // This should be stored as YYYY-MM-DD or ISO string
+  phone: '', 
+  age: 0, 
+  avatar: null
+};
+let token = localStorage.getItem('lifelineUserToken') || '';
+let userId = localStorage.getItem('lifelineUserId') || 'D001';
+let emergencyRequests = [];
+let pendingEmergency = null;
+let notifications = [];
+let currentBloodStep = 1;
+let currentFilter = 'all';
+let notifOpen = false;
+let notificationFetchInterval = null;
+let emergencyFetchInterval = null;
+
+// ══════════════════════════════════════════════════
+// LUCIDE INIT
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  init();
+});
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(a => a.classList.remove('active'));
+  const targetPage = document.getElementById(`page-${page}`);
+  if (targetPage) targetPage.classList.add('active');
+  const navLink = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (navLink) navLink.classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+  if (page === 'requests') loadEmergencies();
+}
+
+// ══════════════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════════════
+function loadProfileFromStorage() {
+  try {
+    const p = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+    if (p.full_name)         donor.fullName = p.full_name;
+    if (p.blood_group)       donor.bloodGroup = p.blood_group;
+    if (p.phone)             donor.phone = p.phone;
+    if (p.age)               donor.age = parseInt(p.age);
+    if (p.avatar)            donor.avatar = p.avatar;
+    if (p.total_donations !== undefined) donor.totalDonations = p.total_donations;
+    if (p.lives_saved !== undefined)     donor.livesSaved = p.lives_saved;
+    if (p.last_donation_date) donor.lastDonationDate = p.last_donation_date;
+    if (p.user_id)           userId = p.user_id;
+  } catch(e) {}
+}
+
+function updateNavUI() {
+  const first = donor.fullName.split(' ')[0] || 'D';
+  const av = document.getElementById('navAvatar');
+  if (donor.avatar && donor.avatar.startsWith('http')) {
+    av.innerHTML = `<img src="${donor.avatar}" alt="${first}">`;
+  } else {
+    av.textContent = first.charAt(0).toUpperCase();
+  }
+}
+
+async function loadProfileFromBackend() {
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/profile/${userId}`);
+    if (res && res.ok) {
+      const data = await res.json();
+      const p = data.profile || data;
+      if (p.full_name) donor.fullName = p.full_name;
+      if (p.blood_group) donor.bloodGroup = p.blood_group;
+      if (p.total_donations !== undefined) donor.totalDonations = p.total_donations;
+      if (p.lives_saved !== undefined) donor.livesSaved = p.lives_saved;
+      if (p.phone) donor.phone = p.phone;
+      if (p.age) donor.age = p.age;
+      if (p.avatar) donor.avatar = p.avatar;
+      if (p.last_donation_date) donor.lastDonationDate = p.last_donation_date;
+      localStorage.setItem('lifelineUserProfile', JSON.stringify(p));
+      if (p.user_id) localStorage.setItem('lifelineUserId', p.user_id);
+      updateNavUI();
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════
+// ELIGIBILITY
+// ══════════════════════════════════════════════════
+function getEligibility() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset to midnight
+  
+  const lastDate = donor.lastDonationDate ? new Date(donor.lastDonationDate) : null;
+  if (lastDate) {
+    lastDate.setHours(0, 0, 0, 0); // Reset to midnight
+  }
+  
+  const daysSince = lastDate ? Math.floor((today - lastDate) / 86400000) : 999;
+  const eligible = daysSince >= 90;
+  
+  const nextDate = lastDate ? new Date(lastDate) : new Date();
+  if (!eligible) {
+    nextDate.setDate(nextDate.getDate() + 90);
+  }
+  
+  return {
+    eligible,
+    daysRemaining: Math.max(0, 90 - daysSince),
+    nextEligible: eligible ? 'Eligible now' : nextDate.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })
+  };
+}
+function renderEligBadge() {
+  const el = document.getElementById('eligStatus');
+  if (!el) return;
+  const elig = getEligibility();
+  if (elig.eligible) {
+    el.innerHTML = `<span class="elig-badge eligible"><i data-lucide="check-circle"></i> Eligible to donate now</span>`;
+  } else {
+    el.innerHTML = `<span class="elig-badge cooldown"><i data-lucide="clock"></i> Next eligible: ${elig.nextEligible}</span>`;
+  }
+  lucide.createIcons();
+}
+
+// ══════════════════════════════════════════════════
+// BLOOD MULTI-STEP FORM
+// ══════════════════════════════════════════════════
+function bloodNextStep(step) {
+  if (step > currentBloodStep) {
+    if (currentBloodStep === 1) {
+      const name = document.getElementById('bloodName').value.trim();
+      if (!name) { showToast('Please enter your full name.', 'error'); return; }
+    }
+    if (currentBloodStep === 2) {
+      const allChecked = ['elig1','elig2','elig3','elig4'].every(id => document.getElementById(id).checked);
+      if (!allChecked) { showToast('Please confirm all eligibility criteria.', 'error'); return; }
+    }
+  }
+
+  document.querySelector(`#blood-step-${currentBloodStep}`).classList.remove('active');
+  document.querySelectorAll('.step-item').forEach((item, idx) => {
+    item.classList.remove('active','done');
+    if (idx + 1 < step) item.classList.add('done');
+    else if (idx + 1 === step) item.classList.add('active');
+  });
+
+  if (step === 4) buildBloodReview();
+
+  currentBloodStep = step;
+  document.querySelector(`#blood-step-${step}`).classList.add('active');
+  
+  document.querySelectorAll('.step-item.done .step-circle').forEach(c => {
+    c.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  });
+  document.querySelectorAll('.step-item:not(.done) .step-circle').forEach((c, idx) => {
+    const stepNum = parseInt(c.closest('.step-item').dataset.step);
+    if (!c.querySelector('svg')) c.textContent = stepNum;
+  });
+}
+
+function buildBloodReview() {
+  const types = Array.from(document.querySelectorAll('input[name="donationType"]:checked')).map(c => c.value);
+  const avail = document.querySelector('input[name="avail"]:checked')?.value || 'now';
+  const html = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Full Name</div>
+        <div style="font-size:13.5px;font-weight:600;">${document.getElementById('bloodName').value || '—'}</div>
+      </div>
+      <div style="padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Blood Group</div>
+        <div style="font-size:13.5px;font-weight:600;color:var(--red);">${document.getElementById('bloodGroup').value || '—'}</div>
+      </div>
+      <div style="padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Phone</div>
+        <div style="font-size:13.5px;font-weight:600;">${document.getElementById('bloodPhone').value || '—'}</div>
+      </div>
+      <div style="padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Donation Types</div>
+        <div style="font-size:13.5px;font-weight:600;">${types.join(', ') || 'Whole Blood'}</div>
+      </div>
+      <div style="padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);grid-column:1/-1;">
+        <div style="font-size:10.5px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Availability</div>
+        <div style="font-size:13.5px;font-weight:600;">${avail === 'now' ? 'Available Now' : 'On Request Only'}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('bloodReviewContent').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// BLOOD REGISTRATION
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('bloodConsent').addEventListener('change', e => {
+    document.getElementById('bloodRegisterBtn').disabled = !e.target.checked;
+    document.getElementById('bloodRegisterBtn').style.opacity = e.target.checked ? '1' : '.5';
+  });
+  document.getElementById('bloodRegisterBtn').style.opacity = '.5';
+  document.getElementById('bloodRegisterBtn').disabled = true;
+
+  document.getElementById('bloodRegisterBtn').addEventListener('click', async () => {
+    const name = document.getElementById('bloodName').value.trim();
+    donor.fullName = name;
+    donor.bloodGroup = document.getElementById('bloodGroup').value;
+    donor.phone = document.getElementById('bloodPhone').value.trim() || donor.phone;
+    donor.age = parseInt(document.getElementById('bloodAge').value) || donor.age;
+
+    const profileData = {
+      user_id: userId, full_name: donor.fullName,
+      blood_group: donor.bloodGroup, phone: donor.phone, age: donor.age
+    };
+    await fetchWithAuth(`${API_BASE}/profile/update`, { method:'POST', body: JSON.stringify(profileData) }).catch(() => {});
+    localStorage.setItem('lifelineUserProfile', JSON.stringify(profileData));
+    updateNavUI();
+    
+    // Add notification
+    await addNotification('🩸 You registered as a blood donor. You can now respond to emergency requests!', 'info');
+    
+    showToast('Registered as Blood Donor. Finding matching requests...', 'success');
+    navigateTo('requests');
+    loadEmergencies();
+  });
+});
+
+// ══════════════════════════════════════════════════
+// ORGAN REGISTRATION (UPDATED)
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('organAll').addEventListener('change', function() {
+    document.querySelectorAll('#organCheckboxes input[type="checkbox"]').forEach(c => {
+      c.checked = this.checked;
+    });
+  });
+
+  document.getElementById('registerOrganBtn').addEventListener('click', async () => {
+    const checked = document.querySelectorAll('#page-organ .option-chip input:checked');
+    if (checked.length === 0) {
+      showToast('Please select at least one organ or tissue type.', 'error');
+      return;
+    }
+    
+    const btn = document.getElementById('registerOrganBtn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-circle"></i> Registering...`;
+    lucide.createIcons();
+
+    try {
+      const selections = Array.from(checked).map(c => c.value);
+      const organTypes = selections.filter(v => v !== 'all');
+      
+      // Register organ donor via backend
+      const response = await fetch(`${API_BASE}/donor/organ-register`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Id': userId
+        },
+        body: JSON.stringify({ 
+          user_id: userId, 
+          donor_name: donor.fullName, 
+          organ_types: organTypes 
+        })
+      });
+
+      const data = await response.json();
+      
+      // Update local stats
+      donor.livesSaved = (donor.livesSaved || 0) + 5;
+      donor.totalDonations = (donor.totalDonations || 0) + 1;
+      
+      const p = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+      p.total_donations = donor.totalDonations;
+      p.lives_saved = donor.livesSaved;
+      p.is_organ_donor = true;
+      p.organ_types = organTypes;
+      localStorage.setItem('lifelineUserProfile', JSON.stringify(p));
+
+      // Add notifications
+      await addNotification(`🧠 You joined the Organ Donor Registry. Organs: ${organTypes.join(', ')}`, 'organ');
+      
+      if (data.hospitals_notified) {
+        await addNotification(`🏥 ${data.hospitals_notified} hospitals have been notified of your organ donor status.`, 'info');
+      }
+      
+      showToast('✅ Registered as Organ Donor!', 'success');
+      navigateTo('home');
+      
+    } catch (error) {
+      console.error('Organ registration error:', error);
+      showToast('❌ Registration failed. Please try again.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      lucide.createIcons();
+    }
+  });
+});
+
+// ══════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════
+async function fetchWithAuth(url, options = {}) {
+    const headers = { 
+        'Content-Type': 'application/json',
+        'X-User-Id': userId,
+        ...options.headers 
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    
+    try {
+        const res = await fetch(url, { 
+            ...options, 
+            headers,
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        return res;
+    } catch(e) {
+        console.error('Fetch error:', e);
+        return null;
+    }
+}
+
+// ══════════════════════════════════════════════════
+// EMERGENCY REQUESTS
+// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// EMERGENCY REQUESTS - FETCH FROM MONGODB
+// ══════════════════════════════════════════════════
+async function loadEmergencies() {
+  const container = document.getElementById('emergencyContainer');
+  
+  // Show loading skeleton
+  container.innerHTML = `
+    <div class="req-card skeleton" style="height:160px;"></div>
+    <div class="req-card skeleton" style="height:160px;"></div>
+    <div class="req-card skeleton" style="height:160px;"></div>
+  `;
+  
+  try {
+    console.log('🔄 Fetching emergencies from MongoDB...');
+    
+    // Fetch from backend API that queries MongoDB
+    const response = await fetch(`${API_BASE}/emergencies/active`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': userId
+      }
+    });
+    
+    console.log('📡 Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('📋 Data from MongoDB:', data);
+    
+    // Extract emergencies from response
+    let emergencies = [];
+    if (data.success && data.emergencies) {
+      emergencies = data.emergencies;
+    } else if (data.emergencies) {
+      emergencies = data.emergencies;
+    } else if (Array.isArray(data)) {
+      emergencies = data;
+    }
+    
+    console.log(`✅ Found ${emergencies.length} emergencies in MongoDB`);
+    
+    if (emergencies.length > 0) {
+      // Map MongoDB data to donor page format
+      emergencyRequests = emergencies.map(e => ({
+        id: e.emergency_id || e._id || `EMG${Date.now()}`,
+        hospital: e.hospital_name || e.hospital || 'Unknown Hospital',
+        bloodType: e.blood_type_needed || e.bloodGroup || 'A+',
+        priority: e.priority || 'medium',
+        units: e.units_needed || e.units || 1,
+        distance: e.distance_km ? `${e.distance_km} km` : `${(Math.random()*8+1).toFixed(1)} km`,
+        eta: e.eta_minutes ? `${e.eta_minutes} min` : `${Math.floor(Math.random()*15+3)} min`,
+        timeAgo: e.created_at ? getTimeAgo(new Date(e.created_at)) : 'Just now',
+        hospital_id: e.hospital_id,
+        latitude: e.latitude || 12.9716 + (Math.random()-.5)*.1,
+        longitude: e.longitude || 77.5946 + (Math.random()-.5)*.1,
+        created_at: e.created_at,
+        patient_name: e.patient_name || 'Unknown',
+        reason: e.reason || '',
+        status: e.status || 'active'
+      }));
+      
+      console.log('📊 Mapped emergencies:', emergencyRequests);
+    } else {
+      console.log('ℹ️ No emergencies in MongoDB, showing empty state');
+      emergencyRequests = [];
+    }
+    
+  } catch (error) {
+    console.error('❌ Error fetching from MongoDB:', error);
+    // Show error state
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="alert-circle"></i></div>
+        <h3>Connection Error</h3>
+        <p>Could not connect to MongoDB. Please make sure the backend is running.</p>
+        <button onclick="loadEmergencies()" class="btn btn-primary" style="margin-top:16px;">
+          <i data-lucide="refresh-cw"></i> Retry
+        </button>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+  
+  // Render the emergencies
+  renderEmergencyCards();
+}
+
+// Helper function to get time ago
+function getTimeAgo(date) {
+  if (!date || isNaN(date.getTime())) return 'Just now';
+  const seconds = Math.floor((new Date() - date) / 1000);
+  if (seconds < 60) return 'Just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hours ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} days ago`;
+  return date.toLocaleDateString();
+}
+
+// Update renderEmergencyCards to handle empty state
+// ══════════════════════════════════════════════════
+// RENDER EMERGENCY CARDS - UPDATED
+// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// RENDER EMERGENCY CARDS - WITH COMPATIBILITY
+// ══════════════════════════════════════════════════
+function renderEmergencyCards() {
+  const container = document.getElementById('emergencyContainer');
+  const elig = getEligibility();
+  const searchVal = document.getElementById('requestSearch')?.value.toLowerCase() || '';
+
+  let filtered = emergencyRequests;
+  
+  // Apply blood type compatibility filter
+  // Show only requests where donor can donate to this blood type
+  const compatibleBloodTypes = getCompatibleBloodTypes(donor.bloodGroup);
+  
+  // Apply filters
+  if (currentFilter === 'critical') {
+    filtered = filtered.filter(r => r.priority === 'critical');
+  }
+  if (currentFilter === 'match') {
+    // Show only requests where donor's blood type is compatible with the recipient
+    filtered = filtered.filter(r => {
+      const recipientType = r.bloodType || 'O+';
+      return isBloodTypeCompatible(donor.bloodGroup, recipientType);
+    });
+  }
+  if (searchVal) {
+    filtered = filtered.filter(r => r.hospital.toLowerCase().includes(searchVal));
+  }
+
+  // Also filter by compatibility for all views (don't show incompatible requests)
+  // But show a note for incompatible ones
+  const matchCount = emergencyRequests.filter(r => {
+    const recipientType = r.bloodType || 'O+';
+    return isBloodTypeCompatible(donor.bloodGroup, recipientType);
+  }).length;
+  
+  document.getElementById('requestSub').textContent = 
+    `${filtered.length} request${filtered.length !== 1 ? 's' : ''} — ${matchCount} compatible with your blood type (${donor.bloodGroup})`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="droplets"></i></div>
+        <h3>${emergencyRequests.length === 0 ? 'No emergency requests' : 'No compatible requests'}</h3>
+        <p>${emergencyRequests.length === 0 ? 
+          'Check back later or create a request from the hospital portal.' : 
+          `Your blood type (${donor.bloodGroup}) is not compatible with any current requests.`}</p>
+        ${emergencyRequests.length > 0 ? `
+          <div style="margin-top:12px;padding:12px;background:rgba(251,191,36,.1);border-radius:8px;border:1px solid #f59e0b;font-size:12px;color:var(--text-2);">
+            <strong>💡 Blood Type Compatibility:</strong><br>
+            ${donor.bloodGroup} can donate to: <strong>${getCompatibleBloodTypes(donor.bloodGroup).join(', ')}</strong>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = filtered.map(req => {
+    const recipientType = req.bloodType || 'O+';
+    const isMatch = isBloodTypeCompatible(donor.bloodGroup, recipientType);
+    const pLabel = req.priority.charAt(0).toUpperCase() + req.priority.slice(1);
+    
+    // Show compatibility note
+    let compatibilityNote = '';
+    if (isMatch) {
+      compatibilityNote = `<span style="color:var(--green);font-weight:600;">✅ You can donate to this</span>`;
+    } else {
+      compatibilityNote = `<span style="color:var(--red);font-weight:600;">❌ Not compatible with your blood type</span>`;
+    }
+    
+    return `
+      <div class="req-card" data-id="${req.id}">
+        ${isMatch ? '<div class="match-indicator"></div>' : ''}
+        <div class="req-card-top">
+          <div>
+            <div class="req-hospital">🏥 ${req.hospital}</div>
+            <div class="req-time">${req.timeAgo}</div>
+          </div>
+          <span class="priority-badge ${req.priority}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+            ${pLabel}
+          </span>
+        </div>
+        <div class="req-meta-row">
+          <span class="blood-type-pill">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+            ${req.bloodType}
+          </span>
+          <span class="req-meta-item">
+            <i data-lucide="droplets"></i> ${req.units} unit${req.units > 1 ? 's' : ''}
+          </span>
+          <span class="req-meta-item">
+            <i data-lucide="map-pin"></i> ${req.distance}
+          </span>
+          <span class="req-meta-item">
+            <i data-lucide="clock"></i> ETA ${req.eta}
+          </span>
+        </div>
+        <div style="font-size:11px;color:var(--text-2);margin-bottom:8px;">
+          ${compatibilityNote}
+          ${isMatch ? ` · You (${donor.bloodGroup}) → Recipient (${req.bloodType}) ✅` : ` · ${donor.bloodGroup} cannot donate to ${req.bloodType}`}
+        </div>
+        ${req.patient_name && req.patient_name !== 'Unknown' ? `
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">
+            👤 Patient: ${req.patient_name}
+          </div>
+        ` : ''}
+        ${req.reason ? `
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">
+            📝 ${req.reason}
+          </div>
+        ` : ''}
+        <div class="req-actions">
+          <button class="btn btn-primary" onclick="openResponseModal('${req.id}')" ${(!elig.eligible || !isMatch) ? 'disabled style="opacity:.45;cursor:not-allowed;"' : ''}>
+            <i data-lucide="send"></i> ${isMatch ? 'Respond' : 'Not Compatible'}
+          </button>
+          <button class="btn btn-outline" onclick="viewRoute('${req.id}')">
+            <i data-lucide="navigation"></i> Route
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  lucide.createIcons();
+
+  // Add search listener if not already added
+  const search = document.getElementById('requestSearch');
+  if (search && !search._hasListener) {
+    search._hasListener = true;
+    search.addEventListener('input', () => renderEmergencyCards());
+  }
+}
+
+
+function setFilter(el, filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  
+  // Show filter info
+  if (filter === 'match') {
+    const compatibleCount = emergencyRequests.filter(r => {
+      const recipientType = r.bloodType || 'O+';
+      return isBloodTypeCompatible(donor.bloodGroup, recipientType);
+    }).length;
+    showToast(`🔍 Showing ${compatibleCount} requests compatible with ${donor.bloodGroup}`, 'info');
+  }
+  
+  renderEmergencyCards();
+}
+
+
+
+function viewRoute(id) {
+  const req = emergencyRequests.find(r => r.id === id);
+  if (req) {
+    localStorage.setItem('destination_hospital', JSON.stringify({
+      name: req.hospital, lat: req.latitude, lng: req.longitude,
+      distance: req.distance, eta: req.eta
+    }));
+    window.location.href = 'route-navigation.html';
+  }
+}
+
+// ══════════════════════════════════════════════════
+// RESPONSE MODAL
+// ══════════════════════════════════════════════════
+function openResponseModal(id) {
+  console.log('🔍 Opening modal for emergency ID:', id);
+  console.log('📋 All emergencies:', emergencyRequests);
+  
+  const req = emergencyRequests.find(r => r.id === id);
+  if (!req) {
+    console.error('❌ Emergency not found with ID:', id);
+    showToast('Emergency request not found', 'error');
+    return;
+  }
+  
+  console.log('✅ Found emergency:', req);
+  pendingEmergency = req;
+  
+  document.getElementById('modalHospital').textContent = req.hospital;
+  document.getElementById('modalBloodType').textContent = req.bloodType;
+  document.getElementById('modalDistance').textContent = req.distance;
+  document.getElementById('modalEta').textContent = req.eta;
+  document.getElementById('modalDonorInfo').textContent = `${donor.fullName} · ${donor.bloodGroup} · ${donor.phone || 'No phone on file'}`;
+  document.getElementById('modalConsent').checked = false;
+  document.getElementById('modalConfirmBtn').disabled = true;
+  document.getElementById('registrationModal').classList.add('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('modalConsent').addEventListener('change', e => {
+    document.getElementById('modalConfirmBtn').disabled = !e.target.checked;
+  });
+
+  document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+    if (!pendingEmergency) {
+        showToast('No emergency selected', 'error');
+        return;
+    }
+    
+    const btn = document.getElementById('modalConfirmBtn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-circle"></i> Processing...`;
+    lucide.createIcons();
+
+    try {
+        console.log('📤 SENDING TO BACKEND:');
+        console.log('  User ID:', userId);
+        console.log('  Emergency ID:', pendingEmergency.id);
+        console.log('  Hospital:', pendingEmergency.hospital);
+        console.log('  Donor:', donor.fullName, donor.bloodGroup);
+        
+        // ✅ ONLY call the emergency response endpoint
+        // This now handles donation creation internally
+        const response = await fetch(`${API_BASE}/emergencies/respond`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-User-Id': userId
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                emergency_id: pendingEmergency.id,
+                hospital_id: pendingEmergency.hospital_id || pendingEmergency.id,
+                hospital_name: pendingEmergency.hospital,
+                donor_name: donor.fullName || 'Donor',
+                blood_type: donor.bloodGroup,
+                donor_phone: donor.phone || ''
+            })
+        });
+
+        console.log('📥 Response status:', response.status);
+        const responseData = await response.json();
+        console.log('📥 Response data:', responseData);
+
+        if (!response.ok) {
+            throw new Error(responseData.error || responseData.message || `HTTP ${response.status}`);
+        }
+
+        // ✅ Donation is already created by the backend, so skip the separate call
+        
+        // Update donor stats locally
+        donor.totalDonations = (donor.totalDonations || 0) + 1;
+        donor.livesSaved = (donor.livesSaved || 0) + 3;
+        donor.lastDonationDate = new Date().toISOString();
+        
+        // Save to localStorage
+        const p = JSON.parse(localStorage.getItem('lifelineUserProfile') || '{}');
+        p.total_donations = donor.totalDonations;
+        p.lives_saved = donor.livesSaved;
+        p.last_donation_date = donor.lastDonationDate;
+        localStorage.setItem('lifelineUserProfile', JSON.stringify(p));
+
+        // Remove from emergency list
+        emergencyRequests = emergencyRequests.filter(r => r.id !== pendingEmergency.id);
+        
+        showToast(`✅ Response confirmed for ${pendingEmergency.hospital}`, 'success');
+        await addNotification(`🩸 You responded to an emergency at ${pendingEmergency.hospital}`, 'emergency');
+        
+        document.getElementById('registrationModal').classList.remove('open');
+        pendingEmergency = null;
+        renderEmergencyCards();
+        
+    } catch (error) {
+        console.error('❌ Response error:', error);
+        showToast(`❌ ${error.message}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        lucide.createIcons();
+    }
+});
+});
+document.getElementById('closeModalBtn').addEventListener('click', () => {
+    document.getElementById('registrationModal').classList.remove('open');
+    pendingEmergency = null;
+});
+
+document.getElementById('registrationModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('registrationModal')) {
+        document.getElementById('registrationModal').classList.remove('open');
+        pendingEmergency = null;
+    }
+});
+
+// ══════════════════════════════════════════════════
+// NOTIFICATIONS (FULLY UPDATED)
+// ══════════════════════════════════════════════════
+async function addNotification(msg, type = 'info') {
+  // 1. Add to local notifications
+  notifications.unshift({ 
+    msg, 
+    time: 'Just now', 
+    unread: true, 
+    type,
+    id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`
+  });
+  renderNotifPanel();
+  updateNotifBadge();
+  
+  // 2. Save to backend (MongoDB)
+  try {
+    const response = await fetch(`${API_BASE}/notifications/create`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-User-Id': userId
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        title: type === 'emergency' ? '🩸 Emergency Response' : 
+               type === 'organ' ? '🧠 Organ Donation' : 
+               '📋 LuminaLife Update',
+        message: msg,
+        type: type === 'emergency' ? 'emergency_response' : 
+              type === 'organ' ? 'organ_donation' : 
+              'donor_notification',
+        priority: type === 'emergency' ? 'high' : 'medium',
+        metadata: {
+          timestamp: new Date().toISOString(),
+          type: type,
+          donor_name: donor.fullName
+        }
+      })
+    });
+    
+    if (response && response.ok) {
+      const data = await response.json();
+      console.log('Notification saved to backend:', data);
+    }
+  } catch(e) {
+    console.warn('Could not save notification to backend:', e);
+  }
+}
+
+async function fetchNotifications() {
+  try {
+    const res = await fetchWithAuth(`${API_BASE}/notifications/${userId}`);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data.notifications && data.notifications.length > 0) {
+        // Convert backend notifications to local format
+        const backendNotifs = data.notifications.map(n => ({
+          msg: n.message || n.title,
+          time: n.created_at ? new Date(n.created_at).toLocaleString() : 'Just now',
+          unread: !n.is_read,
+          id: n.notification_id || `notif_${Date.now()}_${Math.random()}`,
+          type: n.type || 'info'
+        }));
+        
+        // Merge with existing notifications (avoid duplicates)
+        const existingIds = new Set(notifications.map(n => n.id));
+        const newNotifs = backendNotifs.filter(n => !existingIds.has(n.id));
+        
+        if (newNotifs.length > 0) {
+          notifications = [...newNotifs, ...notifications];
+          renderNotifPanel();
+          updateNotifBadge();
+          
+          // Show toast for new notifications
+          newNotifs.forEach(n => {
+            showToast(`🔔 ${n.msg}`, 'info');
+          });
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Could not fetch notifications:', e);
+  }
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notifList');
+  if (notifications.length === 0) {
+    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+    return;
+  }
+  list.innerHTML = notifications.map((n, i) => `
+    <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="markRead(${i})">
+      <div class="notif-dot-unread" style="opacity:${n.unread ? 1 : 0}"></div>
+      <div class="notif-item-content">
+        <div class="notif-item-text">${n.msg}</div>
+        <div class="notif-item-time">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function markRead(idx) {
+  if (notifications[idx]) {
+    notifications[idx].unread = false;
+    updateNotifBadge();
+    renderNotifPanel();
+    
+    // Also mark as read in backend
+    if (notifications[idx].id && notifications[idx].id.startsWith('notif_')) {
+      try {
+        fetch(`${API_BASE}/notifications/read/${notifications[idx].id}`, {
+          method: 'POST',
+          headers: { 'X-User-Id': userId }
+        }).catch(() => {});
+      } catch(e) {}
+    }
+  }
+}
+
+function updateNotifBadge() {
+  const unread = notifications.filter(n => n.unread).length;
+  const dot = document.getElementById('notifDot');
+  dot.style.display = unread > 0 ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('notifToggle').addEventListener('click', e => {
+    e.stopPropagation();
+    notifOpen = !notifOpen;
+    document.getElementById('notifPanel').classList.toggle('open', notifOpen);
+    if (notifOpen) {
+      // Mark all as read when opening
+      markAllRead();
+    }
+  });
+  
+  document.getElementById('markAllRead').addEventListener('click', () => {
+    markAllRead();
+  });
+  
+  document.addEventListener('click', e => {
+    if (notifOpen && !document.getElementById('notifPanel').contains(e.target) && e.target.id !== 'notifToggle') {
+      notifOpen = false;
+      document.getElementById('notifPanel').classList.remove('open');
+    }
+  });
+});
+
+async function markAllRead() {
+  // Mark all local as read
+  const unreadIds = notifications.filter(n => n.unread).map(n => n.id);
+  notifications.forEach(n => n.unread = false);
+  updateNotifBadge();
+  renderNotifPanel();
+  
+  // Also mark as read in backend
+  for (const id of unreadIds) {
+    if (id && id.startsWith('notif_')) {
+      try {
+        await fetch(`${API_BASE}/notifications/read/${id}`, {
+          method: 'POST',
+          headers: { 'X-User-Id': userId }
+        });
+      } catch(e) {}
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const icons = {
+    success: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    error:   '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:    '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type]}</span>${msg}`;
+  document.getElementById('toastStack').appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(24px)'; toast.style.transition = 'all .25s ease'; setTimeout(() => toast.remove(), 300); }, 3500);
+}
+
+// ══════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('llTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcons(saved);
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('llTheme', next);
+    updateThemeIcons(next);
+  });
+});
+
+function updateThemeIcons(theme) {
+  document.getElementById('themeIconMoon').style.display = theme === 'light' ? 'block' : 'none';
+  document.getElementById('themeIconSun').style.display  = theme === 'dark'  ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+async function init() {
+  loadProfileFromStorage();
+  updateNavUI();
+  renderEligBadge();
+
+  // Pre-fill blood form
+  if (donor.fullName && donor.fullName !== 'Donor') document.getElementById('bloodName').value = donor.fullName;
+  if (donor.bloodGroup) document.getElementById('bloodGroup').value = donor.bloodGroup;
+  if (donor.phone) document.getElementById('bloodPhone').value = donor.phone;
+  if (donor.age) document.getElementById('bloodAge').value = donor.age;
+
+  await loadProfileFromBackend();
+  
+  // Fetch notifications from backend
+  await fetchNotifications();
+
+  // Clear any existing intervals
+  if (notificationFetchInterval) clearInterval(notificationFetchInterval);
+  if (emergencyFetchInterval) clearInterval(emergencyFetchInterval);
+
+  // Poll for new notifications every 15 seconds
+  notificationFetchInterval = setInterval(fetchNotifications, 15000);
+  
+  // Poll for emergencies every 30 seconds
+  emergencyFetchInterval = setInterval(() => {
+    if (document.getElementById('page-requests').classList.contains('active')) loadEmergencies();
+  }, 30000);
+  
+  console.log('🟢 Real-time polling started');
+  console.log('📬 Notifications will refresh every 15s');
+  console.log('🚨 Emergencies will refresh every 30s');
+}
+</script>
+</body>
+</html>

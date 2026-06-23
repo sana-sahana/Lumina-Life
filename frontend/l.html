@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLink Login | Donor Platform</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins', system-ui, -apple-system, sans-serif;
+}
+
+:root{
+  --main:#cdb4db;
+  --dark:#6a4c93;
+  --light:#f3e8ff;
+  --error:#e74c3c;
+  --success:#2ecc71;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: var(--light);
+  padding:1rem;
+}
+
+.container{
+  width:900px;
+  max-width:95%;
+  min-height:500px;
+  display:flex;
+  flex-wrap:wrap;
+  border-radius:30px;
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,0.15);
+  background:white;
+  position:relative;
+  z-index:10;
+}
+
+.left{
+  flex:1;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ffc8dd,#cdb4db);
+  overflow:hidden;
+  padding:2rem;
+}
+
+.left img{
+  width:180px;
+  max-width:70%;
+  animation:float 6s ease-in-out infinite;
+  z-index:2;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,0.15));
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-12px);}
+}
+
+.left h2{
+  margin-top:20px;
+  color:white;
+  font-weight:600;
+  z-index:2;
+  font-size:1.8rem;
+  text-align:center;
+  text-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.left p{
+  color:rgba(255,255,255,0.9);
+  font-size:0.9rem;
+  margin-top:0.5rem;
+}
+
+.left::before,
+.left::after{
+  content:"";
+  position:absolute;
+  width:250px;
+  height:250px;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:0.5;
+}
+
+.left::before{
+  background:#ffafcc;
+  top:-50px;
+  left:-50px;
+}
+
+.left::after{
+  background:#bde0fe;
+  bottom:-50px;
+  right:-50px;
+}
+
+.right{
+  flex:1;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(0px);
+  padding:2rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.form{display:none;}
+.form.active{display:block; animation:fadeIn 0.3s ease;}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+h2{
+  color:var(--dark);
+  margin-bottom:0.5rem;
+  font-weight:700;
+}
+
+p{
+  color:#555;
+  margin-bottom:1.5rem;
+  font-size:0.9rem;
+}
+
+input{
+  width:100%;
+  padding:14px 16px;
+  margin:10px 0;
+  border-radius:28px;
+  border:1px solid #e0d4f0;
+  background:#fefcff;
+  outline:none;
+  transition:0.2s;
+  font-size:0.95rem;
+}
+
+input:focus{
+  border-color:var(--main);
+  box-shadow:0 0 0 3px rgba(205,180,219,0.3);
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:40px;
+  background:linear-gradient(135deg,#cdb4db,#b892d6);
+  color:white;
+  font-weight:700;
+  margin-top:12px;
+  cursor:pointer;
+  transition:0.25s;
+  font-size:1rem;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  background:linear-gradient(135deg,#b892d6,#a07cc9);
+  box-shadow:0 6px 14px rgba(106,76,147,0.3);
+}
+
+.google{
+  margin-top:16px;
+  padding:12px;
+  border-radius:40px;
+  background:#f8f4ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  cursor:pointer;
+  transition:0.2s;
+  border:1px solid #e9e0f5;
+}
+
+.google:hover{
+  background:#ffffff;
+  transform:translateY(-2px);
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.google img{
+  width:22px;
+  height:22px;
+}
+
+.toggle{
+  margin-top:20px;
+  text-align:center;
+  color:var(--dark);
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  font-weight:500;
+  transition:0.2s;
+}
+
+.toggle:hover{
+  color:#3c096c;
+  text-decoration:underline;
+}
+
+.toggle img{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+}
+
+.error-msg{
+  color:var(--error);
+  font-size:12px;
+  margin-top:-5px;
+  margin-bottom:8px;
+  text-align:center;
+  background:rgba(231,76,60,0.1);
+  padding:5px;
+  border-radius:20px;
+}
+
+.success-toast{
+  position:fixed;
+  bottom:25px;
+  right:25px;
+  background:linear-gradient(135deg,#6a4c93,#9b6bc1);
+  color:white;
+  padding:12px 24px;
+  border-radius:60px;
+  z-index:2000;
+  animation:slideIn 0.3s ease;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+  font-weight:500;
+}
+
+@keyframes slideIn{
+  from{transform:translateX(400px);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+
+@media (max-width:750px){
+  .left{
+    display:none;
+  }
+  .container{
+    width:450px;
+  }
+  .right{
+    padding:1.8rem;
+  }
+}
+
+.loading-btn{
+  opacity:0.7;
+  cursor:wait;
+  pointer-events:none;
+}
+
+.spinner{
+  display:inline-block;
+  width:18px;
+  height:18px;
+  border:2px solid rgba(255,255,255,0.4);
+  border-radius:50%;
+  border-top-color:white;
+  animation:spin 0.7s linear infinite;
+  margin-right:8px;
+  vertical-align:middle;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT DECORATION -->
+  <div class="left">
+    <img src="https://cdn-icons-png.flaticon.com/512/4140/4140047.png" alt="donor heart">
+    <h2>LifeLink</h2>
+    <p>💖 Every drop saves lives</p>
+  </div>
+
+  <!-- RIGHT FORMS -->
+  <div class="right">
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" class="form active">
+      <h2>Welcome Back 🌸</h2>
+      <p>Login to your donor portal</p>
+
+      <input type="email" id="loginEmail" placeholder="Email address" autocomplete="email">
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+      <div id="loginError" class="error-msg"></div>
+
+      <button class="btn" id="loginBtn">Sign In</button>
+
+      <div class="google" id="googleLoginBtn">
+        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="google">
+        Continue with Google
+      </div>
+
+      <div class="toggle" id="showSignupToggle">
+        <img src="https://i.pinimg.com/736x/00/9f/c0/009fc09a302e18d5cb0c1ecc75d728e5.jpg" alt="signup">
+        Create Account
+      </div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signupForm" class="form">
+      <h2>Create Account 💫</h2>
+      <p>Join the lifesaving community</p>
+
+      <input type="text" id="signupName" placeholder="Full Name" autocomplete="name">
+      <input type="email" id="signupEmail" placeholder="Email" autocomplete="email">
+      <input type="tel" id="signupPhone" placeholder="Phone Number" autocomplete="tel">
+      <input type="password" id="signupPassword" placeholder="Password" autocomplete="new-password">
+      <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+      <div id="signupError" class="error-msg"></div>
+
+      <button class="btn" id="signupBtn">Sign Up</button>
+
+      <div class="google" id="googleSignupBtn">
+        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="google">
+        Sign up with Google
+      </div>
+
+      <div class="toggle" id="showLoginToggle">
+        <img src="https://i.pinimg.com/736x/fa/2f/d5/fa2fd58084e7f38b1e36021ac42c2a03.jpg" alt="login">
+        Already have account? Sign in
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  MONGODB BACKEND INTEGRATION - FULL API CONNECTION
+//  Creates users collection in MongoDB Atlas
+//  Endpoints: /api/auth/register, /api/auth/login, /api/auth/google
+// ============================================================
+
+// ---------- API CONFIGURATION ----------
+// Replace with your actual backend URL when deployed
+// For local development with Flask/Node backend running on port 5000
+const API_BASE_URL = 'http://localhost:5000/api';
+
+// Helper: Show toast notifications
+function showToast(message, isError = false) {
+    const existingToast = document.querySelector('.success-toast');
+    if(existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.style.background = isError 
+        ? 'linear-gradient(135deg,#e74c3c,#c0392b)' 
+        : 'linear-gradient(135deg,#6a4c93,#9b6bc1)';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Button loading state
+function setButtonLoading(button, isLoading, originalText) {
+    if (!button) return;
+    if (isLoading) {
+        button.dataset.originalText = button.innerText;
+        button.innerHTML = '<span class="spinner"></span> Loading...';
+        button.disabled = true;
+        button.classList.add('loading-btn');
+    } else {
+        button.innerText = button.dataset.originalText || originalText;
+        button.disabled = false;
+        button.classList.remove('loading-btn');
+    }
+}
+
+// ========== REGISTER USER (MongoDB Users Collection) ==========
+async function registerUserAPI(name, email, phone, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name.trim(),
+                email: email.trim().toLowerCase(),
+                phone: phone.trim(),
+                password: password,
+                blood_group: 'O+',     // default donor info
+                role: 'donor',
+                createdAt: new Date().toISOString()
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Registration failed');
+        }
+        
+        return { success: true, data };
+    } catch (error) {
+        console.error('Register API Error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ========== LOGIN USER (MongoDB Users Collection) ==========
+async function loginUserAPI(email, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email.trim().toLowerCase(),
+                password: password
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Login failed');
+        }
+        
+        return { success: true, data };
+    } catch (error) {
+        console.error('Login API Error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ========== GOOGLE AUTH (Backend OAuth) ==========
+async function googleAuthAPI() {
+    try {
+        // Redirect to backend Google OAuth endpoint
+        window.location.href = `${API_BASE_URL}/auth/google`;
+    } catch (error) {
+        showToast('Google login failed. Try again.', true);
+    }
+}
+
+// ========== HANDLE SIGNUP ==========
+async function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const errorDiv = document.getElementById('signupError');
+    
+    errorDiv.innerText = '';
+    
+    // Validations
+    if (!name) {
+        errorDiv.innerText = '❌ Please enter your full name';
+        return;
+    }
+    if (!email) {
+        errorDiv.innerText = '❌ Email is required';
+        return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+        errorDiv.innerText = '❌ Enter a valid email address';
+        return;
+    }
+    if (!phone) {
+        errorDiv.innerText = '❌ Phone number is required';
+        return;
+    }
+    if (phone.replace(/\D/g, '').length < 10) {
+        errorDiv.innerText = '❌ Phone number must have at least 10 digits';
+        return;
+    }
+    if (!password) {
+        errorDiv.innerText = '❌ Password cannot be empty';
+        return;
+    }
+    if (password.length < 6) {
+        errorDiv.innerText = '❌ Password must be at least 6 characters';
+        return;
+    }
+    if (password !== confirmPassword) {
+        errorDiv.innerText = '❌ Passwords do not match';
+        return;
+    }
+    
+    const signupButton = document.getElementById('signupBtn');
+    setButtonLoading(signupButton, true, 'Sign Up');
+    
+    // Call MongoDB backend
+    const result = await registerUserAPI(name, email, phone, password);
+    
+    if (result.success) {
+        showToast('✅ Account created successfully! Please login.');
+        // Clear signup fields
+        document.getElementById('signupName').value = '';
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupPhone').value = '';
+        document.getElementById('signupPassword').value = '';
+        document.getElementById('signupConfirmPassword').value = '';
+        
+        // Switch to login form and prefill email
+        showLoginForm();
+        document.getElementById('loginEmail').value = email;
+    } else {
+        errorDiv.innerText = result.error || 'Registration failed. Email might already exist.';
+        showToast(result.error || 'Signup failed', true);
+    }
+    
+    setButtonLoading(signupButton, false, 'Sign Up');
+}
+
+// ========== HANDLE LOGIN ==========
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+    
+    errorDiv.innerText = '';
+    
+    if (!email) {
+        errorDiv.innerText = '❌ Please enter your email';
+        return;
+    }
+    if (!password) {
+        errorDiv.innerText = '❌ Please enter your password';
+        return;
+    }
+    
+    const loginButton = document.getElementById('loginBtn');
+    setButtonLoading(loginButton, true, 'Sign In');
+    
+    const result = await loginUserAPI(email, password);
+    
+    if (result.success) {
+        // Store user data & token in localStorage
+        const { token, user, userId } = result.data;
+        localStorage.setItem('lifelineUserToken', token);
+        localStorage.setItem('lifelineUserId', userId || user?.id);
+        localStorage.setItem('lifelineUserProfile', JSON.stringify(user));
+        
+        showToast(`✨ Welcome back, ${user?.name || 'Donor'}! Redirecting...`);
+        
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1200);
+    } else {
+        errorDiv.innerText = result.error || 'Invalid credentials. Please try again.';
+        showToast(result.error || 'Login failed', true);
+    }
+    
+    setButtonLoading(loginButton, false, 'Sign In');
+}
+
+// ========== GOOGLE HANDLERS ==========
+function handleGoogleLogin() {
+    showToast('🌐 Connecting to Google...', false);
+    googleAuthAPI();
+}
+
+function handleGoogleSignup() {
+    showToast('🌐 Redirecting to Google Sign-Up...', false);
+    googleAuthAPI();
+}
+
+// ========== UI TOGGLE FUNCTIONS ==========
+function showSignupForm() {
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById('signupForm').classList.add('active');
+    document.getElementById('loginError').innerText = '';
+    document.getElementById('signupError').innerText = '';
+}
+
+function showLoginForm() {
+    document.getElementById('signupForm').classList.remove('active');
+    document.getElementById('loginForm').classList.add('active');
+    document.getElementById('loginError').innerText = '';
+    document.getElementById('signupError').innerText = '';
+}
+
+// ========== CHECK EXISTING SESSION WITH BACKEND ==========
+async function verifySessionAndRedirect() {
+    const token = localStorage.getItem('lifelineUserToken');
+    const userId = localStorage.getItem('lifelineUserId');
+    
+    if (!token || !userId) return false;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, userId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.valid) {
+            showToast('🔄 Auto-login successful! Redirecting...');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 800);
+            return true;
+        } else {
+            // Invalid session, clear storage
+            localStorage.removeItem('lifelineUserToken');
+            localStorage.removeItem('lifelineUserId');
+            localStorage.removeItem('lifelineUserProfile');
+            return false;
+        }
+    } catch (err) {
+        console.log('Session verification failed (backend offline?)', err);
+        return false;
+    }
+}
+
+// ========== BACKEND CONNECTION TEST (Optional) ==========
+async function testBackendConnection() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/health`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+            console.log('✅ Backend server is running on', API_BASE_URL);
+        } else {
+            console.warn('⚠️ Backend health check failed');
+        }
+    } catch (error) {
+        console.warn('⚠️ Cannot connect to backend. Make sure MongoDB backend is running on port 5000');
+        showToast('⚠️ Backend server unreachable. Please start Flask/Node server.', true);
+    }
+}
+
+// ========== EVENT LISTENERS SETUP ==========
+function attachEventListeners() {
+    // Login button
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+        loginBtn.removeEventListener('click', handleLogin);
+        loginBtn.addEventListener('click', handleLogin);
+    }
+    
+    // Signup button
+    const signupBtn = document.getElementById('signupBtn');
+    if (signupBtn) {
+        signupBtn.removeEventListener('click', handleSignup);
+        signupBtn.addEventListener('click', handleSignup);
+    }
+    
+    // Google buttons
+    const googleLogin = document.getElementById('googleLoginBtn');
+    if (googleLogin) {
+        googleLogin.removeEventListener('click', handleGoogleLogin);
+        googleLogin.addEventListener('click', handleGoogleLogin);
+    }
+    
+    const googleSignup = document.getElementById('googleSignupBtn');
+    if (googleSignup) {
+        googleSignup.removeEventListener('click', handleGoogleSignup);
+        googleSignup.addEventListener('click', handleGoogleSignup);
+    }
+    
+    // Toggle buttons
+    const showSignupToggle = document.getElementById('showSignupToggle');
+    if (showSignupToggle) {
+        showSignupToggle.removeEventListener('click', showSignupForm);
+        showSignupToggle.addEventListener('click', showSignupForm);
+    }
+    
+    const showLoginToggle = document.getElementById('showLoginToggle');
+    if (showLoginToggle) {
+        showLoginToggle.removeEventListener('click', showLoginForm);
+        showLoginToggle.addEventListener('click', showLoginForm);
+    }
+    
+    // Enter key support
+    const loginPass = document.getElementById('loginPassword');
+    if (loginPass) {
+        loginPass.removeEventListener('keypress', loginEnterHandler);
+        loginPass.addEventListener('keypress', loginEnterHandler);
+    }
+    
+    const signupConfirm = document.getElementById('signupConfirmPassword');
+    if (signupConfirm) {
+        signupConfirm.removeEventListener('keypress', signupEnterHandler);
+        signupConfirm.addEventListener('keypress', signupEnterHandler);
+    }
+}
+
+function loginEnterHandler(e) {
+    if (e.key === 'Enter') handleLogin();
+}
+
+function signupEnterHandler(e) {
+    if (e.key === 'Enter') handleSignup();
+}
+
+// ========== INITIALIZE PAGE ==========
+async function init() {
+    attachEventListeners();
+    await testBackendConnection();
+    
+    // Check if user already logged in and session valid
+    const redirected = await verifySessionAndRedirect();
+    if (redirected) return;
+    
+    // Prefill demo hint (optional)
+    console.log('LifeLink Portal | Backend: MongoDB Users Collection ready');
+}
+
+// Start everything when DOM loaded
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- 
+  ============================================================
+  BACKEND SETUP INSTRUCTIONS (MongoDB Users Collection)
+  ============================================================
+  
+  Create a backend server (Node.js/Express or Flask) with these endpoints:
+  
+  POST   /api/auth/register  -> Create user in MongoDB 'users' collection
+  POST   /api/auth/login     -> Authenticate & return JWT token + user data
+  POST   /api/auth/verify    -> Verify JWT token validity
+  GET    /api/auth/google     -> Google OAuth redirect
+  GET    /api/health          -> Health check
+  
+  MONGODB USERS COLLECTION SCHEMA:
+  {
+    _id: ObjectId,
+    name: String,
+    email: String (unique),
+    phone: String,
+    password: String (hashed bcrypt),
+    blood_group: String,
+    role: String,
+    createdAt: Date,
+    googleId: String (optional)
+  }
+  
+  SAMPLE NODE.JS BACKEND (Express + MongoDB):
+  
+  const express = require('express');
+  const mongoose = require('mongoose');
+  const bcrypt = require('bcryptjs');
+  const jwt = require('jsonwebtoken');
+  const cors = require('cors');
+  
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+  
+  mongoose.connect('mongodb+srv://your-cluster-url/lifelink');
+  
+  const UserSchema = new mongoose.Schema({
+    name: String,
+    email: { type: String, unique: true },
+    phone: String,
+    password: String,
+    blood_group: String,
+    role: String,
+    createdAt: Date,
+    googleId: String
+  });
+  
+  const User = mongoose.model('User', UserSchema);
+  
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { name, email, phone, password, blood_group, role } = req.body;
+      const existing = await User.findOne({ email });
+      if(existing) return res.status(400).json({ error: 'Email already exists' });
+      
+      const hashed = await bcrypt.hash(password, 10);
+      const user = await User.create({
+        name, email, phone, password: hashed, blood_group, role, createdAt: new Date()
+      });
+      res.json({ status: 'success', userId: user._id });
+    } catch(err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  app.post('/api/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if(!user) return res.status(401).json({ error: 'Invalid credentials' });
+    
+    const match = await bcrypt.compare(password, user.password);
+    if(!match) return res.status(401).json({ error: 'Invalid credentials' });
+    
+    const token = jwt.sign({ userId: user._id }, 'SECRET_KEY', { expiresIn: '7d' });
+    res.json({
+      status: 'success',
+      token,
+      userId: user._id,
+      user: { name: user.name, email: user.email, phone: user.phone, blood_group: user.blood_group }
+    });
+  });
+  
+  app.post('/api/auth/verify', (req, res) => {
+    const { token } = req.body;
+    try {
+      jwt.verify(token, 'SECRET_KEY');
+      res.json({ valid: true });
+    } catch(e) {
+      res.json({ valid: false });
+    }
+  });
+  
+  app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+  
+  app.listen(5000, () => console.log('Server on port 5000'));
+  
+  ============================================================
+-->
+</body>
+</html>

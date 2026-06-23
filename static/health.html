@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LuminaLife · Health Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── ALL STYLES ── */
+:root{
+  --navy:#0A1628;--navy-mid:#0F2040;--navy-soft:#1B3050;
+  --ivory:#FBF7F4;--ivory-2:#F5EFE9;--ivory-3:#EDE5DC;
+  --crimson:#C4183C;--crimson-l:#E2264F;
+  --rose:#F9A8B8;--rose-l:#FDDEE5;
+  --sage:#7BB597;--sage-l:#D4EDE0;
+  --amber:#F0A855;--amber-l:#FDE8C8;
+  --gold:#D4A055;--purple:#8B5CF6;--purple-l:#EDE9FE;
+  --blue:#3B82F6;--blue-l:#DBEAFE;
+  --slate:#4A5568;--slate-l:#8A97A8;
+  --white:#FFFFFF;
+  --shadow-s:0 2px 12px rgba(10,22,40,.06);
+  --shadow-m:0 8px 32px rgba(10,22,40,.10);
+  --shadow-l:0 20px 60px rgba(10,22,40,.14);
+  --r-s:12px;--r-m:18px;--r-l:24px;--r-xl:32px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--ivory);min-height:100vh;overflow-x:hidden;}
+
+/* ── LOADER ── */
+.loader{
+  position:fixed;inset:0;
+  background:var(--navy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1.2rem;z-index:9999;transition:opacity .6s ease, visibility .6s ease;
+}
+.loader.hidden{opacity:0;visibility:hidden;}
+.loader-logo{
+  width:64px;height:64px;border-radius:20px;
+  background:var(--crimson);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;color:white;
+  box-shadow:0 0 0 0 rgba(196,24,60,.5);
+  animation:logoPulse 1.8s ease-in-out infinite;
+}
+@keyframes logoPulse{
+  0%{box-shadow:0 0 0 0 rgba(196,24,60,.5);}
+  70%{box-shadow:0 0 0 20px rgba(196,24,60,0);}
+  100%{box-shadow:0 0 0 0 rgba(196,24,60,0);}
+}
+.loader h2{color:white;font-size:1.4rem;letter-spacing:-0.3px;}
+.loader h2 span{color:var(--rose);}
+.loader-bar-wrap{width:220px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.loader-bar{height:100%;background:var(--crimson);border-radius:3px;animation:loadBar 1.6s ease-in-out forwards;}
+@keyframes loadBar{0%{width:0%;}60%{width:80%;}100%{width:100%;}}
+.loader-sub{color:rgba(255,255,255,.4);font-size:.78rem;}
+
+/* ── MAIN WRAPPER ── */
+.main-wrapper{max-width:1420px;margin:0 auto;min-height:100vh;padding:1.5rem 2rem 4rem;}
+
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.75rem;background:white;
+  padding:.9rem 1.8rem;border-radius:var(--r-l);
+  border:1px solid var(--ivory-3);box-shadow:var(--shadow-s);
+  flex-wrap:wrap;gap:.8rem;
+}
+.topbar-left{display:flex;align-items:center;gap:1rem;}
+.logo-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:var(--crimson);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;color:white;
+  box-shadow:0 4px 16px rgba(196,24,60,.3);
+}
+.topbar-left h2{font-size:1.3rem;font-weight:700;color:var(--navy);letter-spacing:-0.3px;}
+.topbar-left h2 span{color:var(--crimson);}
+.topbar-left p{color:var(--slate-l);font-size:.72rem;margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--ivory);border:1px solid var(--ivory-3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--slate);font-size:.88rem;transition:.2s;
+  position:relative;
+}
+.icon-btn:hover{border-color:var(--crimson);color:var(--crimson);background:var(--rose-l);}
+.notif-badge{
+  position:absolute;top:-4px;right:-4px;
+  width:18px;height:18px;border-radius:60px;
+  background:var(--crimson);color:white;
+  font-size:.52rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid white;
+}
+.user-chip{
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--ivory);border:1px solid var(--ivory-3);
+  padding:.35rem .9rem .35rem .4rem;border-radius:60px;cursor:pointer;transition:.2s;
+}
+.user-chip:hover{border-color:var(--crimson);background:white;}
+.avatar{
+  width:32px;height:32px;border-radius:60px;
+  background:linear-gradient(135deg,var(--crimson),var(--rose));
+  color:white;font-weight:700;font-size:.7rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.user-chip-name{font-size:.78rem;font-weight:600;color:var(--navy);}
+.user-chip-role{font-size:.6rem;color:var(--slate-l);}
+
+/* ── PULSE HEADER ── */
+.pulse-header{
+  background:var(--navy);border-radius:var(--r-xl);
+  padding:2rem 2.4rem;margin-bottom:1.75rem;
+  position:relative;overflow:hidden;
+}
+.pulse-bg-orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.orb{
+  position:absolute;border-radius:60px;
+  opacity:.04;
+}
+.orb-1{width:300px;height:300px;background:var(--crimson);top:-100px;right:-80px;animation:orbFloat 8s ease-in-out infinite;}
+.orb-2{width:200px;height:200px;background:var(--rose);bottom:-60px;left:20%;animation:orbFloat 10s ease-in-out infinite reverse;}
+@keyframes orbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.ecg-wrap{position:absolute;bottom:0;left:0;right:0;height:60px;z-index:1;opacity:.2;}
+.ecg-wrap svg{width:100%;height:60px;}
+.ecg-path{
+  fill:none;stroke:var(--rose);stroke-width:2;
+  stroke-dasharray:1400;stroke-dashoffset:1400;
+  animation:drawEcg 2.8s ease forwards,ecgLoop 4s 2.8s linear infinite;
+}
+@keyframes drawEcg{to{stroke-dashoffset:0;}}
+@keyframes ecgLoop{0%{stroke-dashoffset:0;}100%{stroke-dashoffset:-1400;}}
+.pulse-header-content{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.greeting h1{
+  font-family:'Playfair Display',serif;
+  font-size:2.1rem;color:white;font-weight:600;letter-spacing:-0.3px;
+}
+.greeting h1 span{color:var(--rose);}
+.greeting p{color:rgba(255,255,255,.45);font-size:.88rem;margin-top:.35rem;}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:.7rem;}
+.date-chip{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:60px;padding:.4rem 1.1rem;
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.7);font-size:.78rem;
+}
+.date-chip i{color:var(--rose);}
+.live-chip{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.72rem;color:var(--sage);
+  background:rgba(123,181,151,.1);
+  border:1px solid rgba(123,181,151,.2);
+  border-radius:60px;padding:.3rem .9rem;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:60px;background:var(--sage);
+  animation:livePulse 1.5s ease-in-out infinite;
+}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── DONOR STATS STRIP ── */
+.donor-stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+  margin-bottom:1.75rem;
+}
+.donor-stat-card{
+  background:white;border-radius:var(--r-l);border:1px solid var(--ivory-3);
+  box-shadow:var(--shadow-s);padding:1.2rem 1.5rem;
+  display:flex;flex-direction:column;gap:.35rem;
+  transition:box-shadow .2s,transform .2s;
+}
+.donor-stat-card:hover{box-shadow:var(--shadow-m);transform:translateY(-2px);}
+.dsc-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.7px;font-weight:600;color:var(--slate-l);display:flex;align-items:center;gap:.4rem;}
+.dsc-label i{color:var(--crimson);}
+.dsc-value{font-size:1.9rem;font-weight:700;color:var(--navy);letter-spacing:-1px;line-height:1;}
+.dsc-value.sage{color:var(--sage);}
+.dsc-value.amber{color:var(--amber);}
+.dsc-value.purple{color:var(--purple);}
+.dsc-sub{font-size:.7rem;color:var(--slate-l);}
+.dsc-badge{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.2rem .6rem;border-radius:60px;font-size:.62rem;font-weight:600;
+  width:fit-content;margin-top:.2rem;
+}
+.badge-up{background:var(--sage-l);color:#1a6b42;}
+.badge-down{background:var(--rose-l);color:#9b0929;}
+.badge-neutral{background:var(--amber-l);color:#8a5a00;}
+
+/* ── STATUS BAR ── */
+.status-bar{
+  background:white;border-radius:var(--r-l);
+  padding:1.2rem 1.75rem;border:1px solid var(--ivory-3);
+  box-shadow:var(--shadow-s);
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem;
+}
+.status-left{display:flex;align-items:center;gap:1.25rem;}
+.status-emoji{font-size:2.6rem;transition:.4s;}
+.status-emoji.pulse-green{animation:softPulse 2.4s ease-in-out infinite;}
+.status-emoji.wobble{animation:wobble 1.8s ease-in-out infinite;}
+.status-emoji.shake{animation:shake 1.2s ease-in-out infinite;}
+@keyframes softPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+@keyframes wobble{0%,100%{transform:rotate(0);}30%{transform:rotate(-6deg);}70%{transform:rotate(6deg);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+.status-text h3{font-size:1.05rem;font-weight:600;color:var(--navy);}
+.status-text p{font-size:.8rem;color:var(--slate-l);margin-top:2px;}
+.status-badge{padding:.4rem 1.1rem;border-radius:60px;font-size:.7rem;font-weight:600;}
+.badge-great{background:var(--sage-l);color:#1a6b42;}
+.badge-ok{background:var(--amber-l);color:#8a5a00;}
+.badge-poor{background:var(--rose-l);color:#9b0929;}
+.score-ring{position:relative;width:60px;height:60px;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--navy);}
+
+/* ── CARDS ── */
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.75rem;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.75rem;}
+.card{
+  background:white;border-radius:var(--r-l);
+  border:1px solid var(--ivory-3);padding:1.4rem 1.6rem;
+  box-shadow:var(--shadow-s);transition:box-shadow .2s,transform .2s;
+}
+.card:hover{box-shadow:var(--shadow-m);}
+.card-label{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.6px;
+  font-weight:600;color:var(--slate-l);margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.card-label i{color:var(--crimson);}
+.card-value{font-size:2rem;font-weight:700;color:var(--navy);letter-spacing:-1px;line-height:1;}
+.card-value small{font-size:.8rem;font-weight:400;color:var(--slate-l);letter-spacing:0;}
+.card-sub{font-size:.72rem;color:var(--slate-l);margin-top:.3rem;}
+.mini-bar-wrap{background:var(--ivory-2);border-radius:60px;height:5px;margin-top:.7rem;overflow:hidden;}
+.mini-bar{height:100%;border-radius:60px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+
+/* ── DONATION HISTORY ── */
+.history-list{display:flex;flex-direction:column;gap:.7rem;margin-top:.7rem;}
+.history-item{
+  display:flex;align-items:center;gap:.9rem;
+  padding:.8rem 1rem;background:var(--ivory);
+  border-radius:var(--r-m);border:1px solid var(--ivory-3);
+  transition:.2s;cursor:default;
+}
+.history-item:hover{border-color:var(--crimson);background:white;}
+.history-icon{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;flex-shrink:0;
+}
+.hi-blood{background:var(--rose-l);color:var(--crimson);}
+.hi-plasma{background:var(--amber-l);color:#8a5a00;}
+.hi-platelet{background:var(--sage-l);color:#1a6b42;}
+.history-info{flex:1;min-width:0;}
+.history-hospital{font-size:.82rem;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-meta{font-size:.68rem;color:var(--slate-l);margin-top:2px;}
+.history-right{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;}
+.hist-type{font-size:.62rem;font-weight:600;padding:.15rem .6rem;border-radius:60px;}
+.ht-whole{background:var(--rose-l);color:var(--crimson);}
+.ht-plasma{background:var(--amber-l);color:#8a5a00;}
+.ht-platelet{background:var(--sage-l);color:#1a6b42;}
+.hist-status{font-size:.62rem;font-weight:600;padding:.15rem .6rem;border-radius:60px;}
+.hs-done{background:var(--sage-l);color:#1a6b42;}
+.hs-pending{background:var(--amber-l);color:#8a5a00;}
+.lives-badge{
+  display:flex;align-items:center;gap:.3rem;
+  background:var(--rose-l);color:var(--crimson);
+  font-size:.62rem;font-weight:600;
+  padding:.15rem .6rem;border-radius:60px;
+}
+.view-all-btn{
+  width:100%;margin-top:.8rem;padding:.6rem;
+  border:1.5px dashed var(--ivory-3);
+  border-radius:var(--r-m);background:transparent;
+  color:var(--slate-l);font-size:.78rem;font-weight:500;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+}
+.view-all-btn:hover{border-color:var(--crimson);color:var(--crimson);}
+
+/* ── ELIGIBILITY ── */
+.eligibility-card{
+  background:white;border-radius:var(--r-l);
+  border:1px solid var(--ivory-3);padding:1.4rem 1.6rem;
+  box-shadow:var(--shadow-s);
+}
+.eligibility-tips{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem;}
+.elig-tip{
+  display:flex;align-items:center;gap:.6rem;
+  font-size:.75rem;color:var(--slate);
+}
+.elig-tip i{color:var(--sage);font-size:.7rem;}
+
+/* ── REALTIME VITALS ── */
+.vitals-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;
+  margin-top:.5rem;
+}
+.vital-card{
+  background:var(--ivory);border-radius:var(--r-m);
+  border:1px solid var(--ivory-3);padding:.9rem;
+  text-align:center;transition:.2s;
+  position:relative;overflow:hidden;
+}
+.vital-card:hover{border-color:var(--crimson);background:white;}
+.vital-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:0 0 3px 3px;background:var(--crimson);
+  transform:scaleX(0);transition:transform .3s ease;
+}
+.vital-card:hover::before{transform:scaleX(1);}
+.vital-icon{font-size:1.4rem;margin-bottom:.3rem;}
+.vital-val{font-size:1.2rem;font-weight:700;color:var(--navy);}
+.vital-label{font-size:.6rem;color:var(--slate-l);text-transform:uppercase;letter-spacing:.5px;}
+.vital-trend{font-size:.6rem;margin-top:.2rem;font-weight:600;}
+.trend-up{color:var(--sage);}
+.trend-down{color:var(--crimson);}
+.trend-same{color:var(--amber);}
+.vital-card .realtime-blink{
+  position:absolute;top:6px;right:6px;
+  width:6px;height:6px;border-radius:60px;background:var(--sage);
+  animation:livePulse 1.5s ease-in-out infinite;
+}
+
+/* ── READINESS SECTIONS ── */
+.readiness-section{margin-top:.8rem;}
+.readiness-item{
+  display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem;
+}
+.readiness-item .ri-name{font-size:.75rem;font-weight:500;color:var(--navy);min-width:110px;}
+.readiness-bar-wrap{flex:1;background:var(--ivory-2);border-radius:60px;height:8px;overflow:hidden;}
+.readiness-bar{height:100%;border-radius:60px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.readiness-item .ri-pct{font-size:.72rem;font-weight:600;min-width:36px;text-align:right;}
+.ri-tips{
+  background:var(--navy);border-radius:var(--r-m);padding:.8rem 1rem;
+  margin-top:.6rem;display:flex;align-items:center;gap:.7rem;
+}
+.ri-tips p{font-size:.75rem;color:rgba(255,255,255,.7);}
+.ri-tips p strong{color:var(--rose);}
+
+/* ── HEALTH TIPS ROTATOR ── */
+.tip-rotator{
+  background:linear-gradient(135deg,var(--navy),var(--navy-soft));
+  border-radius:var(--r-l);padding:1.4rem 1.6rem;
+  color:white;position:relative;overflow:hidden;
+}
+.tip-rotator::after{
+  content:'"';position:absolute;top:-10px;right:16px;font-size:7rem;
+  color:rgba(249,168,184,.08);font-family:'Playfair Display',serif;
+  line-height:1;pointer-events:none;
+}
+.tip-content{position:relative;z-index:1;}
+.tip-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem;}
+.tip-emoji{font-size:2rem;}
+.tip-cat{font-size:.62rem;text-transform:uppercase;letter-spacing:.6px;font-weight:600;color:var(--rose);}
+.tip-title-text{font-size:1rem;font-weight:600;line-height:1.3;}
+.tip-desc-text{font-size:.78rem;color:rgba(255,255,255,.6);margin-top:.3rem;line-height:1.5;}
+.tip-nav{display:flex;align-items:center;gap:.7rem;margin-top:.9rem;}
+.tip-dots{display:flex;gap:.4rem;}
+.tip-dot{width:6px;height:6px;border-radius:60px;background:rgba(255,255,255,.2);transition:.2s;cursor:pointer;}
+.tip-dot.active{background:var(--rose);width:16px;}
+.tip-nav-btn{
+  margin-left:auto;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  color:white;padding:.35rem .9rem;border-radius:40px;
+  cursor:pointer;font-size:.72rem;font-weight:600;
+  transition:.2s;display:flex;align-items:center;gap:.4rem;
+}
+.tip-nav-btn:hover{background:rgba(255,255,255,.15);}
+
+/* ── MINI STATS ── */
+.mini-stat{
+  background:white;border:1px solid var(--ivory-3);border-radius:var(--r-m);
+  padding:1rem 1.2rem;box-shadow:var(--shadow-s);transition:.2s;
+}
+.mini-stat:hover{box-shadow:var(--shadow-m);transform:translateY(-2px);}
+.mini-stat .ms-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.6px;font-weight:600;color:var(--slate-l);margin-bottom:.35rem;display:flex;align-items:center;gap:.35rem;}
+.mini-stat .ms-label i{color:var(--crimson);}
+.mini-stat .ms-val{font-size:1.15rem;font-weight:700;color:var(--navy);}
+.mini-stat .ms-val small{font-size:.7rem;font-weight:400;color:var(--slate-l);}
+
+/* ── INPUT FORM ── */
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.inp-group{display:flex;flex-direction:column;gap:.3rem;}
+.inp-group label{font-size:.72rem;font-weight:500;color:var(--slate);display:flex;align-items:center;gap:.35rem;}
+.inp-group label i{color:var(--crimson);font-size:.65rem;}
+.inp-group input,.inp-group select{
+  padding:.5rem .8rem;border:1.5px solid var(--ivory-3);
+  border-radius:10px;font-size:.85rem;
+  background:var(--ivory);color:var(--navy);
+  font-family:'DM Sans',sans-serif;outline:none;transition:.2s;
+}
+.inp-group input:focus,.inp-group select:focus{
+  border-color:var(--crimson);
+  box-shadow:0 0 0 3px rgba(196,24,60,.07);background:white;
+}
+.update-btn{
+  width:100%;padding:.75rem;
+  background:var(--crimson);color:white;border:none;
+  border-radius:12px;font-weight:600;font-size:.85rem;
+  font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s;margin-top:.8rem;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;
+  position:relative;overflow:hidden;
+}
+.update-btn:hover{background:var(--crimson-l);transform:scale(.99);}
+.update-btn::after{
+  content:'';position:absolute;top:50%;left:50%;
+  width:0;height:0;border-radius:60px;
+  background:rgba(255,255,255,.2);
+  transition:width .4s,height .4s,opacity .4s;
+  transform:translate(-50%,-50%);opacity:0;
+}
+.update-btn:active::after{width:200px;height:200px;opacity:0;}
+
+/* ── AI CHAT ── */
+.chat-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;}
+.chat-head-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--navy),var(--navy-soft));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--rose);font-size:.95rem;
+}
+.chat-head h3{font-size:.95rem;font-weight:600;color:var(--navy);}
+.online-dot{
+  width:7px;height:7px;border-radius:60px;background:var(--sage);margin-left:auto;
+  box-shadow:0 0 0 2px var(--sage-l);animation:onlinePulse 2s infinite;
+}
+@keyframes onlinePulse{
+  0%,100%{box-shadow:0 0 0 2px var(--sage-l);}
+  50%{box-shadow:0 0 0 4px rgba(123,181,151,.2);}
+}
+.chat-body{
+  height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem;
+  margin-bottom:.75rem;scrollbar-width:thin;scrollbar-color:var(--ivory-3) transparent;
+}
+.msg{
+  padding:.55rem .9rem;border-radius:14px;
+  max-width:88%;font-size:.82rem;line-height:1.45;
+  animation:msgIn .25s ease;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.msg.bot{background:var(--ivory-2);color:var(--navy);align-self:flex-start;border-radius:4px 14px 14px 14px;}
+.msg.user{background:var(--crimson);color:white;align-self:flex-end;border-radius:14px 14px 4px 14px;}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:.55rem .9rem;}
+.typing-dots span{width:7px;height:7px;border-radius:60px;background:var(--slate-l);animation:typingBounce 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.15s;}
+.typing-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes typingBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.chat-row{display:flex;gap:.5rem;}
+.chat-row input{
+  flex:1;padding:.55rem .9rem;border:1.5px solid var(--ivory-3);
+  border-radius:10px;font-size:.82rem;font-family:'DM Sans',sans-serif;
+  background:var(--ivory);color:var(--navy);outline:none;transition:.2s;
+}
+.chat-row input:focus{border-color:var(--crimson);background:white;}
+.send-btn{
+  width:38px;height:38px;border-radius:10px;background:var(--crimson);
+  color:white;border:none;cursor:pointer;transition:.2s;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.send-btn:hover{background:var(--crimson-l);}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--navy);color:white;padding:.7rem 1.8rem;
+  border-radius:60px;font-size:.82rem;font-weight:500;
+  box-shadow:0 8px 28px rgba(10,22,40,.2);
+  display:flex;align-items:center;gap:.55rem;
+  opacity:0;transition:.3s;pointer-events:none;z-index:9999;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── QUOTE CARD ── */
+.quote-card{
+  background:linear-gradient(135deg,#1B1033 0%,var(--navy) 100%);
+  border-radius:var(--r-l);padding:1.5rem 1.7rem;position:relative;overflow:hidden;
+}
+.quote-card::after{
+  content:'"';position:absolute;top:-10px;right:16px;font-size:7rem;
+  color:rgba(249,168,184,.08);font-family:'Playfair Display',serif;line-height:1;pointer-events:none;
+}
+.quote-text{font-family:'Playfair Display',serif;font-size:.92rem;color:rgba(255,255,255,.85);line-height:1.6;font-style:italic;position:relative;z-index:1;}
+.quote-author{font-size:.7rem;color:var(--rose);margin-top:.6rem;font-weight:500;}
+
+/* ── SYNC BAR ── */
+.sync-bar{
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  font-size:.65rem;color:var(--slate-l);padding-top:1.2rem;
+  border-top:1px solid var(--ivory-3);margin-top:.5rem;
+}
+.sync-dot{width:7px;height:7px;border-radius:60px;display:inline-block;}
+.sync-dot.ok{background:var(--sage);}
+.sync-dot.syncing{background:var(--amber);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.rt-badge{
+  display:inline-flex;align-items:center;gap:.35rem;
+  font-size:.62rem;font-weight:600;color:var(--sage);
+  background:rgba(123,181,151,.1);border:1px solid rgba(123,181,151,.2);
+  border-radius:60px;padding:.15rem .6rem;
+}
+.rt-badge::before{content:'';width:5px;height:5px;border-radius:60px;background:var(--sage);animation:livePulse 1.5s ease-in-out infinite;}
+
+/* ── CTA ── */
+.register-btn{
+  background:linear-gradient(135deg,var(--crimson),var(--crimson-l));
+  color:white;padding:.8rem 2.5rem;border-radius:60px;
+  text-decoration:none;font-size:1rem;font-weight:600;
+  display:inline-flex;align-items:center;gap:.5rem;transition:.2s;border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(196,24,60,.25);
+}
+.register-btn:hover{transform:scale(.97);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1200px){
+  .donor-stats-strip{grid-template-columns:1fr 1fr;}
+  .vitals-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:1024px){
+  .grid-3{grid-template-columns:1fr 1fr;}
+  .grid-2{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  .main-wrapper{padding:1rem;}
+  .donor-stats-strip{grid-template-columns:1fr 1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  .vitals-grid{grid-template-columns:1fr 1fr;}
+  .input-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .donor-stats-strip{grid-template-columns:1fr;}
+  .vitals-grid{grid-template-columns:1fr 1fr;}
+  .user-chip-name,.user-chip-role{display:none;}
+  .topbar-left p{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-logo"><i class="fas fa-heart-pulse"></i></div>
+  <h2>Lumina<span>Life</span></h2>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <p class="loader-sub" id="loaderText">Connecting to health network…</p>
+</div>
+
+<main class="main-wrapper">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo-icon"><i class="fas fa-heart-pulse"></i></div>
+      <div>
+        <h2>Lumina<span>Life</span></h2>
+        <p id="topDate">Loading...</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" id="notifBtn" onclick="window.location.href='/notifications.html'">
+        <i class="fas fa-bell"></i>
+        <div class="notif-badge" id="notifCount">0</div>
+      </div>
+      <div class="icon-btn" id="settingsBtn" onclick="window.location.href='/settings.html'">
+        <i class="fas fa-gear"></i>
+      </div>
+      <div class="user-chip" id="profileChip" onclick="window.location.href='/profile.html'">
+        <div class="avatar" id="avatarEl">--</div>
+        <div>
+          <div class="user-chip-name" id="chipName">Loading...</div>
+          <div class="user-chip-role" id="chipRole">🩸 --</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PULSE HEADER -->
+  <div class="pulse-header">
+    <div class="pulse-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+    <div class="ecg-wrap">
+      <svg viewBox="0 0 1400 60" preserveAspectRatio="none">
+        <path class="ecg-path" d="M0,40 L70,40 L85,40 L92,22 L100,60 L108,4 L116,56 L124,40 L200,40 L270,40 L285,40 L292,22 L300,60 L308,4 L316,56 L324,40 L400,40 L470,40 L485,40 L492,22 L500,60 L508,4 L516,56 L524,40 L600,40 L670,40 L685,40 L692,22 L700,60 L708,4 L716,56 L724,40 L800,40 L870,40 L885,40 L892,22 L900,60 L908,4 L916,56 L924,40 L1000,40 L1070,40 L1085,40 L1092,22 L1100,60 L1108,4 L1116,56 L1124,40 L1200,40 L1270,40 L1285,40 L1292,22 L1300,60 L1308,4 L1316,56 L1324,40 L1400,40"/>
+      </svg>
+    </div>
+    <div class="pulse-header-content">
+      <div class="greeting">
+        <h1 id="greetingTime">Good morning, <span id="greetName">Loading...</span> 👋</h1>
+        <p id="greetingSub">Loading your health data…</p>
+      </div>
+      <div class="header-right">
+        <div class="date-chip"><i class="fas fa-calendar-day"></i><span id="headerDate">Loading...</span></div>
+        <div class="live-chip"><div class="live-dot"></div><span>Real-time sync active</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BLOOD DONATION DASHBOARD ===== -->
+  <div id="section-blood">
+
+    <!-- DONOR STATS STRIP -->
+    <div class="donor-stats-strip">
+      <div class="donor-stat-card">
+        <div class="dsc-label"><i class="fas fa-hand-holding-heart"></i> Total Donations</div>
+        <div class="dsc-value" id="totalDon">0</div>
+        <div class="dsc-sub">Lifetime contributions</div>
+        <div class="dsc-badge badge-up"><i class="fas fa-arrow-up"></i> Active Donor</div>
+      </div>
+      <div class="donor-stat-card">
+        <div class="dsc-label"><i class="fas fa-users"></i> Lives Saved</div>
+        <div class="dsc-value sage" id="livesSaved">0</div>
+        <div class="dsc-sub">Each donation saves up to 3</div>
+        <div class="dsc-badge badge-up"><i class="fas fa-heart"></i> Real Impact</div>
+      </div>
+      <div class="donor-stat-card">
+        <div class="dsc-label"><i class="fas fa-calendar-check"></i> Next Eligible</div>
+        <div class="dsc-value amber" id="daysUntilEligible">--</div>
+        <div class="dsc-sub" id="nextEligibleDate">Calculating...</div>
+        <div class="dsc-badge badge-neutral" id="eligBadge"><i class="fas fa-clock"></i> Loading</div>
+      </div>
+      <div class="donor-stat-card">
+        <div class="dsc-label"><i class="fas fa-droplet"></i> Blood Type</div>
+        <div class="dsc-value purple" id="bloodTypeVal">--</div>
+        <div class="dsc-sub" id="bloodTypeSub">Loading compatibility...</div>
+        <div class="dsc-badge badge-up"><i class="fas fa-star"></i> Verified</div>
+      </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-emoji pulse-green" id="statusEmoji">😊</div>
+        <div class="status-text">
+          <h3 id="statusTitle">Loading...</h3>
+          <p id="statusDesc">Fetching your health data…</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <div class="score-ring">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle cx="30" cy="30" r="25" fill="none" stroke="#EDE5DC" stroke-width="4"/>
+            <circle id="scoreCircle" cx="30" cy="30" r="25" fill="none"
+              stroke="#7BB597" stroke-width="4" stroke-linecap="round"
+              stroke-dasharray="157" stroke-dashoffset="16"
+              transform="rotate(-90 30 30)"/>
+          </svg>
+          <div class="score-ring-val" id="scoreVal">--</div>
+        </div>
+        <span class="status-badge badge-great" id="statusBadge">Loading</span>
+        <span class="rt-badge">Live</span>
+      </div>
+    </div>
+
+    <!-- REAL-TIME VITALS -->
+    <div class="card" style="margin-bottom:1.75rem;">
+      <div class="flex-between mb-1">
+        <span class="card-label" style="margin-bottom:0;"><i class="fas fa-heartbeat"></i> Real-Time Vitals</span>
+        <span class="rt-badge">Updates every 30s</span>
+      </div>
+      <div class="vitals-grid">
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">💧</div>
+          <div class="vital-val" id="vHyd">--</div>
+          <div class="vital-label">Hydration</div>
+          <div class="vital-trend trend-up" id="vHydTrend">--</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">🧠</div>
+          <div class="vital-val" id="vStress">--%</div>
+          <div class="vital-label">Stress</div>
+          <div class="vital-trend" id="vStressTrend">--</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">🏃</div>
+          <div class="vital-val" id="vEx">-- min</div>
+          <div class="vital-label">Exercise</div>
+          <div class="vital-trend" id="vExTrend">--</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">🦶</div>
+          <div class="vital-val" id="vSteps">--</div>
+          <div class="vital-label">Steps</div>
+          <div class="vital-trend" id="vStepsTrend">--</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">⚖️</div>
+          <div class="vital-val" id="vWt">-- kg</div>
+          <div class="vital-label">Weight</div>
+          <div class="vital-trend trend-same">Stable</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">🩸</div>
+          <div class="vital-val" id="vHb">-- g/dL</div>
+          <div class="vital-label">Hemoglobin</div>
+          <div class="vital-trend" id="vHbTrend">--</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">🌡️</div>
+          <div class="vital-val" id="vBP">--/--</div>
+          <div class="vital-label">Blood Pressure</div>
+          <div class="vital-trend" id="vBPTrend">mmHg</div>
+        </div>
+        <div class="vital-card">
+          <div class="realtime-blink"></div>
+          <div class="vital-icon">😊</div>
+          <div class="vital-val" id="vMood">--</div>
+          <div class="vital-label">Mood</div>
+          <div class="vital-trend" id="vMoodTrend">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 3 HEALTH CARDS -->
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-label"><i class="fas fa-droplet"></i> Hydration</div>
+        <div class="card-value" id="hydVal">-- <small>glasses</small></div>
+        <div class="card-sub" id="hydSub">-- ml · goal 2000 ml</div>
+        <div class="mini-bar-wrap"><div class="mini-bar" id="hydBar" style="width:0%;background:var(--crimson);"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-label"><i class="fas fa-brain"></i> Stress Level</div>
+        <div class="card-value" id="stressVal">-- <small>%</small></div>
+        <div class="card-sub" id="stressSub">Loading...</div>
+        <div class="mini-bar-wrap"><div class="mini-bar" id="stressBar" style="width:0%;background:var(--sage);"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-label"><i class="fas fa-person-running"></i> Exercise</div>
+        <div class="card-value" id="exVal">-- <small>min</small></div>
+        <div class="card-sub" id="exSub">-- min this week</div>
+        <div class="mini-bar-wrap"><div class="mini-bar" id="exBar" style="width:0%;background:var(--crimson);"></div></div>
+      </div>
+    </div>
+
+    <!-- DONATION HISTORY + ELIGIBILITY -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="flex-between mb-1">
+          <span class="card-label" style="margin-bottom:0;"><i class="fas fa-history"></i> Donation History</span>
+          <span style="font-size:.7rem;font-weight:700;color:var(--crimson);" id="totalDonCount">0 Total</span>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- populated by JS -->
+        </div>
+        <button class="view-all-btn" onclick="window.location.href='/donor.html'">
+          <i class="fas fa-plus"></i> View All Records
+        </button>
+      </div>
+
+      <div class="gap-col">
+        <!-- ELIGIBILITY COUNTDOWN -->
+        <div class="eligibility-card">
+          <div class="flex-between">
+            <span class="card-label" style="margin-bottom:0;"><i class="fas fa-calendar-check"></i> Next Eligibility</span>
+            <span class="rt-badge">Live</span>
+          </div>
+          <div style="margin-top:.8rem;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.5rem;">
+              <span style="font-size:.78rem;color:var(--slate-l);">Days until eligible to donate</span>
+              <span style="font-size:1.8rem;font-weight:800;color:var(--navy);" id="eligDaysLarge">--</span>
+            </div>
+            <div class="mini-bar-wrap" style="height:10px;">
+              <div class="mini-bar" id="eligBar" style="width:0%;background:var(--crimson);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--slate-l);margin-top:.4rem;">
+              <span>Last donation</span>
+              <span id="eligDateLabel">--</span>
+              <span>Next eligible</span>
+            </div>
+          </div>
+          <div class="eligibility-tips">
+            <div class="elig-tip"><i class="fas fa-circle-check"></i><span>Iron-rich diet maintains hemoglobin levels</span></div>
+            <div class="elig-tip"><i class="fas fa-circle-check"></i><span>8 glasses water daily before donation</span></div>
+            <div class="elig-tip"><i class="fas fa-circle-check"></i><span>90-day gap between whole blood donations</span></div>
+          </div>
+        </div>
+
+        <!-- DONATION READINESS -->
+        <div class="card" style="flex:1;">
+          <div class="flex-between mb-1">
+            <span class="card-label" style="margin-bottom:0;"><i class="fas fa-chart-column"></i> Donation Readiness</span>
+            <span class="rt-badge">Live</span>
+          </div>
+          <div class="readiness-section">
+            <div class="readiness-item">
+              <span class="ri-name">🩸 Whole Blood</span>
+              <div class="readiness-bar-wrap"><div class="readiness-bar" id="bloodReadyBar" style="width:0%;background:var(--crimson);"></div></div>
+              <span class="ri-pct" id="bloodReady" style="color:var(--crimson);">--%</span>
+            </div>
+            <div class="readiness-item">
+              <span class="ri-name">💛 Plasma</span>
+              <div class="readiness-bar-wrap"><div class="readiness-bar" id="plasmaReadyBar" style="width:0%;background:var(--amber);"></div></div>
+              <span class="ri-pct" id="plasmaReady" style="color:var(--amber);">--%</span>
+            </div>
+            <div class="readiness-item">
+              <span class="ri-name">🟡 Platelets</span>
+              <div class="readiness-bar-wrap"><div class="readiness-bar" id="plateletReadyBar" style="width:0%;background:var(--sage);"></div></div>
+              <span class="ri-pct" id="plateletReady" style="color:var(--sage);">--%</span>
+            </div>
+          </div>
+          <div class="ri-tips" id="readinessTip">
+            <i class="fas fa-lightbulb" style="color:var(--rose);font-size:.9rem;flex-shrink:0;"></i>
+            <p><strong>Loading</strong> readiness data...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEALTH TIPS + QUOTE -->
+    <div class="grid-2">
+      <!-- HEALTH TIPS ROTATOR -->
+      <div class="tip-rotator">
+        <div class="tip-content">
+          <div class="tip-header">
+            <div class="tip-emoji" id="tipEmoji">❤️</div>
+            <div>
+              <div class="tip-cat" id="tipCat">Hydration</div>
+              <div class="tip-title-text" id="tipTitle">Drink 2-3L water daily</div>
+            </div>
+          </div>
+          <div class="tip-desc-text" id="tipDesc">Hydration supports kidney function and overall organ health for optimal donation readiness.</div>
+          <div class="tip-nav">
+            <div class="tip-dots" id="tipDots"></div>
+            <button class="tip-nav-btn" onclick="nextTip()"><i class="fas fa-arrow-right"></i> Next Tip</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI STATS + QUOTE -->
+      <div class="gap-col">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+          <div class="mini-stat">
+            <div class="ms-label"><i class="fas fa-weight-scale"></i> Weight</div>
+            <div class="ms-val" id="wtVal">-- <small>kg</small></div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-label"><i class="fas fa-hand-holding-heart"></i> Last Donation</div>
+            <div class="ms-val" id="donVal" style="font-size:.9rem;">Loading...</div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-label"><i class="fas fa-tint"></i> Hemoglobin</div>
+            <div class="ms-val" id="hbVal">-- <small>g/dL</small></div>
+          </div>
+          <div class="mini-stat">
+            <div class="ms-label"><i class="fas fa-circle-dot"></i> Cycle Day</div>
+            <div class="ms-val" id="cycleVal">-- <small>/ 28</small></div>
+          </div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text" id="quoteText">"Your health is an investment, not an expense. Every healthy day is a step toward saving lives."</div>
+          <div class="quote-author" id="quoteAuthor">— LuminaLife</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT FORM + AI CHAT -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-title"><i class="fas fa-pen-to-square"></i> Manual Health Input</div>
+        <div class="input-grid">
+          <div class="inp-group"><label><i class="fas fa-droplet"></i> Hydration (glasses)</label><input type="number" id="iHyd" placeholder="0–8" min="0" max="8"/></div>
+          <div class="inp-group"><label><i class="fas fa-brain"></i> Stress (%)</label><input type="number" id="iStress" placeholder="0–100" min="0" max="100"/></div>
+          <div class="inp-group"><label><i class="fas fa-shoe-prints"></i> Steps Today</label><input type="number" id="iSteps" placeholder="0–20000" min="0" max="20000"/></div>
+          <div class="inp-group"><label><i class="fas fa-person-running"></i> Exercise (min)</label><input type="number" id="iEx" placeholder="0–180" min="0" max="180"/></div>
+          <div class="inp-group"><label><i class="fas fa-weight-scale"></i> Weight (kg)</label><input type="number" id="iWt" placeholder="40–120" min="40" max="120" step="0.1"/></div>
+          <div class="inp-group"><label><i class="fas fa-tint"></i> Hemoglobin (g/dL)</label><input type="number" id="iHb" placeholder="10–18" min="10" max="18" step="0.1"/></div>
+          <div class="inp-group"><label><i class="fas fa-circle-dot"></i> Menstrual Day</label><input type="number" id="iCycle" placeholder="1–28" min="1" max="28"/></div>
+          <div class="inp-group"><label><i class="fas fa-face-smile"></i> Mood</label>
+            <select id="iMood">
+              <option value="great">🤩 Great</option>
+              <option value="good" selected>😊 Good</option>
+              <option value="neutral">😐 Neutral</option>
+              <option value="bad">😔 Bad</option>
+              <option value="awful">😫 Awful</option>
+            </select>
+          </div>
+          <div class="inp-group"><label><i class="fas fa-hand-holding-heart"></i> Last Donation</label><input type="date" id="iDon"/></div>
+        </div>
+        <button class="update-btn" id="updateBtn"><i class="fas fa-floppy-disk"></i> Update All Metrics</button>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="card" style="display:flex;flex-direction:column;">
+  <div class="chat-head">
+    <img src="https://i.pinimg.com/736x/be/25/62/be25621d2c50b0012f5da118d332c06e.jpg" 
+         alt="AI Health Assistant" 
+         style="width:38px;height:38px;border-radius:10px;object-fit:cover;border:2px solid var(--ivory-3);"/>
+    <h3>LUMI-AI Health Assistant</h3>
+    <div class="online-dot"></div>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="msg bot">💗 Hello, beautiful human.
+     <br> I'm Lumi, your caring AI health companion.
+      <br>Together, we'll track your wellness, strengthen your health, and help you make a difference through donation.
+     <br> What would you like help with today? 🌸
+  </div>
+  <div class="divider"></div>
+  <div class="chat-row">
+    <input type="text" id="chatIn" placeholder="Ask about your health…"/>
+    <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center;margin:1.5rem 0;">
+      <a href="donor.html" class="register-btn">
+        <i class="fas fa-droplet"></i> Register for Blood Donation
+      </a>
+    </div>
+
+  </div><!-- end blood section -->
+
+  <!-- SYNC BAR -->
+  <div class="sync-bar">
+    <span class="sync-dot ok" id="syncDot"></span>
+    <span id="syncStatus">Connected to MongoDB Atlas</span>
+    <span>·</span>
+    <span id="syncTime">just now</span>
+    <span>·</span>
+    <span>Last update: <span id="lastUpdate">--</span></span>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="fas fa-check-circle" style="color:var(--sage);"></i>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// LUMINALIFE — HEALTH DASHBOARD
+// FULL BACKEND INTEGRATION — NO FAKE DATA
+// ═══════════════════════════════════════════════
+
+const USER_ID = localStorage.getItem('lifelineUserId') || sessionStorage.getItem('lifelineUserId') || 'D001';
+const API_BASE = 'http://127.0.0.1:5000/api';
+const $ = id => document.getElementById(id);
+
+// ── STATE ──────────────────────────────────────
+let S = {
+  profile: {
+    full_name: 'Donor',
+    blood_group: 'O+',
+    age: 25,
+    weight_kg: 0,
+    location: 'Unknown',
+    total_donations: 0,
+    lives_saved: 0,
+    last_donation_date: null,
+    hemoglobin: 0,
+    height_cm: 0,
+    blood_pressure: '--/--',
+    is_recovered: true,
+    donor_status: 'available'
+  },
+  health: {
+    hydration: 0,
+    stress: 0,
+    exercise_minutes: 0,
+    exercise_weekly: 0,
+    hemoglobin: 0,
+    menstrual_day: 0,
+    menstrual_total: 28,
+    mood: 'good',
+    steps: 0
+  },
+  donationHistory: [],
+  isOffline: false
+};
+
+// ── HEALTH TIPS ────────────────────────────────
+const bloodTips = [
+  { emoji: '💧', cat: 'Hydration', title: 'Drink 8 glasses of water daily', desc: 'Proper hydration is critical for blood volume and donation readiness.' },
+  { emoji: '🥩', cat: 'Nutrition', title: 'Eat iron-rich foods daily', desc: 'Spinach, lentils, red meat, and tofu boost hemoglobin — the key marker for blood donation eligibility.' },
+  { emoji: '😴', cat: 'Recovery', title: 'Sleep 7–8 hours after donation', desc: 'Your body rebuilds red blood cells during deep sleep.' },
+  { emoji: '🍊', cat: 'Absorption', title: 'Vitamin C boosts iron uptake', desc: 'Pair iron-rich meals with citrus fruits to increase iron absorption by up to 300%.' },
+  { emoji: '🚫', cat: 'Avoid', title: 'No alcohol 24h before donating', desc: 'Alcohol dehydrates you and thins the blood, making donation unsafe.' },
+  { emoji: '🏃', cat: 'Exercise', title: '150 min moderate activity weekly', desc: 'Regular exercise strengthens your cardiovascular system and keeps your hemoglobin levels elevated.' },
+  { emoji: '🧘', cat: 'Stress', title: 'Manage stress proactively', desc: 'High cortisol levels affect blood quality. Practice mindfulness 10 min daily.' },
+  { emoji: '🩺', cat: 'Check-up', title: 'Monitor hemoglobin monthly', desc: 'Women need ≥12.5 g/dL, men ≥13.0 g/dL to donate.' },
+];
+
+let tipIndex = 0;
+
+function buildTipDots(containerId, count, activeIndex) {
+  const el = $(containerId);
+  if (!el) return;
+  el.innerHTML = Array.from({ length: count }, (_, i) =>
+    `<div class="tip-dot ${i === activeIndex ? 'active' : ''}" onclick="jumpTip(${i})"></div>`
+  ).join('');
+}
+
+function jumpTip(i) { tipIndex = i; renderCurrentTip(); }
+function renderCurrentTip() {
+  const tip = bloodTips[tipIndex];
+  $('tipEmoji').textContent = tip.emoji;
+  $('tipCat').textContent = tip.cat;
+  $('tipTitle').textContent = tip.title;
+  $('tipDesc').textContent = tip.desc;
+  buildTipDots('tipDots', bloodTips.length, tipIndex);
+}
+function nextTip() { tipIndex = (tipIndex + 1) % bloodTips.length; renderCurrentTip(); }
+
+// ── API ────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  try {
+    const url = `${API_BASE}${path}`;
+    console.log(`🌐 API ${opts.method || 'GET'}:`, url);
+    
+    const response = await fetch(url, {
+      headers: { 
+        'Content-Type': 'application/json', 
+        'X-User-Id': USER_ID 
+      },
+      ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ API Error (${response.status}):`, errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log(`✅ API ${path} response:`, data);
+    return data;
+  } catch (e) {
+    console.error(`❌ API ${path} failed:`, e.message);
+    return null;
+  }
+}
+
+// ── GREETING ───────────────────────────────────
+function getTimeGreeting() {
+  const hr = new Date().getHours();
+  if (hr >= 5 && hr < 12) return { text: 'Good morning', emoji: '🌅' };
+  if (hr >= 12 && hr < 17) return { text: 'Good afternoon', emoji: '☀️' };
+  if (hr >= 17 && hr < 21) return { text: 'Good evening', emoji: '🌇' };
+  return { text: 'Good night', emoji: '🌙' };
+}
+
+// ── ELIGIBILITY CALC ───────────────────────────
+// ── ELIGIBILITY CALC ───────────────────────────
+function calcEligibility() {
+  const lastDate = S.profile.last_donation_date;
+  if (!lastDate) return { days: 0, pct: 100, eligible: true };
+  
+  const last = new Date(lastDate);
+  const now = new Date();
+  
+  // Reset time portion to midnight for accurate day calculation
+  last.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
+  
+  // Calculate difference in days
+  const diffTime = now.getTime() - last.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  const waitDays = 90;
+  const daysLeft = Math.max(0, waitDays - diffDays);
+  
+  // Calculate percentage of waiting period completed
+  const pct = Math.min(100, Math.round((diffDays / waitDays) * 100));
+  
+  console.log(`📅 Last donation: ${lastDate}, Days passed: ${diffDays}, Days left: ${daysLeft}`);
+  
+  return { 
+    days: daysLeft, 
+    pct: pct, 
+    eligible: daysLeft === 0,
+    diffDays: diffDays,
+    lastDonation: lastDate,
+    nextEligible: new Date(last.getTime() + (waitDays * 24 * 60 * 60 * 1000))
+  };
+}
+
+// ── FETCH DONATION HISTORY ────────────────────
+async function fetchDonationHistory() {
+  try {
+    // First try to get from backend
+    const res = await apiFetch(`/donations/${USER_ID}`);
+    if (res && res.donations && res.donations.length > 0) {
+      S.donationHistory = res.donations.map(d => ({
+        hospital: d.hospital_name || 'Unknown Hospital',
+        date: d.completed_at || d.created_at,
+        type: d.blood_type === 'plasma' ? 'plasma' : d.blood_type === 'platelet' ? 'platelet' : 'whole',
+        status: d.status || 'done',
+        lives: d.lives_saved || 3
+      }));
+      return;
+    }
+    
+    // If no backend data, use profile data to generate history
+    const total = S.profile.total_donations || 0;
+    // In fetchDonationHistory() function
+if (total > 0 && S.profile.last_donation_date) {
+  S.donationHistory = [{
+    hospital: 'Your Donation Center', // or from backend
+    date: S.profile.last_donation_date,
+    type: 'whole',
+    status: 'done',
+    lives: 3
+  }];
+
+    } else {
+      S.donationHistory = [];
+    }
+  } catch (e) {
+    S.donationHistory = [];
+  }
+}
+// ── RENDER HISTORY ─────────────────────────────
+// ── RENDER HISTORY ─────────────────────────────
+function renderHistory() {
+  const list = $('historyList');
+  if (!list) return;
+  const history = S.donationHistory;
+  $('totalDonCount').textContent = `${history.length} Total`;
+  $('totalDon').textContent = S.profile.total_donations || history.length;
+  $('livesSaved').textContent = S.profile.lives_saved || history.reduce((a, h) => a + h.lives, 0);
+
+  if (history.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:1.5rem 0;color:var(--slate-l);font-size:.8rem;">No donation records found.</div>`;
+    return;
+  }
+
+  list.innerHTML = history.slice(0, 5).map(h => {
+    const typeClass = h.type === 'whole' ? 'ht-whole' : h.type === 'plasma' ? 'ht-plasma' : 'ht-platelet';
+    const typeLabel = h.type === 'whole' ? '🩸 Whole Blood' : h.type === 'plasma' ? '💛 Plasma' : '🟡 Platelets';
+    const iconClass = h.type === 'whole' ? 'hi-blood' : h.type === 'plasma' ? 'hi-plasma' : 'hi-platelet';
+    const iconI = h.type === 'whole' ? 'fa-droplet' : h.type === 'plasma' ? 'fa-flask' : 'fa-vials';
+    // Remove the date formatting - we don't want to show it
+    // const date = new Date(h.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    return `
+      <div class="history-item">
+        <div class="history-icon ${iconClass}"><i class="fas ${iconI}"></i></div>
+        <div class="history-info">
+          <div class="history-hospital">${h.hospital}</div>
+          <!-- Date removed from here -->
+          <div class="history-meta">${typeLabel}</div>
+        </div>
+        <div class="history-right">
+          <span class="lives-badge"><i class="fas fa-heart"></i> ${h.lives} lives</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+// ── RENDER ELIGIBILITY ─────────────────────────
+// ── RENDER ELIGIBILITY ─────────────────────────
+function renderEligibility() {
+  const { days, pct, eligible, diffDays, nextEligible } = calcEligibility();
+  
+  // Format the next eligible date
+  const nextDate = nextEligible || new Date(S.profile.last_donation_date || new Date());
+  if (!nextEligible && S.profile.last_donation_date) {
+    const last = new Date(S.profile.last_donation_date);
+    nextDate.setDate(last.getDate() + 90);
+  }
+
+  // Update DOM elements
+  $('eligDaysLarge').textContent = eligible ? '0' : days;
+  $('daysUntilEligible').textContent = eligible ? '0' : days;
+  
+  // Update the progress bar
+  const barWidth = Math.min(100, pct);
+  $('eligBar').style.width = barWidth + '%';
+  $('eligBar').style.background = eligible ? 'var(--sage)' : days <= 14 ? 'var(--amber)' : 'var(--crimson)';
+  
+  // Update date labels
+  $('eligDateLabel').textContent = S.profile.last_donation_date ? fmtDate(S.profile.last_donation_date) : 'Never';
+  $('nextEligibleDate').textContent = eligible ? 'Eligible now!' : `Eligible ${fmtDate(nextDate.toISOString().split('T')[0])}`;
+
+  // Update badge
+  const eligBadge = $('eligBadge');
+  if (eligible) {
+    eligBadge.textContent = '✅ Eligible Now!';
+    eligBadge.className = 'dsc-badge badge-up';
+  } else if (days <= 14) {
+    eligBadge.textContent = `⏳ ${days} days left`;
+    eligBadge.className = 'dsc-badge badge-neutral';
+  } else {
+    eligBadge.textContent = `⏳ ${days} days left`;
+    eligBadge.className = 'dsc-badge badge-down';
+  }
+}
+// ── RENDER READINESS ───────────────────────────
+function renderReadiness() {
+  const hb = parseFloat(S.profile.hemoglobin || S.health.hemoglobin || 0);
+  const wt = parseFloat(S.profile.weight_kg || 0);
+
+  const onPeriod = S.health.menstrual_day >= 1 && S.health.menstrual_day <= 5;
+
+if (onPeriod) {
+  $('bloodReady').textContent = '0%';
+  $('bloodReadyBar').style.width = '0%';
+
+  $('plasmaReady').textContent = '0%';
+  $('plasmaReadyBar').style.width = '0%';
+
+  $('plateletReady').textContent = '0%';
+  $('plateletReadyBar').style.width = '0%';
+
+  $('readinessTip').innerHTML = `
+    <i class="fas fa-circle-exclamation" style="color:var(--amber);flex-shrink:0;"></i>
+    <p>
+      <strong style="color:var(--amber);">Donation temporarily paused.</strong>
+      Active menstrual cycle detected. Please wait until your period ends and update your health status.
+    </p>
+  `;
+
+  return;
+}
+
+  const bReady = Math.min(100, Math.round(hb >= 12.5 && wt >= 50 ? 100 : ((hb / 12.5) * 60 + (wt / 50) * 40)));
+  const pReady = Math.min(100, Math.round(hb >= 13 && wt >= 55 ? 100 : ((hb / 13) * 60 + (wt / 55) * 40)));
+  const plReady = Math.min(100, Math.round(hb >= 14 && wt >= 55 ? 100 : ((hb / 14) * 60 + (wt / 55) * 40)));
+
+  $('bloodReady').textContent = bReady + '%';
+  $('bloodReadyBar').style.width = bReady + '%';
+  $('plasmaReady').textContent = pReady + '%';
+  $('plasmaReadyBar').style.width = pReady + '%';
+  $('plateletReady').textContent = plReady + '%';
+  $('plateletReadyBar').style.width = plReady + '%';
+
+  const tip = $('readinessTip');
+  if (bReady === 100) {
+    tip.innerHTML = `<i class="fas fa-circle-check" style="color:var(--sage);flex-shrink:0;"></i><p><strong style="color:var(--sage);">All clear!</strong></p>`;
+  } else if (hb < 12.5) {
+    tip.innerHTML = `<i class="fas fa-lightbulb" style="color:var(--rose);flex-shrink:0;"></i><p>Boost hemoglobin with <strong>iron-rich foods + vitamin C</strong> to reach donation eligibility.</p>`;
+  } else {
+    tip.innerHTML = `<i class="fas fa-lightbulb" style="color:var(--rose);flex-shrink:0;"></i><p>Almost ready! Maintain <strong>weight ≥50kg and Hb ≥12.5 g/dL</strong> for full eligibility.</p>`;
+  }
+}
+
+// ── RENDER VITALS ──────────────────────────────
+function renderVitals() {
+  const h = S.health, p = S.profile;
+  $('vHyd').textContent = h.hydration + ' gl';
+  $('vHydTrend').textContent = h.hydration >= 6 ? '↑ On track' : '↓ Drink more';
+  $('vHydTrend').className = 'vital-trend ' + (h.hydration >= 6 ? 'trend-up' : 'trend-down');
+
+  $('vStress').textContent = h.stress + '%';
+  $('vStressTrend').textContent = h.stress < 40 ? 'Low · great' : h.stress < 70 ? 'Moderate' : 'High · rest!';
+  $('vStressTrend').className = 'vital-trend ' + (h.stress < 40 ? 'trend-up' : h.stress < 70 ? 'trend-same' : 'trend-down');
+
+  $('vEx').textContent = h.exercise_minutes + ' min';
+  $('vExTrend').textContent = h.exercise_minutes >= 30 ? '↑ Goal met!' : `${30 - h.exercise_minutes}m to goal`;
+  $('vExTrend').className = 'vital-trend ' + (h.exercise_minutes >= 30 ? 'trend-up' : 'trend-same');
+
+  const steps = h.steps || 0;
+  $('vSteps').textContent = steps.toLocaleString();
+  $('vStepsTrend').textContent = steps >= 8000 ? '↑ Goal reached' : `${(8000 - steps).toLocaleString()} to 8k`;
+  $('vStepsTrend').className = 'vital-trend ' + (steps >= 8000 ? 'trend-up' : 'trend-same');
+
+  $('vWt').textContent = (p.weight_kg || '--') + ' kg';
+  $('vHb').textContent = (p.hemoglobin || h.hemoglobin || '--') + ' g/dL';
+  $('vHbTrend').textContent = (p.hemoglobin || h.hemoglobin || 0) >= 12.5 ? '✓ Eligible' : '↓ Below threshold';
+  $('vHbTrend').className = 'vital-trend ' + ((p.hemoglobin || h.hemoglobin || 0) >= 12.5 ? 'trend-up' : 'trend-down');
+
+  $('vBP').textContent = p.blood_pressure || '--/--';
+  $('vBPTrend').textContent = 'mmHg';
+
+  const moodMap = { great: '🤩 Great', good: '😊 Good', neutral: '😐 Neutral', bad: '😔 Bad', awful: '😫 Awful' };
+  $('vMood').textContent = (moodMap[h.mood] || '😊 Good').split(' ')[0];
+  $('vMoodTrend').textContent = (moodMap[h.mood] || '😊 Good').split(' ').slice(1).join(' ');
+}
+
+// ── RENDER STATUS ──────────────────────────────
+function renderStatus(h) {
+  let score = 100;
+  if (h.hydration < 4) score -= 15;
+  if (h.stress > 50) score -= 20;
+  if (h.exercise_minutes < 20) score -= 10;
+  if (h.hemoglobin < 12) score -= 15;
+  if (h.menstrual_day > 0 && h.menstrual_day <= 5) score -= 10;
+  score = Math.max(0, score);
+
+  $('scoreVal').textContent = score;
+  const circumference = 157;
+  $('scoreCircle').setAttribute('stroke-dashoffset', circumference - (circumference * (score / 100)));
+
+  if (score >= 80) {
+    $('statusEmoji').textContent = '😊'; $('statusEmoji').className = 'status-emoji pulse-green';
+    $('statusTitle').textContent = 'Feeling Great!';
+    $('statusDesc').textContent = 'Your health metrics are excellent — perfect for donation.';
+    $('statusBadge').textContent = 'Excellent'; $('statusBadge').className = 'status-badge badge-great';
+    $('scoreCircle').setAttribute('stroke', 'var(--sage)');
+  } else if (score >= 60) {
+    $('statusEmoji').textContent = '😐'; $('statusEmoji').className = 'status-emoji wobble';
+    $('statusTitle').textContent = 'Feeling Okay';
+    $('statusDesc').textContent = 'Some metrics need attention before donation.';
+    $('statusBadge').textContent = 'Fair'; $('statusBadge').className = 'status-badge badge-ok';
+    $('scoreCircle').setAttribute('stroke', 'var(--amber)');
+  } else {
+    $('statusEmoji').textContent = '😔'; $('statusEmoji').className = 'status-emoji shake';
+    $('statusTitle').textContent = 'Need Some Rest';
+    $('statusDesc').textContent = 'Rest and recover before your next donation.';
+    $('statusBadge').textContent = 'Needs Attention'; $('statusBadge').className = 'status-badge badge-poor';
+    $('scoreCircle').setAttribute('stroke', 'var(--crimson)');
+  }
+}
+
+// ── RENDER ALL ─────────────────────────────────
+function renderAll() {
+  const h = S.health, p = S.profile;
+  const name = p.full_name?.split(' ')[0] || 'User';
+  const greeting = getTimeGreeting();
+
+  $('greetingTime').innerHTML = `${greeting.text}, <span id="greetName">${name}</span> ${greeting.emoji}`;
+  $('greetingSub').textContent = `${p.location || ''} · ${p.total_donations || 0} donations · ${p.lives_saved || 0} lives saved`;
+
+  const now = new Date();
+  $('topDate').textContent = now.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  $('headerDate').textContent = now.toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  $('chipName').textContent = p.full_name || 'User';
+  $('chipRole').textContent = `🩸 ${p.blood_group || '--'} · ${p.total_donations || 0} donations`;
+  $('avatarEl').textContent = (p.full_name || 'User').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  $('bloodTypeVal').textContent = p.blood_group || '--';
+  const bgCompat = { 'O-': 'Universal donor', 'O+': 'Donates to O+, A+, B+, AB+', 'A+': 'Donates to A+, AB+', 'A-': 'Donates to A, AB', 'B+': 'Donates to B+, AB+', 'B-': 'Donates to B, AB', 'AB+': 'Universal recipient', 'AB-': 'Rare but valuable' };
+  $('bloodTypeSub').textContent = bgCompat[p.blood_group] || 'Blood type compatibility';
+
+  $('hydVal').innerHTML = `${h.hydration} <small>glasses</small>`;
+  $('hydSub').textContent = `${h.hydration * 250} ml · goal 2000 ml`;
+  $('hydBar').style.width = Math.min(100, (h.hydration / 8) * 100) + '%';
+
+  const stressColor = h.stress < 40 ? 'var(--sage)' : h.stress < 70 ? 'var(--amber)' : 'var(--crimson)';
+  $('stressVal').innerHTML = `${h.stress} <small>%</small>`;
+  $('stressSub').textContent = h.stress < 40 ? 'Low · calm & focused' : h.stress < 70 ? 'Moderate · take a breath' : 'High · rest needed';
+  $('stressBar').style.width = Math.min(100, h.stress) + '%';
+  $('stressBar').style.background = stressColor;
+
+  $('exVal').innerHTML = `${h.exercise_minutes} <small>min</small>`;
+  $('exSub').textContent = `${h.exercise_weekly || h.exercise_minutes * 4} min this week`;
+  $('exBar').style.width = Math.min(100, (h.exercise_minutes / 60) * 100) + '%';
+
+  $('wtVal').innerHTML = `${p.weight_kg || '--'} <small>kg</small>`;
+  $('donVal').textContent = p.last_donation_date ? fmtDate(p.last_donation_date) : 'Not set';
+  $('cycleVal').innerHTML = `${h.menstrual_day || '--'} <small>/ ${h.menstrual_total || 28}</small>`;
+  $('hbVal').innerHTML = `${p.hemoglobin || h.hemoglobin || '--'} <small>g/dL</small>`;
+
+  renderStatus(h);
+  renderVitals();
+  renderHistory();
+  renderEligibility();
+  renderReadiness();
+
+  $('lastUpdate').textContent = new Date().toLocaleTimeString();
+}
+
+// ── SAVE ───────────────────────────────────────
+async function saveAll() {
+  const vals = {
+    hydration: parseFloat($('iHyd').value) || null,
+    stress: parseFloat($('iStress').value) || null,
+    exercise_minutes: parseFloat($('iEx').value) || null,
+    weight_kg: parseFloat($('iWt').value) || null,
+    hemoglobin: parseFloat($('iHb').value) || null,
+    menstrual_day: parseInt($('iCycle').value) || null,
+    mood: $('iMood').value,
+    last_donation_date: $('iDon').value || null,
+    steps: parseInt($('iSteps').value) || null
+  };
+
+  // Validation
+  if (vals.hydration != null && (vals.hydration < 0 || vals.hydration > 8)) return toast('⚠️ Hydration: 0–8 glasses');
+  if (vals.stress != null && (vals.stress < 0 || vals.stress > 100)) return toast('⚠️ Stress: 0–100%');
+  if (vals.exercise_minutes != null && (vals.exercise_minutes < 0 || vals.exercise_minutes > 180)) return toast('⚠️ Exercise: 0–180 min');
+  if (vals.weight_kg != null && (vals.weight_kg < 30 || vals.weight_kg > 150)) return toast('⚠️ Weight: 30–150 kg');
+  if (vals.hemoglobin != null && (vals.hemoglobin < 8 || vals.hemoglobin > 20)) return toast('⚠️ Hemoglobin: 8–20 g/dL');
+
+  // Update local state FIRST
+  Object.entries(vals).forEach(([k, v]) => {
+    if (v != null) {
+      if (k === 'weight_kg') {
+        S.profile.weight_kg = v;
+        console.log('✅ Weight updated locally to:', v);
+      } else if (k === 'last_donation_date') {
+        S.profile.last_donation_date = v;
+      } else if (k === 'hemoglobin') {
+        S.profile.hemoglobin = v;
+        S.health.hemoglobin = v;
+      } else {
+        S.health[k] = v;
+      }
+    }
+  });
+
+  setSyncStatus(false);
+  $('updateBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+  // Prepare profile update (includes weight)
+  const profileUpdate = {};
+  if (vals.weight_kg != null) profileUpdate.weight_kg = vals.weight_kg;
+  if (vals.last_donation_date != null) profileUpdate.last_donation_date = vals.last_donation_date;
+  if (vals.hemoglobin != null) profileUpdate.hemoglobin = vals.hemoglobin;
+  if (S.profile.full_name) profileUpdate.full_name = S.profile.full_name;
+  if (S.profile.blood_group) profileUpdate.blood_group = S.profile.blood_group;
+  if (S.profile.age) profileUpdate.age = S.profile.age;
+  if (S.profile.location) profileUpdate.location = S.profile.location;
+
+  console.log('📤 Sending profile update:', profileUpdate);
+
+  // Prepare health update
+  const healthUpdate = {
+    hydration: vals.hydration || S.health.hydration || 0,
+    stress: vals.stress || S.health.stress || 0,
+    exercise_minutes: vals.exercise_minutes || S.health.exercise_minutes || 0,
+    exercise_weekly: (vals.exercise_minutes || S.health.exercise_minutes || 0) * 4,
+    menstrual_day: vals.menstrual_day || S.health.menstrual_day || 0,
+    menstrual_total: 28,
+    mood: vals.mood || S.health.mood || 'good',
+    steps: vals.steps || S.health.steps || 5000,
+    hemoglobin: vals.hemoglobin || S.profile.hemoglobin || S.health.hemoglobin || 0,
+    user_id: USER_ID,
+    updated_at: new Date().toISOString()
+  };
+
+  console.log('📤 Sending health update:', healthUpdate);
+
+  try {
+    // Try to save to backend
+    const results = await Promise.allSettled([
+      apiFetch('/profile/update', { 
+        method: 'POST', 
+        body: { user_id: USER_ID, ...profileUpdate } 
+      }),
+      apiFetch('/health/update', { 
+        method: 'POST', 
+        body: healthUpdate 
+      })
+    ]);
+
+    // Check results
+    let profileSuccess = false;
+    let healthSuccess = false;
+
+    if (results[0].status === 'fulfilled' && results[0].value) {
+      profileSuccess = true;
+      console.log('✅ Profile saved to backend:', results[0].value);
+    } else {
+      console.warn('⚠️ Profile save failed:', results[0]);
+    }
+
+    if (results[1].status === 'fulfilled' && results[1].value) {
+      healthSuccess = true;
+      console.log('✅ Health saved to backend:', results[1].value);
+    } else {
+      console.warn('⚠️ Health save failed:', results[1]);
+    }
+
+    if (profileSuccess || healthSuccess) {
+      toast('✅ Metrics saved to MongoDB!');
+      setSyncStatus(true);
+    } else {
+      // Fallback: Save to localStorage
+      try {
+        const localData = {
+          profile: S.profile,
+          health: S.health,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('lifeline_health_data', JSON.stringify(localData));
+        toast('📡 Saved locally (backend offline)');
+        console.log('💾 Data saved to localStorage as backup');
+      } catch (e) {
+        toast('⚠️ Could not save data anywhere');
+      }
+    }
+  } catch (e) {
+    console.error('❌ Save error:', e);
+    toast('❌ Error saving data. Check console.');
+  }
+
+  // Force render update
+  renderAll();
+  
+  // Clear form fields
+  ['iHyd','iStress','iEx','iWt','iHb','iCycle','iSteps'].forEach(id => {
+    const el = $(id);
+    if (el) el.value = '';
+  });
+  
+  $('updateBtn').innerHTML = '<i class="fas fa-floppy-disk"></i> Update All Metrics';
+}
+// ── AI CHAT ────────────────────────────────────
+function addMsg(text, isUser) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + (isUser ? 'user' : 'bot');
+  d.textContent = text;
+  $('chatBody').appendChild(d);
+  $('chatBody').scrollTop = $('chatBody').scrollHeight;
+}
+
+function showTyping() {
+  const d = document.createElement('div');
+  d.className = 'typing-dots'; d.id = 'typing';
+  d.innerHTML = '<span></span><span></span><span></span>';
+  $('chatBody').appendChild(d);
+  $('chatBody').scrollTop = $('chatBody').scrollHeight;
+}
+
+function hideTyping() {
+  const el = $('typing');
+  if (el) el.remove();
+}
+
+function reply(msg) {
+  const h = S.health, p = S.profile, m = msg.toLowerCase();
+  if (m.includes('water') || m.includes('hydrat')) return `💧 You've had ${h.hydration} glasses today (${h.hydration * 250}ml). Goal is 8 glasses/2000ml. ${h.hydration < 4 ? 'Drink 2 more glasses before your next meal!' : 'Great hydration — keeps plasma donation-ready!'}`;
+  if (m.includes('stress')) return `🧘 Your stress is at ${h.stress}%. ${h.stress < 40 ? 'Excellent — low stress optimises blood quality.' : h.stress < 70 ? 'Moderate. Try 10 min of deep breathing.' : 'High stress affects iron absorption. Rest is priority.'}`;
+  if (m.includes('exercise') || m.includes('workout')) return `🏃 ${h.exercise_minutes} min today, ${h.exercise_weekly || h.exercise_minutes * 4} min this week. ${h.exercise_minutes >= 30 ? '30-min goal achieved! Regular cardio boosts hemoglobin.' : `${30 - h.exercise_minutes} more minutes to hit daily goal.`}`;
+  if (m.includes('donat') || m.includes('eligibl')) {
+    const hb = p.hemoglobin || h.hemoglobin || 0;
+    const elig = calcEligibility();
+    if (hb >= 12.5 && (p.weight_kg || 0) >= 50 && elig.eligible) return `✅ You're fully eligible! Hb: ${hb} g/dL ✓, Weight: ${p.weight_kg}kg ✓, 56-day gap: met ✓. Visit your nearest blood bank!`;
+    const issues = [];
+    if (hb < 12.5) issues.push(`Hb ${hb} < 12.5 g/dL`);
+    if ((p.weight_kg || 0) < 50) issues.push(`Weight ${p.weight_kg}kg < 50kg`);
+    if (!elig.eligible) issues.push(`${elig.days} days until gap is complete`);
+    return `⚠️ Not yet eligible. Issues: ${issues.join(', ')}. Tips: eat iron-rich foods, maintain weight, wait for gap.`;
+  }
+  if (m.includes('hemo') || m.includes('iron') || m.includes('hb')) return `🩸 Hemoglobin: ${p.hemoglobin || h.hemoglobin || '--'} g/dL. Threshold for donation: 12.5 g/dL (women), 13.0 (men). Boost with: spinach, lentils, red meat, vitamin C alongside meals.`;
+  if (m.includes('blood type') || m.includes('blood group')) return `🧬 Your blood type is ${p.blood_group || '--'}. ${p.blood_group === 'O-' ? 'Universal donor — your blood can save ANYONE!' : p.blood_group === 'AB+' ? 'Universal recipient — and a valuable apheresis donor!' : `You can donate to: ${{ 'O+': 'O+, A+, B+, AB+', 'A+': 'A+, AB+', 'A-': 'A+, A-, AB+, AB-', 'B+': 'B+, AB+', 'B-': 'B+, B-, AB+, AB-', 'AB-': 'AB+, AB-' }[p.blood_group] || 'recipients with compatible type'}`}`;
+  if (m.includes('score') || m.includes('health score')) return `📊 Your health score is ${$('scoreVal').textContent}/100. ${parseInt($('scoreVal').textContent) >= 80 ? 'Excellent — you\'re in top donation condition!' : 'Improve hydration and reduce stress to boost your score.'}`;
+  if (m.includes('next donation') || m.includes('when can')) { const e = calcEligibility(); return e.eligible ? '✅ You can donate right now! Find your nearest blood bank and book an appointment.' : `⏳ ${e.days} days until your next eligible donation date. Use this time to build up iron stores!`; }
+  return `🤔 I can help with: hydration, stress, exercise, donation eligibility, hemoglobin, blood type, health score. What would you like to know?`;
+}
+
+// ── AI CHAT ────────────────────────────────────
+async function sendChat() {
+  const val = $('chatIn').value.trim();
+  if (!val) return;
+  
+  addMsg(val, true);
+  $('chatIn').value = '';
+  showTyping();
+
+  try {
+    // Call the backend AI endpoint
+    const response = await apiFetch('/ai/chat', {
+      method: 'POST',
+      body: {
+        user_id: USER_ID,
+        message: val
+      }
+    });
+
+    hideTyping();
+    
+    if (response && response.reply) {
+      addMsg(response.reply, false);
+    } else {
+      addMsg("I'm having trouble connecting. Please try again.", false);
+    }
+  } catch (error) {
+    console.error('Chat error:', error);
+    hideTyping();
+    addMsg("Sorry, I'm having trouble responding right now. Please try again.", false);
+  }
+}
+
+// ── REAL-TIME REFRESH ──────────────────────────
+let rtInterval = null;
+
+async function realtimeRefresh() {
+  try {
+    const [profileRes, healthRes] = await Promise.allSettled([
+      apiFetch(`/profile/${USER_ID}`),
+      apiFetch(`/health/${USER_ID}`)
+    ]);
+    let updated = false;
+    if (profileRes.status === 'fulfilled' && profileRes.value) {
+      const d = profileRes.value?.profile || profileRes.value;
+      if (d && d.full_name) { S.profile = { ...S.profile, ...d }; updated = true; }
+    }
+    if (healthRes.status === 'fulfilled' && healthRes.value) {
+      const d = healthRes.value;
+      if (d && d.hydration !== undefined) { S.health = { ...S.health, ...d }; updated = true; }
+    }
+    if (updated) {
+      renderAll();
+      setSyncStatus(true);
+    }
+  } catch (e) {}
+}
+
+// ── EVENTS ─────────────────────────────────────
+$('updateBtn').addEventListener('click', saveAll);
+$('sendBtn').addEventListener('click', sendChat);
+$('chatIn').addEventListener('keypress', e => { if (e.key === 'Enter') sendChat(); });
+
+
+$('notifBtn').addEventListener('click', async () => {
+  $('notifCount').style.display = 'none';
+  try {
+    const n = await apiFetch(`/notifications/${USER_ID}`);
+    toast(n?.unread_count != null ? `🔔 ${n.unread_count} unread notifications` : '🔔 No new notifications');
+  } catch {
+    toast('🔔 Check your notifications');
+  }
+});
+
+$('profileChip').addEventListener('click', () => {
+  const p = S.profile;
+  toast(`👤 ${p.full_name} · ${p.blood_group} · ${p.age} yrs · ${p.total_donations} donations`);
+});
+
+$('settingsBtn').addEventListener('click', () => toast('⚙️ Settings coming soon'));
+
+// ── UTILITY ────────────────────────────────────
+function setSyncStatus(ok) {
+  $('syncDot').className = 'sync-dot ' + (ok ? 'ok' : 'syncing');
+  $('syncStatus').textContent = ok ? 'Connected to MongoDB Atlas' : 'Offline Mode (Demo Data)';
+  if (ok) $('syncTime').textContent = new Date().toLocaleTimeString();
+}
+
+function toast(msg) {
+  $('toastMsg').textContent = msg;
+  const el = $('toast');
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function fmtDate(s) {
+  if (!s) return 'Not set';
+  return new Date(s).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ── QUOTES ROTATOR ─────────────────────────────
+const quotes = [
+  { q: "Your health is an investment, not an expense. Every healthy day is a step toward saving lives.", a: "— LuminaLife" },
+  { q: "Strength comes from overcoming what you once thought you couldn't.", a: "— Rikki Rogers" },
+  { q: "The greatest wealth is health. Invest in it every single day.", a: "— Jim Rohn" },
+  { q: "Every drop of blood donated can save up to three lives.", a: "— LuminaLife" },
+  { q: "Donating blood is an act of love that speaks louder than words.", a: "— World Health Organization" },
+];
+let qi = 0;
+setInterval(() => {
+  const { q, a } = quotes[qi % quotes.length];
+  $('quoteText').textContent = `"${q}"`;
+  $('quoteAuthor').textContent = a;
+  qi++;
+}, 9000);
+
+// ── AUTO ROTATE TIPS ───────────────────────────
+setInterval(() => nextTip(), 12000);
+
+// ── EXPOSE GLOBALS ─────────────────────────────
+window.nextTip = nextTip;
+window.jumpTip = jumpTip;
+window.toast = toast;
+
+// ── INIT ───────────────────────────────────────
+async function init() {
+  const loader = $('loader');
+  $('loaderText').textContent = 'Loading your health dashboard…';
+
+  // Fetch data from backend
+  await fetchDonationHistory();
+
+  renderAll();
+  renderCurrentTip();
+  buildTipDots('tipDots', bloodTips.length, 0);
+
+  setTimeout(() => { loader.classList.add('hidden'); }, 1200);
+  toast('📡 Loading LuminaLife dashboard…');
+  setSyncStatus(false);
+
+  // try backend for profile/health
+  try {
+    const [profileRes, healthRes] = await Promise.allSettled([
+      apiFetch(`/profile/${USER_ID}`),
+      apiFetch(`/health/${USER_ID}`)
+    ]);
+    let connected = false;
+    if (profileRes.status === 'fulfilled' && profileRes.value) {
+      const d = profileRes.value?.profile || profileRes.value;
+      if (d && d.full_name) { S.profile = { ...S.profile, ...d }; connected = true; }
+    }
+    if (healthRes.status === 'fulfilled' && healthRes.value) {
+      const d = healthRes.value;
+      if (d && d.hydration !== undefined) { S.health = { ...S.health, ...d }; connected = true; }
+    }
+    if (connected) {
+      renderAll();
+      setSyncStatus(true);
+      toast(`✅ Live data loaded for ${S.profile.full_name}`);
+    } else {
+      toast('📡 Demo mode — enter data to sync with backend');
+    }
+  } catch (e) {
+    toast('📡 Demo mode active (backend offline)');
+  }
+
+  // start real-time polling
+  rtInterval = setInterval(realtimeRefresh, 30000);
+  console.log('🟢 Real-time polling every 30s started');
+}
+
+init();
+</script>
+</body>
+</html>

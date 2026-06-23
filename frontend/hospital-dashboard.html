@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Life - Hospital Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:linear-gradient(135deg,#fff8fa,#fff1f2,#fdf2f8);
+--card:rgba(255,255,255,.88);
+--text:#1f2937;
+--muted:#6b7280;
+}
+body.dark{
+--bg:linear-gradient(135deg,#0b1220,#111827,#1f2937);
+--card:rgba(17,24,39,.85);
+--text:#fff;
+--muted:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding:24px}
+.topbar{max-width:1300px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.7rem;font-weight:800}
+.logo span{color:#ec4899}
+.theme{padding:12px 18px;border:none;border-radius:999px;cursor:pointer}
+.container{max-width:1300px;margin:24px auto}
+.layout{display:grid;grid-template-columns:320px 1fr;gap:22px}
+.card{background:var(--card);backdrop-filter:blur(20px);border-radius:28px;padding:24px}
+.profile{text-align:center}
+.avatar{width:110px;height:110px;border-radius:50%;margin:auto;background:linear-gradient(135deg,#ef4444,#ec4899);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:800}
+.profile h2{margin-top:15px}
+.profile p{color:var(--muted)}
+.info{margin-top:20px;text-align:left}
+.info div{margin:12px 0}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.action{padding:22px;border-radius:22px;background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(236,72,153,.12))}
+.action h3{margin-bottom:8px}
+.action p{color:var(--muted);margin-bottom:14px}
+.btn{display:inline-block;padding:12px 16px;border-radius:12px;text-decoration:none;background:linear-gradient(135deg,#ef4444,#ec4899);color:white;font-weight:700}
+.section{margin-top:22px}
+.smallgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.smallcard{padding:20px;border-radius:20px;background:rgba(255,255,255,.06)}
+.smallcard p{color:var(--muted);margin-top:8px}
+@media(max-width:950px){.layout,.smallgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="dark">
+<div class="topbar">
+<div class="logo">Lumina <span>Life</span></div>
+<button id="themeBtn" class="theme">Theme</button>
+</div>
+
+<div class="container">
+<div class="layout">
+
+<div class="card profile">
+<div class="avatar" id="avatar">H</div>
+<h2 id="hospitalName">Hospital Name</h2>
+<p id="hospitalArea">Area</p>
+
+<div class="info">
+<div><strong>Email:</strong> <span id="hospitalEmail">Not Available</span></div>
+<div><strong>Area:</strong> <span id="hospitalArea2">Not Available</span></div>
+<div><strong>Status:</strong> Active</div>
+<div><strong>Role:</strong> Hospital</div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<h2>Hospital Dashboard</h2>
+<p style="color:var(--muted);margin:10px 0 20px;">Manage requests and monitor donation activities.</p>
+
+<div class="actions">
+<div class="action">
+<h3>Create Blood Request</h3>
+<p>Create a blood donation requirement.</p>
+<a href="request.html" class="btn">Open</a>
+</div>
+
+<div class="action">
+<h3>Create Organ Request</h3>
+<p>Create a kidney, liver or bone marrow request.</p>
+<a href="request.html" class="btn">Open</a>
+</div>
+
+<div class="action">
+<h3>Request Status</h3>
+<p>Track the status of submitted requests.</p>
+<a href="request-status.html" class="btn">View</a>
+</div>
+
+<div class="action">
+<h3>Hospital Profile</h3>
+<p>Review stored hospital information.</p>
+<a href="hospital-profile.html" class="btn">Profile</a>
+</div>
+</div>
+</div>
+
+<div class="section smallgrid">
+<div class="card smallcard">
+<h3>Profile Information</h3>
+<p>Displays details entered during registration.</p>
+</div>
+
+<div class="card smallcard">
+<h3>Recent Requests</h3>
+<p>No requests created yet.</p>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+const profile = JSON.parse(localStorage.getItem("hospitalProfile")) || {};
+
+document.getElementById("hospitalName").innerText = profile.name || "Hospital Name";
+document.getElementById("hospitalEmail").innerText = profile.email || "Not Available";
+document.getElementById("hospitalArea").innerText = profile.area || "Area";
+document.getElementById("hospitalArea2").innerText = profile.area || "Not Available";
+
+if(profile.name){
+document.getElementById("avatar").innerText = profile.name.charAt(0).toUpperCase();
+}
+
+if(localStorage.getItem('theme')==='light'){
+document.body.classList.remove('dark');
+}
+document.getElementById('themeBtn').onclick=()=>{
+document.body.classList.toggle('dark');
+localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+}
+</script>
+</body>
+</html>
