@@ -51,12 +51,19 @@ CORS(app,
      })
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-cred = credentials.Certificate(
-    os.path.join(
-        BASE_DIR,
-        "luminalife-7f217-firebase-adminsdk-fbsvc-921f0445a7.json"
+try:
+    cred = credentials.Certificate(
+        os.path.join(
+            BASE_DIR,
+            "luminalife-7f217-firebase-adminsdk-fbsvc-921f0445a7.json"
+        )
     )
-)
+
+    firebase_admin.initialize_app(cred)
+    print("✅ Firebase initialized")
+
+except Exception as e:
+    print("⚠️ Firebase not initialized:", e)
 
 firebase_admin.initialize_app(cred)
 # Load configuration
